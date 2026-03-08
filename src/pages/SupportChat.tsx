@@ -52,7 +52,7 @@ export default function SupportChat() {
     if (!inputValue.trim()) return;
 
     const userMsg: Message = {
-      id: Date.now().toString(),
+      id: Date.now().toString() + Math.random().toString(36).substring(2, 9),
       text: inputValue,
       sender: 'user',
       timestamp: new Date()
@@ -82,7 +82,7 @@ export default function SupportChat() {
       const data = await res.json();
 
       const adminMsg: Message = {
-        id: (Date.now() + 1).toString(),
+        id: Date.now().toString() + Math.random().toString(36).substring(2, 9),
         text: data.success ? data.text : "I'm sorry, I'm having trouble connecting. Please try again later.",
         sender: 'admin',
         timestamp: new Date()
@@ -92,7 +92,7 @@ export default function SupportChat() {
     } catch (error) {
       console.error("Support Chat Error:", error);
       const errorMsg: Message = {
-        id: (Date.now() + 1).toString(),
+        id: Date.now().toString() + Math.random().toString(36).substring(2, 9),
         text: "I'm currently offline. Please try again in a moment.",
         sender: 'admin',
         timestamp: new Date()

@@ -17,6 +17,7 @@ import PythonReference from './pages/PythonReference';
 import CodePlayground from './pages/CodePlayground';
 import CourseDetail from './pages/CourseDetail';
 import Community from './pages/Community';
+import Forum from './pages/Forum';
 import Explore from './pages/Explore';
 import SupportChat from './pages/SupportChat';
 import AdminDashboard from './pages/AdminDashboard';
@@ -42,6 +43,7 @@ export default function App() {
           <Route path="/playground" element={<CodePlayground />} />
           <Route path="/course" element={<CourseDetail />} />
           <Route path="/community" element={<Community />} />
+          <Route path="/forum" element={<Forum />} />
           <Route path="/explore" element={<Explore />} />
           <Route path="/support" element={<SupportChat />} />
           <Route path="/admin" element={<AdminDashboard />} />

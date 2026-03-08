@@ -5,6 +5,7 @@ import { useAppContext } from '../context/AppContext';
 import SettingsModal from '../components/SettingsModal';
 import CoinDisplay from '../components/CoinDisplay';
 import { supabase } from '../lib/supabase';
+import { MessageSquare } from 'lucide-react';
 
 interface ChatMessage {
   id: string;
@@ -177,6 +178,9 @@ export default function Community() {
         </Link>
         <h2 className="text-slate-900 dark:text-white text-xl font-bold leading-tight tracking-tight flex-1 text-center">Community Chat</h2>
         <div className="flex w-auto items-center justify-end gap-3">
+          <Link to="/forum" className="flex size-10 items-center justify-center rounded-full bg-primary/10 text-primary border border-primary/20 hover:bg-primary/20 transition-colors">
+            <MessageSquare size={20} />
+          </Link>
           <CoinDisplay />
           <button onClick={() => setIsSettingsOpen(true)} className="flex size-10 cursor-pointer items-center justify-center rounded-full bg-primary/10 text-primary overflow-hidden border border-primary/20">
             {profilePicture ? (
