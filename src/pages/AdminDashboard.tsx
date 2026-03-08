@@ -37,7 +37,12 @@ export default function AdminDashboard() {
         setUsers(data.users);
         setIsAuthenticated(true);
       } else {
-        setError('Invalid admin password');
+        const errorData = await response.json().catch(() => null);
+        if (response.status === 500 && errorData?.error) {
+          setError(errorData.error);
+        } else {
+          setError('Invalid admin password');
+        }
       }
     } catch (err) {
       setError('Network error. Please try again.');

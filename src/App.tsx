@@ -21,11 +21,13 @@ import Explore from './pages/Explore';
 import SupportChat from './pages/SupportChat';
 import AdminDashboard from './pages/AdminDashboard';
 import { AppProvider } from './context/AppContext';
+import NotificationHandler from './components/NotificationHandler';
 
 export default function App() {
   return (
     <AppProvider>
       <Router>
+        <NotificationHandler />
         <Routes>
           <Route path="/" element={<Landing />} />
           <Route path="/login" element={<Login />} />

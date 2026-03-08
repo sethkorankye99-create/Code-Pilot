@@ -41,36 +41,6 @@ const getYesterdayDateStr = () => {
   return `${yesterday.getUTCFullYear()}-${String(yesterday.getUTCMonth() + 1).padStart(2, '0')}-${String(yesterday.getUTCDate()).padStart(2, '0')}`;
 };
 
-// Ensure a default user exists (legacy support or guest mode)
-const ensureDefaultUser = () => {
-  const userId = 'default_user';
-  const stmt = db.prepare('SELECT * FROM users WHERE id = ?');
-  let user = stmt.get(userId) as any;
-  
-  const today = getCurrentDateStr();
-  const yesterday = getYesterdayDateStr();
-
-  if (!user) {
-    db.prepare('INSERT INTO users (id, username, password, coins, last_reset_date, streak_count, last_streak_date, profile_picture) VALUES (?, ?, ?, ?, ?, ?, ?, ?)').run(userId, 'Guest', 'guest', 5, today, 0, '', null);
-    user = { id: userId, username: 'Guest', coins: 5, last_reset_date: today, streak_count: 0, last_streak_date: '', profile_picture: null };
-  } else {
-    // Reset coins if it's a new day
-    if (user.last_reset_date !== today) {
-      db.prepare('UPDATE users SET coins = 5, last_reset_date = ? WHERE id = ?').run(today, userId);
-      user.coins = 5;
-      user.last_reset_date = today;
-    }
-    
-    // Check if streak should be reset (if last streak was before yesterday)
-    if (user.last_streak_date && user.last_streak_date !== today && user.last_streak_date !== yesterday) {
-      db.prepare('UPDATE users SET streak_count = 0 WHERE id = ?').run(userId);
-      user.streak_count = 0;
-    }
-  }
-  
-  return user;
-};
-
 async function startServer() {
   const app = express();
   const PORT = 3000;
@@ -138,13 +108,13 @@ async function startServer() {
   // Coin API routes
   app.get("/api/coins", (req, res) => {
     const userId = req.query.userId as string;
-    let user;
-    if (userId) {
-      user = db.prepare('SELECT * FROM users WHERE id = ?').get(userId) as any;
+    if (!userId) {
+      return res.status(401).json({ error: "Unauthorized: User ID required" });
     }
     
+    let user = db.prepare('SELECT * FROM users WHERE id = ?').get(userId) as any;
     if (!user) {
-      user = ensureDefaultUser();
+      return res.status(404).json({ error: "User not found" });
     }
     
     res.json({ coins: user.coins, streak_count: user.streak_count, profile_picture: user.profile_picture });
@@ -152,13 +122,13 @@ async function startServer() {
 
   app.post("/api/coins/deduct", (req, res) => {
     const { userId } = req.body;
-    let user;
-    if (userId) {
-      user = db.prepare('SELECT * FROM users WHERE id = ?').get(userId) as any;
+    if (!userId) {
+      return res.status(401).json({ error: "Unauthorized: User ID required" });
     }
-
+    
+    let user = db.prepare('SELECT * FROM users WHERE id = ?').get(userId) as any;
     if (!user) {
-      user = ensureDefaultUser();
+      return res.status(404).json({ error: "User not found" });
     }
     
     if (user.coins <= 0) {
@@ -173,13 +143,13 @@ async function startServer() {
 
   app.post("/api/streak/update", (req, res) => {
     const { userId } = req.body;
-    let user;
-    if (userId) {
-      user = db.prepare('SELECT * FROM users WHERE id = ?').get(userId) as any;
+    if (!userId) {
+      return res.status(401).json({ error: "Unauthorized: User ID required" });
     }
-
+    
+    let user = db.prepare('SELECT * FROM users WHERE id = ?').get(userId) as any;
     if (!user) {
-      user = ensureDefaultUser();
+      return res.status(404).json({ error: "User not found" });
     }
 
     const today = getCurrentDateStr();
@@ -282,10 +252,13 @@ async function startServer() {
 
   app.get("/api/admin/users", (req, res) => {
     const adminPassword = req.headers['x-admin-password'];
-    // In production, use process.env.ADMIN_PASSWORD. For this demo, we use a hardcoded fallback.
-    const expectedPassword = process.env.ADMIN_PASSWORD ? process.env.ADMIN_PASSWORD.trim() : "admin123";
+    const expectedPassword = process.env.ADMIN_PASSWORD ? process.env.ADMIN_PASSWORD.trim() : null;
     
-    if (!adminPassword || (adminPassword.toString().trim() !== expectedPassword && adminPassword.toString().trim() !== "admin123")) {
+    if (!expectedPassword) {
+      return res.status(500).json({ error: "Server configuration error: ADMIN_PASSWORD environment variable is not set." });
+    }
+
+    if (!adminPassword || adminPassword.toString().trim() !== expectedPassword) {
       return res.status(401).json({ error: "Unauthorized" });
     }
 

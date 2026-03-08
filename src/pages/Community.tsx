@@ -10,6 +10,7 @@ interface ChatMessage {
   user: string;
   text: string;
   timestamp: number;
+  type?: 'community';
 }
 
 interface MenuPosition {
@@ -70,6 +71,7 @@ export default function Community() {
       user: username,
       text: inputValue.trim(),
       timestamp: Date.now(),
+      type: 'community',
     };
 
     socketRef.current.emit('chat message', newMsg);

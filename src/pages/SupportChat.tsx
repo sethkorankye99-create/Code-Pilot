@@ -62,7 +62,7 @@ export default function SupportChat() {
     setInputValue('');
     setIsTyping(true);
 
-    // Send to socket (optional for this demo, but follows real infra rules)
+    // Send to socket
     socketRef.current?.emit('chat message', {
       text: inputValue,
       sender: username,

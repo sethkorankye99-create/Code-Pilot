@@ -69,16 +69,25 @@ export function AppProvider({ children }: { children: ReactNode }) {
   }, [theme]);
 
   const refreshCoins = async () => {
+    if (!userId) {
+      setCoins(0);
+      setStreak(0);
+      return;
+    }
     try {
-      const url = userId ? `/api/coins?userId=${userId}` : '/api/coins';
+      const url = `/api/coins?userId=${userId}`;
       const res = await fetch(url);
-      const data = await res.json();
-      setCoins(data.coins);
-      if (data.streak_count !== undefined) {
-        setStreak(data.streak_count);
-      }
-      if (data.profile_picture !== undefined) {
-        setProfilePicture(data.profile_picture);
+      if (res.ok) {
+        const data = await res.json();
+        setCoins(data.coins);
+        if (data.streak_count !== undefined) {
+          setStreak(data.streak_count);
+        }
+        if (data.profile_picture !== undefined) {
+          setProfilePicture(data.profile_picture);
+        }
+      } else {
+        console.error('Failed to fetch coins: Unauthorized or not found');
       }
     } catch (err) {
       console.error('Failed to fetch coins', err);
@@ -116,6 +125,10 @@ export function AppProvider({ children }: { children: ReactNode }) {
   };
 
   const deductCoin = async () => {
+    if (!userId) {
+      showToast("Please log in to use coins.", 'error');
+      return { success: false, error: "Not logged in" };
+    }
     try {
       const res = await fetch('/api/coins/deduct', { 
         method: 'POST',
@@ -128,7 +141,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
         showToast(`1 coin used. ${data.coins} coins remaining.`, 'info');
         return { success: true, coins: data.coins };
       } else {
-        showToast("You have no coins left. Come back tomorrow for 5 new coins.", 'error');
+        showToast(data.error || "You have no coins left. Come back tomorrow for 5 new coins.", 'error');
         return { success: false, error: data.error };
       }
     } catch (err) {
@@ -138,6 +151,10 @@ export function AppProvider({ children }: { children: ReactNode }) {
   };
 
   const addCoins = async (amount: number) => {
+    if (!userId) {
+      showToast("Please log in to earn coins.", 'error');
+      return { success: false, error: "Not logged in" };
+    }
     try {
       const res = await fetch('/api/coins/add', { 
         method: 'POST',
@@ -160,6 +177,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
   };
 
   const updateStreak = async () => {
+    if (!userId) return;
     try {
       const res = await fetch('/api/streak/update', {
         method: 'POST',
