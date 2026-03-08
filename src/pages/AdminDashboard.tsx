@@ -14,7 +14,7 @@ interface User {
 }
 
 export default function AdminDashboard() {
-  const [password, setPassword] = useState('');
+  const [email, setEmail] = useState('');
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [users, setUsers] = useState<User[]>([]);
   const [error, setError] = useState('');
@@ -28,7 +28,7 @@ export default function AdminDashboard() {
     try {
       const response = await fetch('/api/admin/users', {
         headers: {
-          'x-admin-password': password.trim()
+          'x-admin-email': email.trim()
         }
       });
       
@@ -41,7 +41,7 @@ export default function AdminDashboard() {
         if (response.status === 500 && errorData?.error) {
           setError(errorData.error);
         } else {
-          setError('Invalid admin password');
+          setError('Access denied. Invalid admin email.');
         }
       }
     } catch (err) {
@@ -65,15 +65,15 @@ export default function AdminDashboard() {
             </div>
           </div>
           <h1 className="text-2xl font-bold text-center text-slate-900 dark:text-white mb-2">Admin Access</h1>
-          <p className="text-slate-500 dark:text-slate-400 text-center mb-8">Enter the admin password to view user data.</p>
+          <p className="text-slate-500 dark:text-slate-400 text-center mb-8">Enter the admin email to view user data.</p>
           
           <form onSubmit={handleLogin} className="space-y-4">
             <div>
               <input
-                type="password"
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                placeholder="Admin Password"
+                type="email"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                placeholder="Admin Email"
                 className="w-full px-4 py-3 rounded-xl bg-slate-100 dark:bg-slate-800 border-none focus:ring-2 focus:ring-primary text-slate-900 dark:text-white"
                 required
               />

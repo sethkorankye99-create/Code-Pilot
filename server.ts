@@ -251,14 +251,14 @@ async function startServer() {
   });
 
   app.get("/api/admin/users", (req, res) => {
-    const adminPassword = req.headers['x-admin-password'];
-    const expectedPassword = process.env.ADMIN_PASSWORD ? process.env.ADMIN_PASSWORD.trim() : null;
+    const adminEmail = req.headers['x-admin-email'];
+    const expectedEmail = process.env.ADMIN_EMAIL ? process.env.ADMIN_EMAIL.trim() : null;
     
-    if (!expectedPassword) {
-      return res.status(500).json({ error: "Server configuration error: ADMIN_PASSWORD environment variable is not set." });
+    if (!expectedEmail) {
+      return res.status(500).json({ error: "Server configuration error: ADMIN_EMAIL environment variable is not set." });
     }
 
-    if (!adminPassword || adminPassword.toString().trim() !== expectedPassword) {
+    if (!adminEmail || adminEmail.toString().trim().toLowerCase() !== expectedEmail.toLowerCase()) {
       return res.status(401).json({ error: "Unauthorized" });
     }
 

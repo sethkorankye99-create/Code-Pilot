@@ -91,6 +91,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
       }
     } catch (err) {
       console.error('Failed to fetch coins', err);
+      showToast("Could not sync your data. Please check your connection.", "error");
     }
   };
 
@@ -193,6 +194,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
       }
     } catch (err) {
       console.error('Failed to update streak', err);
+      showToast("Failed to update your streak.", "error");
     }
   };
 
