@@ -9,7 +9,7 @@ interface SettingsModalProps {
 }
 
 export default function SettingsModal({ isOpen, onClose }: SettingsModalProps) {
-  const { username, profilePicture, updateProfilePicture, coins, streak, showToast, logout, addCoins } = useAppContext();
+  const { username, profilePicture, updateProfilePicture, coins, streak, showToast, logout, addCoins, theme, toggleTheme } = useAppContext();
   const [isEditing, setIsEditing] = useState(false);
   const [editName, setEditName] = useState(username);
   const fileInputRef = useRef<HTMLInputElement>(null);
@@ -147,6 +147,25 @@ export default function SettingsModal({ isOpen, onClose }: SettingsModalProps) {
                 >
                   <span className="material-symbols-outlined text-lg">play_circle</span>
                   Watch Ad (+5Coins)
+                </button>
+              </div>
+
+              {/* Theme Toggle */}
+              <div className="flex items-center justify-between p-4 rounded-2xl bg-slate-50 dark:bg-slate-800/50 border border-slate-100 dark:border-slate-800">
+                <div className="flex items-center gap-3">
+                  <span className="material-symbols-outlined text-slate-700 dark:text-slate-300">
+                    {theme === 'dark' ? 'dark_mode' : 'light_mode'}
+                  </span>
+                  <div>
+                    <p className="text-sm font-bold text-slate-900 dark:text-white">Dark Mode</p>
+                    <p className="text-xs text-slate-500 dark:text-slate-400">Toggle dark/light theme</p>
+                  </div>
+                </div>
+                <button 
+                  onClick={toggleTheme}
+                  className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors ${theme === 'dark' ? 'bg-primary' : 'bg-slate-300 dark:bg-slate-600'}`}
+                >
+                  <span className={`inline-block h-4 w-4 transform rounded-full bg-white transition-transform ${theme === 'dark' ? 'translate-x-6' : 'translate-x-1'}`} />
                 </button>
               </div>
 
