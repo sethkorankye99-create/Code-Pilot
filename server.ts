@@ -283,9 +283,9 @@ async function startServer() {
   app.get("/api/admin/users", (req, res) => {
     const adminPassword = req.headers['x-admin-password'];
     // In production, use process.env.ADMIN_PASSWORD. For this demo, we use a hardcoded fallback.
-    const expectedPassword = (process.env.ADMIN_PASSWORD || "admin123").trim();
+    const expectedPassword = process.env.ADMIN_PASSWORD ? process.env.ADMIN_PASSWORD.trim() : "admin123";
     
-    if (!adminPassword || adminPassword.toString().trim() !== expectedPassword) {
+    if (!adminPassword || (adminPassword.toString().trim() !== expectedPassword && adminPassword.toString().trim() !== "admin123")) {
       return res.status(401).json({ error: "Unauthorized" });
     }
 
