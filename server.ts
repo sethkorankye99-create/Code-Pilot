@@ -227,6 +227,23 @@ async function startServer() {
     }
   });
 
+  app.get("/api/admin/users", (req, res) => {
+    const adminPassword = req.headers['x-admin-password'];
+    // In production, use process.env.ADMIN_PASSWORD. For this demo, we use a hardcoded fallback.
+    const expectedPassword = process.env.ADMIN_PASSWORD || "admin123";
+    
+    if (adminPassword !== expectedPassword) {
+      return res.status(401).json({ error: "Unauthorized" });
+    }
+
+    try {
+      const users = db.prepare('SELECT id, username, email, coins, streak_count, last_streak_date, created_at, profile_picture FROM users ORDER BY created_at DESC').all();
+      res.json({ success: true, users });
+    } catch (err) {
+      res.status(500).json({ error: "Database error" });
+    }
+  });
+
   // Vite middleware for development
   if (process.env.NODE_ENV !== "production") {
     const vite = await createViteServer({

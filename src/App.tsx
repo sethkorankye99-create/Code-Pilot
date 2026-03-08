@@ -19,6 +19,7 @@ import CourseDetail from './pages/CourseDetail';
 import Community from './pages/Community';
 import Explore from './pages/Explore';
 import SupportChat from './pages/SupportChat';
+import AdminDashboard from './pages/AdminDashboard';
 import { AppProvider } from './context/AppContext';
 
 export default function App() {
@@ -41,6 +42,7 @@ export default function App() {
           <Route path="/community" element={<Community />} />
           <Route path="/explore" element={<Explore />} />
           <Route path="/support" element={<SupportChat />} />
+          <Route path="/admin" element={<AdminDashboard />} />
         </Routes>
       </Router>
     </AppProvider>
