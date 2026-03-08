@@ -19,7 +19,8 @@ import {
   Wrench,
   Trophy,
   RefreshCcw,
-  Home
+  Home,
+  Sparkles
 } from 'lucide-react';
 import { jsContent } from '../data/jsContent';
 import { useAppContext } from '../context/AppContext';
@@ -37,6 +38,7 @@ const sectionIcons: Record<string, React.ReactNode> = {
   'browser-apis': <Globe size={20} />,
   'advanced-concepts': <BrainCircuit size={20} />,
   'tooling-environment': <Wrench size={20} />,
+  'es6-plus-mastery': <Sparkles size={20} />,
 };
 
 export default function JsReference() {

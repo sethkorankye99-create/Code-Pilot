@@ -378,5 +378,60 @@ console.log(regex.test("test@email.com")); // true`,
       { question: 'What does a bundler do with ES Modules (import/export)?', options: ['Ignores them', 'Combines them into a single file or a few optimized files', 'Converts them to HTML', 'Deletes them'], correctAnswer: 1 },
       { question: 'Why is Vite often preferred over older bundlers like Webpack for development?', options: ['It uses a different language', 'It provides significantly faster server start and Hot Module Replacement (HMR) by leveraging native ES modules', 'It does not require Node.js', 'It automatically writes code for you'], correctAnswer: 1 }
     ]
+  },
+  {
+    id: 'es6-plus-mastery',
+    title: 'ES6+ Mastery',
+    note: 'Modern JavaScript (ES6 and beyond) brought significant improvements to the language. Arrow functions provide a shorter syntax and do not have their own "this". Template literals allow for multi-line strings and string interpolation. Destructuring makes it easy to extract values from arrays and objects. Spread and Rest operators use the triple-dot (...) syntax for different purposes. Classes provide a clearer and more concise syntax to create objects and deal with inheritance.',
+    example: `// Arrow Functions
+const add = (a, b) => a + b;
+
+// Template Literals
+const user = 'Alice';
+console.log(\`Welcome, \${user}!\`);
+
+// Destructuring
+const colors = ['red', 'green', 'blue'];
+const [first, second] = colors;
+
+const settings = { theme: 'dark', fontSize: 16 };
+const { theme } = settings;
+
+// Spread & Rest
+const numbers = [1, 2, 3];
+const newNumbers = [...numbers, 4, 5]; // Spread
+
+function sum(...args) { // Rest
+  return args.reduce((a, b) => a + b, 0);
+}
+
+// Classes
+class Developer {
+  constructor(name, language) {
+    this.name = name;
+    this.language = language;
+  }
+  code() {
+    console.log(\`\${this.name} is coding in \${this.language}\`);
+  }
+}`,
+    quizzes: [
+      { question: 'Which of the following is a benefit of arrow functions?', options: ['They are always faster', 'They have a shorter syntax and lexical "this"', 'They can be used as constructors', 'They automatically name themselves'], correctAnswer: 1 },
+      { question: 'What is the output of `const a = 5; const b = 10; console.log(\`Sum is \${a + b}\`);`?', options: ['Sum is 15', 'Sum is a + b', 'Sum is ${a + b}', 'Error'], correctAnswer: 0 },
+      { question: 'In object destructuring `const { x: y } = { x: 10 };`, what is the value of `y`?', options: ['x', '10', 'undefined', 'ReferenceError'], correctAnswer: 1 },
+      { question: 'What does the spread operator do when used on an object?', options: ['It deletes all properties', 'It creates a shallow copy of the object\'s properties', 'It freezes the object', 'It converts the object to an array'], correctAnswer: 1 },
+      { question: 'Which keyword is used in a class to refer to the parent class?', options: ['this', 'parent', 'super', 'base'], correctAnswer: 2 },
+      { question: 'What is the result of `[...[1, 2], ...[3, 4]]`?', options: ['[[1, 2], [3, 4]]', '[1, 2, 3, 4]', '[4, 6]', 'Error'], correctAnswer: 1 },
+      { question: 'Can arrow functions be used as methods in an object if they need to access `this`?', options: ['Yes, always', 'No, because they don\'t have their own `this` context', 'Only in strict mode', 'Only if they are async'], correctAnswer: 1 },
+      { question: 'What is the "Rest" parameter used for in function arguments?', options: ['To stop the function execution', 'To represent an indefinite number of arguments as an array', 'To reset the arguments to zero', 'To spread an array into arguments'], correctAnswer: 1 },
+      { question: 'How do you define a default value for a destructured variable?', options: ['const { x = 10 } = {}', 'const { x : 10 } = {}', 'const { x } = { x : 10 }', 'const { x == 10 } = {}'], correctAnswer: 0 },
+      { question: 'What is the main purpose of the `constructor` method in a class?', options: ['To render the class', 'To initialize object properties when a new instance is created', 'To delete the object', 'To define static methods'], correctAnswer: 1 }
+    ],
+    challenge: {
+      title: "ES6 Refactoring",
+      description: "Refactor the following function to use an arrow function and template literals: \n\nfunction greet(name) { return 'Hello, ' + name + '!'; }",
+      initialCode: "function greet(name) {\n  return 'Hello, ' + name + '!';\n}",
+      solution: "const greet = (name) => `Hello, ${name}!`;"
+    }
   }
 ];
