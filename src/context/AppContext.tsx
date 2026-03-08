@@ -19,6 +19,7 @@ interface AppContextType {
   coins: number | null;
   streak: number;
   deductCoin: () => Promise<{success: boolean, coins?: number, error?: string}>;
+  addCoins: (amount: number) => Promise<{success: boolean, coins?: number, error?: string}>;
   updateStreak: () => Promise<void>;
   updateProfilePicture: (base64: string) => Promise<void>;
   refreshCoins: () => Promise<void>;
@@ -136,6 +137,28 @@ export function AppProvider({ children }: { children: ReactNode }) {
     }
   };
 
+  const addCoins = async (amount: number) => {
+    try {
+      const res = await fetch('/api/coins/add', { 
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ userId, amount })
+      });
+      const data = await res.json();
+      if (res.ok && data.success) {
+        setCoins(data.coins);
+        showToast(`${amount} coins added! You now have ${data.coins} coins.`, 'success');
+        return { success: true, coins: data.coins };
+      } else {
+        showToast("Failed to add coins.", 'error');
+        return { success: false, error: data.error };
+      }
+    } catch (err) {
+      showToast("Failed to add coins", 'error');
+      return { success: false, error: "Network error" };
+    }
+  };
+
   const updateStreak = async () => {
     try {
       const res = await fetch('/api/streak/update', {
@@ -181,7 +204,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
   };
 
   return (
-    <AppContext.Provider value={{ userId, username, profilePicture, isLoggedIn, login, logout, theme, toggleTheme, coins, streak, deductCoin, updateStreak, updateProfilePicture, refreshCoins, showToast }}>
+    <AppContext.Provider value={{ userId, username, profilePicture, isLoggedIn, login, logout, theme, toggleTheme, coins, streak, deductCoin, addCoins, updateStreak, updateProfilePicture, refreshCoins, showToast }}>
       {children}
       {/* Toast Container */}
       <div className="fixed top-20 left-1/2 -translate-x-1/2 z-[100] flex flex-col gap-2 pointer-events-none w-full max-w-sm px-4">

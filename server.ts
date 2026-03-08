@@ -6,6 +6,8 @@ import path from "path";
 import { fileURLToPath } from "url";
 import Database from "better-sqlite3";
 
+import { GoogleGenAI } from "@google/genai";
+
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
@@ -214,6 +216,57 @@ async function startServer() {
     });
   });
 
+  app.post("/api/coins/add", (req, res) => {
+    const { userId, amount } = req.body;
+    if (!userId || !amount) {
+      return res.status(400).json({ error: "User ID and amount required" });
+    }
+
+    try {
+      const user = db.prepare('SELECT coins FROM users WHERE id = ?').get(userId) as any;
+      if (!user) {
+        return res.status(404).json({ error: "User not found" });
+      }
+
+      const newCoins = user.coins + amount;
+      db.prepare('UPDATE users SET coins = ? WHERE id = ?').run(newCoins, userId);
+      res.json({ success: true, coins: newCoins });
+    } catch (err) {
+      res.status(500).json({ error: "Database error" });
+    }
+  });
+
+  app.post("/api/support/chat", async (req, res) => {
+    const { message, username } = req.body;
+    if (!message) {
+      return res.status(400).json({ error: "Message required" });
+    }
+
+    try {
+      const ai = new GoogleGenAI({ apiKey: process.env.GEMINI_API_KEY! });
+      const response = await ai.models.generateContent({
+        model: "gemini-3-flash-preview",
+        contents: [
+          {
+            role: "user",
+            parts: [{ text: `You are the Customer Support Admin for "Code Pillot", an interactive coding platform. 
+            The user's name is ${username || 'Guest'}. 
+            Be professional, helpful, and encouraging. 
+            Respond to this message: "${message}"` }]
+          }
+        ],
+        config: {
+          systemInstruction: "You are a helpful support admin for Code Pillot. Keep responses concise and friendly."
+        }
+      });
+
+      res.json({ success: true, text: response.text });
+    } catch (err) {
+      console.error("Gemini Error:", err);
+      res.status(500).json({ error: "Failed to generate response" });
+    }
+  });
+
   app.post("/api/profile/picture", (req, res) => {
     const { userId, profilePicture } = req.body;
     if (!userId) {
@@ -230,9 +283,9 @@ async function startServer() {
   app.get("/api/admin/users", (req, res) => {
     const adminPassword = req.headers['x-admin-password'];
     // In production, use process.env.ADMIN_PASSWORD. For this demo, we use a hardcoded fallback.
-    const expectedPassword = process.env.ADMIN_PASSWORD || "admin123";
+    const expectedPassword = (process.env.ADMIN_PASSWORD || "admin123").trim();
     
-    if (adminPassword !== expectedPassword) {
+    if (!adminPassword || adminPassword.toString().trim() !== expectedPassword) {
       return res.status(401).json({ error: "Unauthorized" });
     }
 

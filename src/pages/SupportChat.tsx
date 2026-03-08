@@ -70,34 +70,27 @@ export default function SupportChat() {
     });
 
     try {
-      // Call Gemini to act as Admin
-      const ai = new GoogleGenAI({ apiKey: process.env.GEMINI_API_KEY! });
-      const response = await ai.models.generateContent({
-        model: "gemini-3-flash-preview",
-        contents: [
-          {
-            role: "user",
-            parts: [{ text: `You are the Customer Support Admin for "Code Pillot", an interactive coding platform. 
-            The user's name is ${username}. 
-            Be professional, helpful, and encouraging. 
-            Respond to this message: "${inputValue}"` }]
-          }
-        ],
-        config: {
-          systemInstruction: "You are a helpful support admin for Code Pillot. Keep responses concise and friendly."
-        }
+      // Call backend API to act as Admin
+      const res = await fetch('/api/support/chat', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ message: inputValue, username })
       });
+      
+      const data = await res.json();
 
       const adminMsg: Message = {
         id: (Date.now() + 1).toString(),
-        text: response.text || "I'm sorry, I'm having trouble connecting. Please try again later.",
+        text: data.success ? data.text : "I'm sorry, I'm having trouble connecting. Please try again later.",
         sender: 'admin',
         timestamp: new Date()
       };
 
       setMessages(prev => [...prev, adminMsg]);
     } catch (error) {
-      console.error("Gemini Error:", error);
+      console.error("Support Chat Error:", error);
       const errorMsg: Message = {
         id: (Date.now() + 1).toString(),
         text: "I'm currently offline. Please try again in a moment.",

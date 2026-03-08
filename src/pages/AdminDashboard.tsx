@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { motion } from 'motion/react';
 
@@ -28,7 +28,7 @@ export default function AdminDashboard() {
     try {
       const response = await fetch('/api/admin/users', {
         headers: {
-          'x-admin-password': password
+          'x-admin-password': password.trim()
         }
       });
       

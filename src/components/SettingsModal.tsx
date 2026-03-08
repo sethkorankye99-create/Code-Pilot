@@ -9,10 +9,11 @@ interface SettingsModalProps {
 }
 
 export default function SettingsModal({ isOpen, onClose }: SettingsModalProps) {
-  const { username, profilePicture, updateProfilePicture, coins, streak, showToast, logout } = useAppContext();
+  const { username, profilePicture, updateProfilePicture, coins, streak, showToast, logout, addCoins } = useAppContext();
   const [isEditing, setIsEditing] = useState(false);
   const [editName, setEditName] = useState(username);
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const [isWatchingAd, setIsWatchingAd] = useState(false);
 
   const handleSaveName = () => {
     if (editName.trim()) {
@@ -37,9 +38,16 @@ export default function SettingsModal({ isOpen, onClose }: SettingsModalProps) {
     }
   };
 
-  const handleWatchAd = () => {
-    showToast("Ad watched! +5 Coins added.", "success");
-    // In a real app, this would call an API to add coins.
+  const handleWatchAd = async () => {
+    if (isWatchingAd) return;
+    setIsWatchingAd(true);
+    showToast("Watching ad...", "info");
+    
+    // Simulate watching an ad for 2 seconds
+    setTimeout(async () => {
+      await addCoins(5);
+      setIsWatchingAd(false);
+    }, 2000);
   };
 
   return (
