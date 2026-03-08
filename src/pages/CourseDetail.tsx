@@ -1,0 +1,222 @@
+import { useState } from 'react';
+import { Link } from 'react-router-dom';
+import { useAppContext } from '../context/AppContext';
+import CoinDisplay from '../components/CoinDisplay';
+import StreakDisplay from '../components/StreakDisplay';
+import SettingsModal from '../components/SettingsModal';
+import AdModal from '../components/AdModal';
+import { motion, AnimatePresence } from 'motion/react';
+
+export default function CourseDetail() {
+  const { deductCoin, updateStreak } = useAppContext();
+  const [isQuizStarted, setIsQuizStarted] = useState(false);
+  const [isSettingsOpen, setIsSettingsOpen] = useState(false);
+  const [isAdOpen, setIsAdOpen] = useState(false);
+  const [isVideoPlaying, setIsVideoPlaying] = useState(false);
+  const [hasWatchedAd, setHasWatchedAd] = useState(false);
+
+  const handleStartQuiz = async () => {
+    const result = await deductCoin();
+    if (result.success) {
+      setIsQuizStarted(true);
+      await updateStreak();
+    }
+  };
+
+  const handlePlayClick = () => {
+    if (!hasWatchedAd) {
+      setIsAdOpen(true);
+    } else {
+      setIsVideoPlaying(!isVideoPlaying);
+    }
+  };
+
+  const handleAdClose = () => {
+    setIsAdOpen(false);
+    setHasWatchedAd(true);
+    setIsVideoPlaying(true);
+  };
+
+  return (
+    <div className="relative flex h-auto min-h-screen w-full flex-col overflow-x-hidden bg-background-light dark:bg-background-dark transition-colors duration-300">
+      {/* Header */}
+      <div className="flex items-center bg-background-light dark:bg-background-dark p-4 pb-2 justify-between sticky top-0 z-10 border-b border-slate-200 dark:border-slate-800/50">
+        <Link to="/dashboard" className="flex size-12 shrink-0 items-center justify-start">
+          <span className="material-symbols-outlined text-slate-900 dark:text-slate-100 cursor-pointer">arrow_back</span>
+        </Link>
+        <h2 className="text-slate-900 dark:text-slate-100 text-lg font-bold leading-tight tracking-[-0.015em] flex-1 text-center">Code Pillot</h2>
+        <div className="flex w-auto items-center justify-end gap-2">
+          <StreakDisplay />
+          <CoinDisplay />
+          <button className="flex cursor-pointer items-center justify-center rounded-lg h-10 w-10 bg-transparent text-slate-900 dark:text-slate-100 p-0">
+            <span className="material-symbols-outlined">share</span>
+          </button>
+        </div>
+      </div>
+
+      {/* Video Player Section */}
+      <div 
+        className="relative flex items-center justify-center bg-slate-900 bg-cover bg-center aspect-video group" 
+        style={{backgroundImage: 'url("https://lh3.googleusercontent.com/aida-public/AB6AXuBtAidPR6i1qZxxAnmoC51FmdcQyEHIx-i48l8i58hZj3dHI9EAy4U67AHMkgecfC_YgogSOerPE7kIYALavgCtWizguLe7UxmcrWoVwWRZCq22ioeTQaSPiGUOTt-0zrdt6sa-eyJ1VA87xK867FFH0o5cGTdli_ZKcfGjNHdsFyYjJz43lpUesU-riQxAxWeVDO47FgWsj_8CyyBqdygRdR9jG2dv6sk9goB1n3SlkXcThvILIk3sfSKYT-6nsnrdAdIzpRxsI8E")'}}
+      >
+        <div className={`absolute inset-0 bg-black/40 group-hover:bg-black/20 transition-colors ${isVideoPlaying ? 'opacity-0' : 'opacity-100'}`}></div>
+        
+        {isVideoPlaying ? (
+          <div className="absolute inset-0 flex items-center justify-center bg-black/60 backdrop-blur-sm">
+            <div className="flex flex-col items-center gap-4">
+              <div className="size-16 rounded-full border-4 border-primary border-t-transparent animate-spin"></div>
+              <p className="text-white font-bold animate-pulse">Streaming Video Content...</p>
+              <button 
+                onClick={() => setIsVideoPlaying(false)}
+                className="mt-4 px-6 py-2 bg-white/10 hover:bg-white/20 text-white rounded-full text-xs font-bold backdrop-blur-md transition-all"
+              >
+                Pause Video
+              </button>
+            </div>
+          </div>
+        ) : (
+          <button 
+            onClick={handlePlayClick}
+            className="relative z-10 flex shrink-0 items-center justify-center rounded-full size-16 bg-primary text-white shadow-lg shadow-primary/40 hover:scale-110 transition-transform active:scale-95"
+          >
+            <span className="material-symbols-outlined text-4xl" style={{fontVariationSettings: "'FILL' 1"}}>play_arrow</span>
+          </button>
+        )}
+
+        <div className="absolute inset-x-0 bottom-0 px-4 py-3 bg-gradient-to-t from-black/80 to-transparent">
+          <div className="flex h-1.5 items-center justify-center mb-2">
+            <div className="h-1.5 w-1/4 rounded-full bg-primary"></div>
+            <div className="relative"><div className="absolute -left-2 -top-1.5 size-4 rounded-full bg-primary border-2 border-white shadow-sm"></div></div>
+            <div className="h-1.5 flex-1 rounded-full bg-white/30"></div>
+          </div>
+          <div className="flex items-center justify-between">
+            <p className="text-white text-xs font-medium leading-normal tracking-[0.015em]">0:37</p>
+            <p className="text-white text-xs font-medium leading-normal tracking-[0.015em]">12:23</p>
+          </div>
+        </div>
+      </div>
+
+      {/* Lesson Details */}
+      <div className="px-4 py-6">
+        <div className="flex justify-between items-start mb-2">
+          <span className="text-primary text-xs font-bold uppercase tracking-wider">Module 3: Layouts</span>
+          <div className="flex items-center gap-1 text-slate-500 dark:text-slate-400">
+            <span className="material-symbols-outlined text-sm">visibility</span>
+            <span className="text-xs">12.4k views</span>
+          </div>
+        </div>
+        <h1 className="text-slate-900 dark:text-slate-100 tracking-tight text-2xl font-bold leading-tight mb-3">Advanced CSS Flexbox</h1>
+        <p className="text-slate-600 dark:text-slate-400 text-sm font-normal leading-relaxed mb-6">
+          Master complex layouts using advanced Flexbox properties like flex-grow, flex-shrink, and nested containers. We'll build a responsive dashboard header as a practical exercise.
+        </p>
+        <button className="w-full flex items-center justify-center gap-2 bg-primary hover:bg-primary/90 text-white font-bold py-3 px-6 rounded-xl transition-all shadow-lg shadow-primary/20">
+          <span className="material-symbols-outlined">check_circle</span>
+          Mark as Complete
+        </button>
+      </div>
+
+      {/* Course Content List */}
+      <div className="flex-1 px-4 pb-24">
+        {/* Quiz Section */}
+        <div className="mb-6 bg-slate-50 dark:bg-slate-900 rounded-2xl p-5 border border-slate-200 dark:border-slate-800 text-center">
+          <div className="w-12 h-12 bg-yellow-100 dark:bg-yellow-900/30 text-yellow-600 dark:text-yellow-500 rounded-full flex items-center justify-center mx-auto mb-3">
+            <span className="material-symbols-outlined text-2xl" style={{fontVariationSettings: "'FILL' 1"}}>quiz</span>
+          </div>
+          <h3 className="text-lg font-bold text-slate-900 dark:text-white mb-2">Module Quiz</h3>
+          <p className="text-sm text-slate-500 dark:text-slate-400 mb-4">Test your knowledge on Advanced CSS Flexbox. Costs 1 coin.</p>
+          
+          {isQuizStarted ? (
+            <div className="bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-400 p-3 rounded-xl text-sm font-bold">
+              Quiz Started! Good luck!
+            </div>
+          ) : (
+            <button 
+              onClick={handleStartQuiz}
+              className="w-full py-3 rounded-xl bg-slate-900 dark:bg-white text-white dark:text-slate-900 font-bold text-sm hover:opacity-90 transition-opacity flex items-center justify-center gap-2"
+            >
+              <span className="material-symbols-outlined text-yellow-500 text-lg" style={{fontVariationSettings: "'FILL' 1"}}>monetization_on</span>
+              Start Quiz (1 Coin)
+            </button>
+          )}
+        </div>
+
+        <div className="flex items-center justify-between mb-4 mt-2">
+          <h3 className="text-slate-900 dark:text-slate-100 text-lg font-bold">Course Content</h3>
+          <span className="text-slate-500 dark:text-slate-400 text-sm font-medium">8 Lessons</span>
+        </div>
+        <div className="space-y-3">
+          {/* Item 1 (Active/Previous) */}
+          <div className="flex items-center gap-4 p-3 rounded-xl bg-slate-100 dark:bg-slate-900/80 border border-slate-200 dark:border-primary/30">
+            <div className="relative size-12 shrink-0 rounded-lg bg-primary/10 flex items-center justify-center text-primary overflow-hidden">
+              <span className="material-symbols-outlined" style={{fontVariationSettings: "'FILL' 1"}}>play_circle</span>
+            </div>
+            <div className="flex-1 min-w-0">
+              <p className="text-primary text-sm font-bold truncate">1. Advanced CSS Flexbox</p>
+              <p className="text-slate-500 dark:text-slate-400 text-xs mt-0.5">12:23 • Playing</p>
+            </div>
+            <span className="material-symbols-outlined text-primary">equalizer</span>
+          </div>
+
+          {/* Item 2 (Up Next) */}
+          <div className="flex items-center gap-4 p-3 rounded-xl bg-white dark:bg-slate-900/40 border border-slate-100 dark:border-slate-800/50 hover:border-slate-200 dark:hover:border-slate-700 transition-colors">
+            <div className="relative size-12 shrink-0 rounded-lg bg-slate-100 dark:bg-slate-900 flex items-center justify-center text-slate-400">
+              <span className="material-symbols-outlined">play_circle</span>
+            </div>
+            <div className="flex-1 min-w-0">
+              <p className="text-slate-900 dark:text-slate-100 text-sm font-bold truncate">2. CSS Grid Fundamentals</p>
+              <p className="text-slate-500 dark:text-slate-400 text-xs mt-0.5">15:45 • Up Next</p>
+            </div>
+            <span className="material-symbols-outlined text-slate-400">lock_open</span>
+          </div>
+
+          {/* Item 3 */}
+          <div className="flex items-center gap-4 p-3 rounded-xl bg-white dark:bg-slate-900/40 border border-slate-100 dark:border-slate-800/50">
+            <div className="relative size-12 shrink-0 rounded-lg bg-slate-100 dark:bg-slate-900 flex items-center justify-center text-slate-400">
+              <span className="material-symbols-outlined">play_circle</span>
+            </div>
+            <div className="flex-1 min-w-0">
+              <p className="text-slate-900 dark:text-slate-100 text-sm font-bold truncate">3. Building Layout Systems</p>
+              <p className="text-slate-500 dark:text-slate-400 text-xs mt-0.5">22:10</p>
+            </div>
+            <span className="material-symbols-outlined text-slate-400">lock</span>
+          </div>
+
+          {/* Item 4 */}
+          <div className="flex items-center gap-4 p-3 rounded-xl bg-white dark:bg-slate-900/40 border border-slate-100 dark:border-slate-800/50">
+            <div className="relative size-12 shrink-0 rounded-lg bg-slate-100 dark:bg-slate-900 flex items-center justify-center text-slate-400">
+              <span className="material-symbols-outlined">play_circle</span>
+            </div>
+            <div className="flex-1 min-w-0">
+              <p className="text-slate-900 dark:text-slate-100 text-sm font-bold truncate">4. Responsive Design Patterns</p>
+              <p className="text-slate-500 dark:text-slate-400 text-xs mt-0.5">18:30</p>
+            </div>
+            <span className="material-symbols-outlined text-slate-400">lock</span>
+          </div>
+        </div>
+      </div>
+
+      {/* Bottom Navigation Bar */}
+      <div className="fixed bottom-0 left-0 right-0 flex gap-2 border-t border-slate-200 dark:border-slate-800 bg-white/95 dark:bg-background-dark/95 backdrop-blur-md px-4 pb-6 pt-2 z-20">
+        <Link to="/dashboard" className="flex flex-1 flex-col items-center justify-center gap-1 text-slate-500 dark:text-slate-400">
+          <span className="material-symbols-outlined">home</span>
+          <p className="text-[10px] font-medium leading-normal tracking-[0.015em]">Home</p>
+        </Link>
+        <Link to="/explore" className="flex flex-1 flex-col items-center justify-center gap-1 text-slate-500 dark:text-slate-400">
+          <span className="material-symbols-outlined">search</span>
+          <p className="text-[10px] font-medium leading-normal tracking-[0.015em]">Explore</p>
+        </Link>
+        <Link to="/community" className="flex flex-1 flex-col items-center justify-center gap-1 text-slate-500 dark:text-slate-400">
+          <span className="material-symbols-outlined">group</span>
+          <p className="text-[10px] font-medium leading-normal tracking-[0.015em]">Community</p>
+        </Link>
+        <button onClick={() => setIsSettingsOpen(true)} className="flex flex-1 flex-col items-center justify-center gap-1 text-slate-500 dark:text-slate-400">
+          <span className="material-symbols-outlined">person</span>
+          <p className="text-[10px] font-medium leading-normal tracking-[0.015em]">Profile</p>
+        </button>
+      </div>
+
+      <SettingsModal isOpen={isSettingsOpen} onClose={() => setIsSettingsOpen(false)} />
+      <AdModal isOpen={isAdOpen} onClose={handleAdClose} />
+    </div>
+  );
+}
