@@ -3,6 +3,8 @@ import { Link } from 'react-router-dom';
 import SettingsModal from '../components/SettingsModal';
 import CoinDisplay from '../components/CoinDisplay';
 import StreakDisplay from '../components/StreakDisplay';
+import { Trophy, Star, Sparkles, ChevronRight } from 'lucide-react';
+import { motion } from 'motion/react';
 
 import { useAppContext } from '../context/AppContext';
 
@@ -152,6 +154,63 @@ export default function Dashboard() {
             {!searchQuery && <div className="bg-white dark:bg-card-dark pr-4 rounded-r-xl"></div>}
           </div>
         </label>
+      </div>
+
+      {/* Achievement Banner */}
+      <div className="px-4 pb-6">
+        <motion.div 
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          className="relative overflow-hidden bg-gradient-to-br from-primary to-indigo-600 rounded-3xl p-6 text-white shadow-xl shadow-primary/20"
+        >
+          {/* Decorative background icons */}
+          <div className="absolute top-0 right-0 p-4 opacity-10 rotate-12">
+            <Trophy size={120} />
+          </div>
+          <div className="absolute bottom-0 left-0 p-4 opacity-10 -rotate-12">
+            <Star size={80} />
+          </div>
+
+          <div className="relative z-10 flex items-center gap-6">
+            <div className="hidden sm:flex size-24 shrink-0 items-center justify-center bg-white/20 backdrop-blur-md rounded-2xl border border-white/30 shadow-inner">
+              <motion.div
+                animate={{ rotate: [0, 10, -10, 0] }}
+                transition={{ repeat: Infinity, duration: 5 }}
+              >
+                <Trophy size={48} className="text-yellow-400" />
+              </motion.div>
+            </div>
+            
+            <div className="flex-1">
+              <div className="flex items-center gap-2 mb-1">
+                <Sparkles size={16} className="text-yellow-400" />
+                <span className="text-[10px] font-black uppercase tracking-[0.2em] text-white/80">Your Achievement</span>
+              </div>
+              <h3 className="text-2xl font-black mb-2 leading-tight">Master Your Journey</h3>
+              <p className="text-white/80 text-sm font-medium max-w-md">
+                Complete quizzes in any section to win Bronze, Silver, and Gold trophies. Show off your skills!
+              </p>
+              <div className="mt-4 flex items-center gap-4">
+                <div className="flex -space-x-2">
+                  <div className="size-8 rounded-full bg-yellow-500 border-2 border-white flex items-center justify-center shadow-lg" title="Gold Trophy">
+                    <Trophy size={14} />
+                  </div>
+                  <div className="size-8 rounded-full bg-slate-400 border-2 border-white flex items-center justify-center shadow-lg" title="Silver Trophy">
+                    <Trophy size={14} />
+                  </div>
+                  <div className="size-8 rounded-full bg-amber-700 border-2 border-white flex items-center justify-center shadow-lg" title="Bronze Trophy">
+                    <Trophy size={14} />
+                  </div>
+                </div>
+                <span className="text-xs font-bold text-white/90">3 Trophies Available</span>
+              </div>
+            </div>
+
+            <div className="sm:hidden size-16 shrink-0 flex items-center justify-center bg-white/20 backdrop-blur-md rounded-2xl border border-white/30">
+              <Trophy size={32} className="text-yellow-400" />
+            </div>
+          </div>
+        </motion.div>
       </div>
 
       {/* Filter Chips */}

@@ -1,5 +1,7 @@
 import { Link } from 'react-router-dom';
 import { useAppContext } from '../context/AppContext';
+import { Trophy } from 'lucide-react';
+import { motion } from 'motion/react';
 
 export default function Landing() {
   const { isLoggedIn } = useAppContext();
@@ -30,16 +32,31 @@ export default function Landing() {
           <div className="relative w-full aspect-square max-w-[400px] mx-auto">
             {/* Glow Effect */}
             <div className="absolute inset-0 bg-primary/20 blur-[80px] rounded-full"></div>
-            {/* Code Brackets & Circuit Visual */}
+            {/* Trophy Visual */}
             <div 
               className="relative w-full h-full bg-slate-900/40 border border-slate-800/50 rounded-3xl overflow-hidden backdrop-blur-md flex items-center justify-center bg-cover bg-center" 
-              style={{backgroundImage: "url('https://lh3.googleusercontent.com/aida-public/AB6AXuC8fUYE_OqE9m_APk8YN1_hAyzc1Ez6BUV50PFY4cEoFRxoLeA0zEjvihXNcXRWK_MteBIcbyiqICVHFhhaJtF47_W4nrCE-SLaKC7ZkrwfumoieuTDjVWXz9lZc_T1Tmzn1OkuOqdJh0swPsil-5H-s2vXVeyJH69GodJFJyo7Q7uwaWqFwJ3_fsAdOvWvwxf6c2oRtav_JrFONE94so7cT5DI02MOynJuo7g0wLay6FA82eWmcpkFeYGWmvJB8TM4jJ5Xj8rWPf8')"}}
             >
-              <div className="flex items-center space-x-4">
-                <span className="text-primary text-7xl font-bold opacity-80">&lt;</span>
-                <div className="h-16 w-1 bg-primary/40 rounded-full"></div>
-                <span className="text-primary text-7xl font-bold opacity-80">/&gt;</span>
-              </div>
+              <div className="absolute inset-0 bg-gradient-to-br from-primary/20 to-transparent"></div>
+              
+              <motion.div 
+                animate={{ 
+                  y: [0, -10, 0],
+                  rotate: [0, 5, -5, 0]
+                }}
+                transition={{ repeat: Infinity, duration: 6, ease: "easeInOut" }}
+                className="relative z-10 flex flex-col items-center"
+              >
+                <div className="relative">
+                  <div className="absolute inset-0 bg-yellow-500/40 blur-2xl rounded-full"></div>
+                  <Trophy size={120} className="text-yellow-400 relative z-10 drop-shadow-[0_0_20px_rgba(250,204,21,0.4)]" />
+                </div>
+                <div className="mt-4 flex gap-2">
+                  <div className="size-3 rounded-full bg-yellow-500 animate-pulse"></div>
+                  <div className="size-3 rounded-full bg-yellow-500 animate-pulse delay-75"></div>
+                  <div className="size-3 rounded-full bg-yellow-500 animate-pulse delay-150"></div>
+                </div>
+              </motion.div>
+
               {/* Floating Tech Tags */}
               <div className="absolute top-8 left-8 bg-slate-900/80 border border-primary/30 px-3 py-1 rounded-full text-xs text-primary font-mono">JS</div>
               <div className="absolute bottom-12 right-12 bg-slate-900/80 border border-primary/30 px-3 py-1 rounded-full text-xs text-primary font-mono">CSS</div>

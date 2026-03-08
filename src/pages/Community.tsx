@@ -8,6 +8,7 @@ import CoinDisplay from '../components/CoinDisplay';
 interface ChatMessage {
   id: string;
   user: string;
+  avatar?: string | null;
   text: string;
   timestamp: number;
   type?: 'community';
@@ -69,6 +70,7 @@ export default function Community() {
     const newMsg: ChatMessage = {
       id: Date.now().toString() + Math.random().toString(36).substring(2, 9),
       user: username,
+      avatar: profilePicture,
       text: inputValue.trim(),
       timestamp: Date.now(),
       type: 'community',
@@ -153,25 +155,38 @@ export default function Community() {
             messages.map((msg) => {
               const isMe = msg.user === username;
               return (
-                <div key={msg.id} className={`flex flex-col ${isMe ? 'items-end' : 'items-start'}`}>
-                  <div className="flex items-baseline gap-2 mb-1">
-                    <span className="text-xs font-medium text-slate-500 dark:text-slate-400">{msg.user}</span>
-                    <span className="text-[10px] text-slate-400 dark:text-slate-500">
-                      {new Date(msg.timestamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
-                    </span>
+                <div key={msg.id} className={`flex gap-3 ${isMe ? 'flex-row-reverse' : 'flex-row'}`}>
+                  {/* Avatar */}
+                  <div className="flex-shrink-0 mt-1">
+                    <div className="size-8 rounded-full bg-primary/10 text-primary overflow-hidden border border-primary/20 flex items-center justify-center">
+                      {msg.avatar ? (
+                        <img src={msg.avatar} alt={msg.user} className="w-full h-full object-cover" />
+                      ) : (
+                        <span className="material-symbols-outlined text-lg">account_circle</span>
+                      )}
+                    </div>
                   </div>
-                  <div 
-                    onContextMenu={(e) => handleContextMenu(e, msg)}
-                    onDoubleClick={(e) => handleDoubleClick(e, msg)}
-                    onTouchStart={(e) => handleTouchStart(e, msg)}
-                    onTouchEnd={handleTouchEnd}
-                    className={`px-4 py-2 rounded-2xl max-w-[80%] break-words cursor-pointer transition-all ${
-                      isMe 
-                        ? 'bg-primary text-white rounded-br-sm' 
-                        : 'bg-white dark:bg-slate-800 text-slate-900 dark:text-slate-100 border border-slate-200 dark:border-slate-700 rounded-bl-sm'
-                    }`}
-                  >
-                    {msg.text}
+
+                  <div className={`flex flex-col ${isMe ? 'items-end' : 'items-start'} max-w-[80%]`}>
+                    <div className="flex items-baseline gap-2 mb-1">
+                      <span className="text-xs font-bold text-slate-700 dark:text-slate-300">{msg.user}</span>
+                      <span className="text-[10px] text-slate-400 dark:text-slate-500">
+                        {new Date(msg.timestamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+                      </span>
+                    </div>
+                    <div 
+                      onContextMenu={(e) => handleContextMenu(e, msg)}
+                      onDoubleClick={(e) => handleDoubleClick(e, msg)}
+                      onTouchStart={(e) => handleTouchStart(e, msg)}
+                      onTouchEnd={handleTouchEnd}
+                      className={`px-4 py-2 rounded-2xl break-words cursor-pointer transition-all shadow-sm ${
+                        isMe 
+                          ? 'bg-primary text-white rounded-tr-none' 
+                          : 'bg-white dark:bg-slate-800 text-slate-900 dark:text-slate-100 border border-slate-200 dark:border-slate-700 rounded-tl-none'
+                      }`}
+                    >
+                      {msg.text}
+                    </div>
                   </div>
                 </div>
               );

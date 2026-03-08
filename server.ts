@@ -181,6 +181,11 @@ async function startServer() {
       io.emit("chat message", msg);
     });
 
+    socket.on("delete message", (id) => {
+      // Broadcast deletion to all clients
+      io.emit("delete message", id);
+    });
+
     socket.on("disconnect", () => {
       console.log("User disconnected:", socket.id);
     });

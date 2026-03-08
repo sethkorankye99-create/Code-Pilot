@@ -23,6 +23,7 @@ import {
 } from 'lucide-react';
 import { pythonContent } from '../data/pythonContent';
 import { useAppContext } from '../context/AppContext';
+import TrophyModal from '../components/TrophyModal';
 
 const sectionIcons: Record<string, React.ReactNode> = {
   'python-fundamentals': <Terminal size={20} />,
@@ -45,6 +46,7 @@ export default function PythonReference() {
   const [quizFinished, setQuizFinished] = useState(false);
   const [selectedOption, setSelectedOption] = useState<number | null>(null);
   const [isCorrect, setIsCorrect] = useState<boolean | null>(null);
+  const [isTrophyModalOpen, setIsTrophyModalOpen] = useState(false);
 
   const activeSection = pythonContent.find(s => s.id === activeSectionId) || pythonContent[0];
 
@@ -96,6 +98,7 @@ export default function PythonReference() {
         setIsCorrect(null);
       } else {
         setQuizFinished(true);
+        setIsTrophyModalOpen(true);
       }
     }, 1500);
   };
@@ -358,6 +361,14 @@ export default function PythonReference() {
           ))}
         </div>
       </main>
+
+      <TrophyModal 
+        isOpen={isTrophyModalOpen}
+        onClose={() => setIsTrophyModalOpen(false)}
+        score={score}
+        total={activeSection.quizzes.length}
+        sectionTitle={activeSection.title}
+      />
     </div>
   );
 }

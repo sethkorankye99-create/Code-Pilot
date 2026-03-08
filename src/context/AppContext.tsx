@@ -37,7 +37,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
     if (localStorage.getItem('theme')) {
       return localStorage.getItem('theme') as 'light' | 'dark';
     }
-    return window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+    return 'dark';
   });
   const [coins, setCoins] = useState<number | null>(null);
   const [streak, setStreak] = useState<number>(0);
