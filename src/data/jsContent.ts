@@ -4,12 +4,20 @@ export interface Quiz {
   correctAnswer: number;
 }
 
+export interface Challenge {
+  title: string;
+  description: string;
+  initialCode: string;
+  solution: string;
+}
+
 export interface JsSection {
   id: string;
   title: string;
   note: string;
   example: string;
   quizzes: Quiz[];
+  challenge?: Challenge;
 }
 
 export const jsContent: JsSection[] = [
@@ -47,7 +55,13 @@ console.log(greet(name));`,
       { question: 'What is the correct way to call a function named "myFunction"?', options: ['call function myFunction()', 'call myFunction()', 'myFunction()', 'execute myFunction()'], correctAnswer: 2 },
       { question: 'What will console.log(1 + "2") output?', options: ['3', '"12"', 'NaN', 'Error'], correctAnswer: 1 },
       { question: 'Which keyword is used to return a value from a function?', options: ['get', 'return', 'output', 'yield'], correctAnswer: 1 }
-    ]
+    ],
+    challenge: {
+      title: "Variable Declaration",
+      description: "Declare a constant variable named 'pi' with the value 3.14 and log it to the console.",
+      initialCode: "// Write your code here\n",
+      solution: "const pi = 3.14;\nconsole.log(pi);"
+    }
   },
   {
     id: 'objects-prototypes',

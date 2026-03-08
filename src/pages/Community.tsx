@@ -4,6 +4,7 @@ import { io, Socket } from 'socket.io-client';
 import { useAppContext } from '../context/AppContext';
 import SettingsModal from '../components/SettingsModal';
 import CoinDisplay from '../components/CoinDisplay';
+import { supabase } from '../lib/supabase';
 
 interface ChatMessage {
   id: string;
@@ -41,14 +42,35 @@ export default function Community() {
   }, []);
 
   useEffect(() => {
+    // Fetch initial messages from Supabase
+    const fetchMessages = async () => {
+      const { data, error } = await supabase
+        .from('community_messages')
+        .select('*')
+        .order('timestamp', { ascending: true })
+        .limit(100);
+
+      if (error) {
+        console.error('Error fetching messages:', error);
+      } else if (data) {
+        setMessages(data as ChatMessage[]);
+      }
+    };
+
+    fetchMessages();
+
     // Connect to the socket server
     socketRef.current = io();
 
     socketRef.current.on('chat message', (msg: ChatMessage) => {
-      setMessages((prev) => [...prev, msg]);
+      setMessages((prev) => {
+        // Prevent duplicate messages if they were already fetched or received
+        if (prev.some(m => m.id === msg.id)) return prev;
+        return [...prev, msg];
+      });
     });
 
-    // Listen for deletions (simulated)
+    // Listen for deletions
     socketRef.current.on('delete message', (id: string) => {
       setMessages((prev) => prev.filter(m => m.id !== id));
     });
@@ -63,7 +85,7 @@ export default function Community() {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
   }, [messages]);
 
-  const handleSendMessage = (e: React.FormEvent) => {
+  const handleSendMessage = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!inputValue.trim() || !socketRef.current) return;
 
@@ -76,8 +98,22 @@ export default function Community() {
       type: 'community',
     };
 
-    socketRef.current.emit('chat message', newMsg);
+    // Optimistically add to local state
+    setMessages((prev) => [...prev, newMsg]);
     setInputValue('');
+
+    // Store in Supabase
+    const { error } = await supabase
+      .from('community_messages')
+      .insert([newMsg]);
+
+    if (error) {
+      console.error('Error storing message:', error);
+      // Optional: remove from local state if failed
+    }
+
+    // Broadcast via Socket.IO
+    socketRef.current.emit('chat message', newMsg);
   };
 
   const showMenu = (e: React.MouseEvent | React.TouchEvent, msg: ChatMessage) => {
@@ -110,10 +146,20 @@ export default function Community() {
     }
   };
 
-  const handleDelete = () => {
+  const handleDelete = async () => {
     if (!selectedMessage || !socketRef.current) return;
     // In a real app, we would check user_id matches current session
     if (selectedMessage.user === username) {
+      // Delete from Supabase
+      const { error } = await supabase
+        .from('community_messages')
+        .delete()
+        .eq('id', selectedMessage.id);
+
+      if (error) {
+        console.error('Error deleting message:', error);
+      }
+
       socketRef.current.emit('delete message', selectedMessage.id);
       setMessages(prev => prev.filter(m => m.id !== selectedMessage.id));
     } else {

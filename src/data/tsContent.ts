@@ -4,12 +4,20 @@ export interface Quiz {
   correctAnswer: number;
 }
 
+export interface Challenge {
+  title: string;
+  description: string;
+  initialCode: string;
+  solution: string;
+}
+
 export interface TsSection {
   id: string;
   title: string;
   note: string;
   example: string;
   quizzes: Quiz[];
+  challenge?: Challenge;
 }
 
 export const tsContent: TsSection[] = [
@@ -52,7 +60,13 @@ const emp: Employee = {
       { question: 'Can an interface extend another interface?', options: ['Yes, using the "extends" keyword', 'No, interfaces cannot be extended', 'Yes, using the "implements" keyword', 'Only if they have the same properties'], correctAnswer: 0 },
       { question: 'What is a Type Alias?', options: ['A way to rename a variable', 'A name for any type, including primitives, unions, and intersections', 'A built-in TypeScript function', 'A way to hide types'], correctAnswer: 1 },
       { question: 'Which of the following is a valid Union Type?', options: ['type Result = string & number;', 'type Result = string | number;', 'type Result = string + number;', 'type Result = string || number;'], correctAnswer: 1 }
-    ]
+    ],
+    challenge: {
+      title: "TypeScript Interface",
+      description: "Define an interface named 'User' with a string property 'name' and a number property 'age'. Then create a variable 'user' of type 'User' and log it.",
+      initialCode: "// Write your TypeScript here\n",
+      solution: "interface User {\n  name: string;\n  age: number;\n}\nconst user: User = { name: 'Alice', age: 25 };\nconsole.log(user);"
+    }
   },
   {
     id: 'advanced-types',

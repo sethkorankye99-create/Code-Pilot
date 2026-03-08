@@ -8,6 +8,7 @@ import {
   ChevronRight, 
   ChevronLeft, 
   Layout, 
+  Terminal,
   Type, 
   List as ListIcon, 
   Link as LinkIcon, 
@@ -27,6 +28,7 @@ import { htmlContent, HtmlSection } from '../data/htmlContent';
 
 import { useAppContext } from '../context/AppContext';
 import TrophyModal from '../components/TrophyModal';
+import CodeChallenge from '../components/CodeChallenge';
 
 const sectionIcons: Record<string, React.ReactNode> = {
   'basic-syntax': <Layout size={20} />,
@@ -212,6 +214,23 @@ export default function HtmlReference() {
                     </pre>
                   </div>
                 </div>
+
+                {/* Interactive Challenge */}
+                {activeSection.challenge && (
+                  <div className="space-y-4">
+                    <div className="flex items-center gap-2 text-sm font-bold text-slate-500 uppercase tracking-widest">
+                      <Terminal size={16} />
+                      Interactive Challenge
+                    </div>
+                    <CodeChallenge 
+                      title={activeSection.challenge.title}
+                      description={activeSection.challenge.description}
+                      initialCode={activeSection.challenge.initialCode}
+                      solution={activeSection.challenge.solution}
+                      language="html"
+                    />
+                  </div>
+                )}
 
                 {/* Action Buttons */}
                 <div className="flex flex-col sm:flex-row gap-4 pt-6">

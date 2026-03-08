@@ -79,9 +79,9 @@ export default function SettingsModal({ isOpen, onClose }: SettingsModalProps) {
 
             <div className="space-y-6">
               {/* Profile Section */}
-              <div className="flex items-center gap-4 p-4 rounded-2xl bg-slate-50 dark:bg-slate-800/50 border border-slate-100 dark:border-slate-800">
+              <div className="flex flex-col items-center gap-4 p-6 rounded-2xl bg-slate-50 dark:bg-slate-800/50 border border-slate-100 dark:border-slate-800 text-center">
                 <div 
-                  className="relative size-16 rounded-full bg-primary/20 flex items-center justify-center text-primary text-2xl font-bold cursor-pointer overflow-hidden group"
+                  className="relative size-24 rounded-full bg-primary/20 flex items-center justify-center text-primary text-3xl font-bold cursor-pointer overflow-hidden group shadow-lg"
                   onClick={() => fileInputRef.current?.click()}
                 >
                   {profilePicture ? (
@@ -90,7 +90,7 @@ export default function SettingsModal({ isOpen, onClose }: SettingsModalProps) {
                     username.charAt(0).toUpperCase()
                   )}
                   <div className="absolute inset-0 bg-black/40 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
-                    <span className="material-symbols-outlined text-white text-sm">photo_camera</span>
+                    <span className="material-symbols-outlined text-white text-base">photo_camera</span>
                   </div>
                 </div>
                 <input 
@@ -100,35 +100,37 @@ export default function SettingsModal({ isOpen, onClose }: SettingsModalProps) {
                   accept="image/*" 
                   className="hidden" 
                 />
-                <div className="flex-1">
+                <div className="w-full">
                   {isEditing ? (
-                    <div className="flex items-center gap-2">
+                    <div className="flex items-center gap-2 max-w-xs mx-auto">
                       <input 
                         type="text" 
                         value={editName}
                         onChange={(e) => setEditName(e.target.value)}
-                        className="w-full bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-700 rounded-lg px-3 py-1 text-sm text-slate-900 dark:text-white focus:outline-none focus:border-primary"
+                        className="w-full bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-700 rounded-lg px-3 py-2 text-sm text-slate-900 dark:text-white focus:outline-none focus:border-primary text-center"
                         autoFocus
                       />
-                      <button onClick={handleSaveName} className="p-1.5 bg-primary text-white rounded-lg hover:bg-primary/90">
+                      <button onClick={handleSaveName} className="p-2 bg-primary text-white rounded-lg hover:bg-primary/90 shadow-md">
                         <span className="material-symbols-outlined text-sm">check</span>
                       </button>
                     </div>
                   ) : (
-                    <div className="flex items-center justify-between">
-                      <div>
+                    <div className="flex flex-col items-center">
+                      <div className="relative group/name inline-block">
                         <p className="text-xs text-slate-500 dark:text-slate-400 font-medium uppercase tracking-wider mb-1">Username</p>
-                        <p className="text-lg font-bold text-slate-900 dark:text-white">{username}</p>
+                        <div className="flex items-center justify-center gap-2">
+                          <p className="text-xl font-bold text-slate-900 dark:text-white">{username}</p>
+                          <button onClick={() => setIsEditing(true)} className="p-1 text-slate-400 hover:text-primary transition-colors">
+                            <span className="material-symbols-outlined text-sm">edit</span>
+                          </button>
+                        </div>
                         {streak > 0 && (
-                          <div className="flex items-center gap-1 mt-1">
+                          <div className="flex items-center justify-center gap-1 mt-2 bg-orange-500/10 px-3 py-1 rounded-full">
                             <span className="material-symbols-outlined text-orange-500 text-sm" style={{fontVariationSettings: "'FILL' 1"}}>local_fire_department</span>
                             <span className="text-xs font-bold text-orange-600 dark:text-orange-400">{streak} Day Streak</span>
                           </div>
                         )}
                       </div>
-                      <button onClick={() => setIsEditing(true)} className="p-2 text-slate-400 hover:text-primary transition-colors">
-                        <span className="material-symbols-outlined">edit</span>
-                      </button>
                     </div>
                   )}
                 </div>

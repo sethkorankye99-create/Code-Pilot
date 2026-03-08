@@ -4,12 +4,20 @@ export interface Quiz {
   correctAnswer: number;
 }
 
+export interface Challenge {
+  title: string;
+  description: string;
+  initialCode: string;
+  solution: string;
+}
+
 export interface HtmlSection {
   id: string;
   title: string;
   note: string;
   example: string;
   quizzes: Quiz[];
+  challenge?: Challenge;
 }
 
 export const htmlContent: HtmlSection[] = [
@@ -37,7 +45,13 @@ export const htmlContent: HtmlSection[] = [
       { question: 'What character is used to indicate an end tag?', options: ['*', '/', '<', '^'], correctAnswer: 1 },
       { question: 'What does HTML stand for?', options: ['Hyper Text Markup Language', 'High Tech Modern Language', 'Hyper Tabular Markup Language', 'None of the above'], correctAnswer: 0 },
       { question: 'Which element is used to specify the character encoding?', options: ['<title>', '<meta>', '<link>', '<script>'], correctAnswer: 1 }
-    ]
+    ],
+    challenge: {
+      title: "Create a Heading",
+      description: "Create an <h1> tag with the text 'My First Website' and a <p> tag below it with the text 'Learning HTML is fun!'.",
+      initialCode: "<!-- Write your HTML here -->\n",
+      solution: "<h1>My First Website</h1>\n<p>Learning HTML is fun!</p>"
+    }
   },
   {
     id: 'text-formatting',

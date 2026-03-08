@@ -4,12 +4,20 @@ export interface Quiz {
   correctAnswer: number;
 }
 
+export interface Challenge {
+  title: string;
+  description: string;
+  initialCode: string;
+  solution: string;
+}
+
 export interface PythonSection {
   id: string;
   title: string;
   note: string;
   example: string;
   quizzes: Quiz[];
+  challenge?: Challenge;
 }
 
 export const pythonContent: PythonSection[] = [
@@ -49,7 +57,13 @@ while count < 2:
       { question: 'What function generates a sequence of numbers, often used in for loops?', options: ['sequence()', 'range()', 'list()', 'generate()'], correctAnswer: 1 },
       { question: 'How do you insert a variable into an f-string?', options: ['f"Hello {name}"', '"Hello " + name', '"Hello %s" % name', 'f"Hello $name"'], correctAnswer: 0 },
       { question: 'What is the boolean value for "False" in Python?', options: ['false', 'False', '0', 'None'], correctAnswer: 1 }
-    ]
+    ],
+    challenge: {
+      title: "Python Print",
+      description: "Assign the value 'Hello Python' to a variable named 'msg' and print it.",
+      initialCode: "# Write your Python code here\n",
+      solution: "msg = 'Hello Python'\nprint(msg)"
+    }
   },
   {
     id: 'data-structures',

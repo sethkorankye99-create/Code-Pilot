@@ -4,12 +4,20 @@ export interface Quiz {
   correctAnswer: number;
 }
 
+export interface Challenge {
+  title: string;
+  description: string;
+  initialCode: string;
+  solution: string;
+}
+
 export interface CssSection {
   id: string;
   title: string;
   note: string;
   example: string;
   quizzes: Quiz[];
+  challenge?: Challenge;
 }
 
 export const cssContent: CssSection[] = [
@@ -40,7 +48,13 @@ p { color: green; }`,
       { question: 'Which property changes the box model so width includes padding and border?', options: ['box-sizing: border-box', 'box-model: border', 'sizing: include', 'width: total'], correctAnswer: 0 },
       { question: 'What does the "em" unit depend on?', options: ['Viewport width', 'Root font size', 'Parent element\'s font size', 'Screen resolution'], correctAnswer: 2 },
       { question: 'Which symbol targets all elements?', options: ['#', '.', '*', '&'], correctAnswer: 2 }
-    ]
+    ],
+    challenge: {
+      title: "Styling a Box",
+      description: "Style the '.box' class with a blue background, white text, and 20px of padding.",
+      initialCode: ".box {\n  /* Write your CSS here */\n}\n",
+      solution: ".box {\n  background-color: blue;\n  color: white;\n  padding: 20px;\n}"
+    }
   },
   {
     id: 'typography',
