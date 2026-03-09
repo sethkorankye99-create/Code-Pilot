@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { useAppContext } from '../context/AppContext';
 import CoinDisplay from '../components/CoinDisplay';
@@ -8,18 +8,76 @@ import AdModal from '../components/AdModal';
 import { motion, AnimatePresence } from 'motion/react';
 
 export default function CourseDetail() {
-  const { deductCoin, updateStreak } = useAppContext();
+  const { deductCoin, updateStreak, userId, showToast } = useAppContext();
   const [isQuizStarted, setIsQuizStarted] = useState(false);
   const [isSettingsOpen, setIsSettingsOpen] = useState(false);
   const [isAdOpen, setIsAdOpen] = useState(false);
   const [isVideoPlaying, setIsVideoPlaying] = useState(false);
   const [hasWatchedAd, setHasWatchedAd] = useState(false);
+  const [isCompleted, setIsCompleted] = useState(false);
+  const [quizScore, setQuizScore] = useState(0);
+
+  const courseId = "css-advanced";
+  const moduleId = "module-3";
+
+  useEffect(() => {
+    if (userId) {
+      fetch(`/api/progress?userId=${userId}&courseId=${courseId}`)
+        .then(res => res.json())
+        .then(data => {
+          if (data.success && data.progress) {
+            const moduleProgress = data.progress.find((p: any) => p.module_id === moduleId);
+            if (moduleProgress) {
+              setIsCompleted(moduleProgress.is_completed === 1);
+              setQuizScore(moduleProgress.quiz_score);
+            }
+          }
+        })
+        .catch(err => console.error("Failed to fetch progress", err));
+    }
+  }, [userId]);
+
+  const saveProgress = async (completed: boolean, score: number) => {
+    if (!userId) return;
+    try {
+      await fetch('/api/progress/update', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          userId,
+          courseId,
+          moduleId,
+          isCompleted: completed,
+          quizScore: score
+        })
+      });
+    } catch (err) {
+      console.error("Failed to save progress", err);
+    }
+  };
+
+  const handleMarkComplete = () => {
+    const newStatus = !isCompleted;
+    setIsCompleted(newStatus);
+    saveProgress(newStatus, quizScore);
+    if (newStatus) {
+      showToast("Module marked as complete!", "success");
+    }
+  };
 
   const handleStartQuiz = async () => {
     const result = await deductCoin();
     if (result.success) {
       setIsQuizStarted(true);
       await updateStreak();
+      // Simulate quiz completion for demo purposes
+      setTimeout(() => {
+        const score = Math.floor(Math.random() * 3) + 8; // Random score 8-10
+        setQuizScore(score);
+        saveProgress(isCompleted, score);
+        showToast(`Quiz completed! You scored ${score}/10`, "success");
+        setIsQuizStarted(false);
+      }, 3000);
     }
   };
 
@@ -109,9 +167,18 @@ export default function CourseDetail() {
         <p className="text-slate-600 dark:text-slate-400 text-sm font-normal leading-relaxed mb-6">
           Master complex layouts using advanced Flexbox properties like flex-grow, flex-shrink, and nested containers. We'll build a responsive dashboard header as a practical exercise.
         </p>
-        <button className="w-full flex items-center justify-center gap-2 bg-primary hover:bg-primary/90 text-white font-bold py-3 px-6 rounded-xl transition-all shadow-lg shadow-primary/20">
-          <span className="material-symbols-outlined">check_circle</span>
-          Mark as Complete
+        <button 
+          onClick={handleMarkComplete}
+          className={`w-full flex items-center justify-center gap-2 font-bold py-3 px-6 rounded-xl transition-all shadow-lg ${
+            isCompleted 
+              ? 'bg-emerald-500 hover:bg-emerald-600 text-white shadow-emerald-500/20' 
+              : 'bg-primary hover:bg-primary/90 text-white shadow-primary/20'
+          }`}
+        >
+          <span className="material-symbols-outlined">
+            {isCompleted ? 'check_circle' : 'radio_button_unchecked'}
+          </span>
+          {isCompleted ? 'Completed' : 'Mark as Complete'}
         </button>
       </div>
 
@@ -125,9 +192,17 @@ export default function CourseDetail() {
           <h3 className="text-lg font-bold text-slate-900 dark:text-white mb-2">Module Quiz</h3>
           <p className="text-sm text-slate-500 dark:text-slate-400 mb-4">Test your knowledge on Advanced CSS Flexbox. Costs 1 coin.</p>
           
+          {quizScore > 0 && !isQuizStarted && (
+            <div className="mb-4 bg-emerald-100 dark:bg-emerald-900/30 text-emerald-700 dark:text-emerald-400 p-3 rounded-xl text-sm font-bold flex items-center justify-center gap-2">
+              <span className="material-symbols-outlined">workspace_premium</span>
+              Previous Score: {quizScore}/10
+            </div>
+          )}
+          
           {isQuizStarted ? (
-            <div className="bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-400 p-3 rounded-xl text-sm font-bold">
-              Quiz Started! Good luck!
+            <div className="bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-400 p-3 rounded-xl text-sm font-bold flex items-center justify-center gap-2">
+              <div className="size-4 rounded-full border-2 border-green-700 dark:border-green-400 border-t-transparent animate-spin"></div>
+              Quiz in progress...
             </div>
           ) : (
             <button 

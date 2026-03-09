@@ -87,7 +87,11 @@ export function AppProvider({ children }: { children: ReactNode }) {
           setProfilePicture(data.profile_picture);
         }
       } else {
-        console.error('Failed to fetch coins: Unauthorized or not found');
+        if (res.status === 401 || res.status === 404) {
+          logout();
+        } else {
+          console.error('Failed to fetch coins: Server error');
+        }
       }
     } catch (err) {
       console.error('Failed to fetch coins', err);

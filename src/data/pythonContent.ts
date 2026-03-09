@@ -369,5 +369,46 @@ divide(10, 0)`,
       { question: 'What does a debugger allow you to do?', options: ['Automatically write tests', 'Pause execution, step through code line-by-line, and inspect variables', 'Compile Python code to C', 'Format code'], correctAnswer: 1 },
       { question: 'Which built-in function can drop you into the Python debugger (PDB)?', options: ['debug()', 'breakpoint()', 'stop()', 'pause()'], correctAnswer: 1 }
     ]
+  },
+  {
+    id: 'common-libraries',
+    title: 'Common Libraries',
+    note: 'Python has a rich ecosystem of third-party libraries. "requests" simplifies HTTP requests. "numpy" and "pandas" are essential for data manipulation and analysis. "matplotlib" is used for data visualization. "flask" and "django" are popular web frameworks.',
+    example: `# Using the requests library
+import requests
+
+response = requests.get('https://api.github.com')
+if response.status_code == 200:
+    print("Success!")
+    data = response.json()
+    print(data.keys())
+
+# Using pandas (DataFrames)
+import pandas as pd
+
+data = {
+    'Name': ['Alice', 'Bob', 'Charlie'],
+    'Age': [25, 30, 35]
+}
+df = pd.DataFrame(data)
+print(df.head())`,
+    quizzes: [
+      { question: 'Which library is the standard for making HTTP requests in Python?', options: ['http', 'url', 'requests', 'fetch'], correctAnswer: 2 },
+      { question: 'What is "numpy" primarily used for?', options: ['Web development', 'Numerical computing and large multi-dimensional arrays', 'Database management', 'Game development'], correctAnswer: 1 },
+      { question: 'Which library provides the "DataFrame" structure for data manipulation?', options: ['pandas', 'numpy', 'matplotlib', 'scipy'], correctAnswer: 0 },
+      { question: 'What is "matplotlib" used for?', options: ['Machine learning', 'Data visualization and plotting', 'Web scraping', 'Network programming'], correctAnswer: 1 },
+      { question: 'Which of the following is a lightweight Python web framework?', options: ['Django', 'Flask', 'Pandas', 'Requests'], correctAnswer: 1 },
+      { question: 'Which of the following is a full-stack Python web framework?', options: ['Flask', 'Django', 'BeautifulSoup', 'Pygame'], correctAnswer: 1 },
+      { question: 'What does the "requests.get()" method return?', options: ['A string', 'A dictionary', 'A Response object', 'A JSON object'], correctAnswer: 2 },
+      { question: 'How do you extract JSON data from a "requests" Response object?', options: ['response.text', 'response.content', 'response.json()', 'json.parse(response)'], correctAnswer: 2 },
+      { question: 'Which library is commonly used for web scraping in Python?', options: ['BeautifulSoup', 'Flask', 'Numpy', 'Pytest'], correctAnswer: 0 },
+      { question: 'What is "scikit-learn" used for?', options: ['Web development', 'Machine learning algorithms', 'Data visualization', 'Database ORM'], correctAnswer: 1 }
+    ],
+    challenge: {
+      title: "API Request",
+      description: "Use the 'requests' library to make a GET request to 'https://jsonplaceholder.typicode.com/todos/1' and print the JSON response.",
+      initialCode: "import requests\n\n# Make your request here\n",
+      solution: "import requests\n\nresponse = requests.get('https://jsonplaceholder.typicode.com/todos/1')\nprint(response.json())"
+    }
   }
 ];

@@ -62,19 +62,6 @@ const COURSES = [
     link: '/ts-mastery'
   },
   {
-    id: 'java',
-    title: 'Java Architecture',
-    description: 'Scalable backend systems and OOP design patterns.',
-    progress: 68,
-    icon: 'coffee',
-    tag: 'ENTERPRISE',
-    colorClass: 'text-accent-java',
-    bgClass: 'bg-accent-java/10',
-    bgFillClass: 'bg-accent-java',
-    categories: ['Backend', 'Systems'],
-    link: '#'
-  },
-  {
     id: 'python',
     title: 'Python for Systems',
     description: 'Scripting, automation, and backend services.',

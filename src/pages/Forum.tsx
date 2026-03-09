@@ -51,6 +51,7 @@ export default function Forum() {
   const [newComment, setNewComment] = useState('');
   const [searchQuery, setSearchQuery] = useState('');
   const [activeCategory, setActiveCategory] = useState('All');
+  const [likedPosts, setLikedPosts] = useState<string[]>([]);
 
   // New Post State
   const [newPostTitle, setNewPostTitle] = useState('');
@@ -62,6 +63,13 @@ export default function Forum() {
   useEffect(() => {
     fetchPosts();
   }, []);
+
+  useEffect(() => {
+    if (username) {
+      const storedLikes = JSON.parse(localStorage.getItem(`liked_posts_${username}`) || '[]');
+      setLikedPosts(storedLikes);
+    }
+  }, [username]);
 
   const fetchPosts = async () => {
     setLoading(true);
@@ -160,13 +168,23 @@ export default function Forum() {
     const post = posts.find(p => p.id === postId);
     if (!post) return;
 
-    const newLikes = post.likes + 1;
+    const isLiked = likedPosts.includes(postId);
+    const newLikes = isLiked ? Math.max(0, post.likes - 1) : post.likes + 1;
     
     // Update local state
     setPosts(posts.map(p => p.id === postId ? { ...p, likes: newLikes } : p));
     if (selectedPost && selectedPost.id === postId) {
       setSelectedPost({ ...selectedPost, likes: newLikes });
     }
+
+    let newLikedPosts;
+    if (isLiked) {
+      newLikedPosts = likedPosts.filter(id => id !== postId);
+    } else {
+      newLikedPosts = [...likedPosts, postId];
+    }
+    setLikedPosts(newLikedPosts);
+    localStorage.setItem(`liked_posts_${username}`, JSON.stringify(newLikedPosts));
 
     // Update Supabase
     const { error } = await supabase
@@ -292,9 +310,13 @@ export default function Forum() {
                 </div>
                 <button 
                   onClick={(e) => handleLikePost(e, post.id)}
-                  className="flex items-center gap-1.5 text-slate-500 dark:text-slate-400 hover:text-primary transition-colors"
+                  className={`flex items-center gap-1.5 transition-colors ${
+                    likedPosts.includes(post.id) 
+                      ? 'text-primary' 
+                      : 'text-slate-500 dark:text-slate-400 hover:text-primary'
+                  }`}
                 >
-                  <ThumbsUp size={16} />
+                  <ThumbsUp size={16} className={likedPosts.includes(post.id) ? 'fill-current' : ''} />
                   <span className="text-xs font-bold">{post.likes} Likes</span>
                 </button>
               </div>
@@ -433,9 +455,13 @@ export default function Forum() {
                 <div className="flex items-center gap-6 py-4 border-y border-slate-100 dark:border-slate-800">
                   <button 
                     onClick={(e) => handleLikePost(e, selectedPost.id)}
-                    className="flex items-center gap-2 text-slate-500 dark:text-slate-400 hover:text-primary transition-colors"
+                    className={`flex items-center gap-2 transition-colors ${
+                      likedPosts.includes(selectedPost.id)
+                        ? 'text-primary'
+                        : 'text-slate-500 dark:text-slate-400 hover:text-primary'
+                    }`}
                   >
-                    <ThumbsUp size={18} />
+                    <ThumbsUp size={18} className={likedPosts.includes(selectedPost.id) ? 'fill-current' : ''} />
                     <span className="text-sm font-bold">{selectedPost.likes} Likes</span>
                   </button>
                   <div className="flex items-center gap-2 text-slate-500 dark:text-slate-400">

@@ -25,7 +25,18 @@ db.exec(`
     streak_count INTEGER DEFAULT 0,
     last_streak_date TEXT,
     profile_picture TEXT
-  )
+  );
+
+  CREATE TABLE IF NOT EXISTS course_progress (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    user_id TEXT,
+    course_id TEXT,
+    module_id TEXT,
+    is_completed BOOLEAN DEFAULT 0,
+    quiz_score INTEGER DEFAULT 0,
+    FOREIGN KEY(user_id) REFERENCES users(id),
+    UNIQUE(user_id, course_id, module_id)
+  );
 `);
 
 // Helper to get current server date string (YYYY-MM-DD)
@@ -170,6 +181,45 @@ async function startServer() {
     }
 
     res.json({ success: true, streak_count: newStreak });
+  });
+
+  // Course Progress API routes
+  app.get("/api/progress", (req, res) => {
+    const userId = req.query.userId as string;
+    const courseId = req.query.courseId as string;
+    
+    if (!userId || !courseId) {
+      return res.status(400).json({ error: "User ID and Course ID required" });
+    }
+    
+    try {
+      const progress = db.prepare('SELECT * FROM course_progress WHERE user_id = ? AND course_id = ?').all(userId, courseId);
+      res.json({ success: true, progress });
+    } catch (err) {
+      res.status(500).json({ error: "Database error" });
+    }
+  });
+
+  app.post("/api/progress/update", (req, res) => {
+    const { userId, courseId, moduleId, isCompleted, quizScore } = req.body;
+    
+    if (!userId || !courseId || !moduleId) {
+      return res.status(400).json({ error: "Missing required fields" });
+    }
+    
+    try {
+      db.prepare(`
+        INSERT INTO course_progress (user_id, course_id, module_id, is_completed, quiz_score)
+        VALUES (?, ?, ?, ?, ?)
+        ON CONFLICT(user_id, course_id, module_id) DO UPDATE SET
+          is_completed = excluded.is_completed,
+          quiz_score = excluded.quiz_score
+      `).run(userId, courseId, moduleId, isCompleted ? 1 : 0, quizScore || 0);
+      
+      res.json({ success: true });
+    } catch (err) {
+      res.status(500).json({ error: "Failed to update progress" });
+    }
   });
 
   // Socket.IO logic

@@ -19,7 +19,8 @@ import {
   Wrench,
   Trophy,
   RefreshCcw,
-  Home
+  Home,
+  Library
 } from 'lucide-react';
 import { pythonContent } from '../data/pythonContent';
 import { useAppContext } from '../context/AppContext';
@@ -36,6 +37,7 @@ const sectionIcons: Record<string, React.ReactNode> = {
   'file-io': <Globe size={20} />,
   'concurrency': <Clock size={20} />,
   'testing-debugging': <Wrench size={20} />,
+  'common-libraries': <Library size={20} />,
 };
 
 export default function PythonReference() {
