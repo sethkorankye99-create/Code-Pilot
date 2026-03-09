@@ -12,7 +12,8 @@ import {
   Filter,
   MoreVertical,
   ThumbsUp,
-  Share2
+  Share2,
+  Trash2
 } from 'lucide-react';
 import { supabase } from '../lib/supabase';
 import { useAppContext } from '../context/AppContext';
@@ -197,6 +198,31 @@ export default function Forum() {
     }
   };
 
+  const handleDeletePost = async (e: React.MouseEvent, postId: string) => {
+    e.stopPropagation();
+    
+    // Confirm deletion
+    if (!window.confirm("Are you sure you want to delete this discussion?")) return;
+
+    // Delete from Supabase
+    const { error } = await supabase
+      .from('forum_posts')
+      .delete()
+      .eq('id', postId);
+
+    if (error) {
+      console.error('Error deleting post:', error);
+      showToast('Failed to delete discussion', 'error');
+    } else {
+      // Update local state
+      setPosts(posts.filter(p => p.id !== postId));
+      if (selectedPost && selectedPost.id === postId) {
+        setSelectedPost(null);
+      }
+      showToast('Discussion deleted successfully', 'success');
+    }
+  };
+
   const filteredPosts = posts.filter(post => {
     const matchesCategory = activeCategory === 'All' || post.category === activeCategory;
     const matchesSearch = post.title.toLowerCase().includes(searchQuery.toLowerCase()) || 
@@ -319,6 +345,14 @@ export default function Forum() {
                   <ThumbsUp size={16} className={likedPosts.includes(post.id) ? 'fill-current' : ''} />
                   <span className="text-xs font-bold">{post.likes} Likes</span>
                 </button>
+                {post.user === username && (
+                  <button 
+                    onClick={(e) => handleDeletePost(e, post.id)}
+                    className="flex items-center gap-1.5 text-slate-500 dark:text-slate-400 hover:text-red-500 transition-colors ml-auto"
+                  >
+                    <Trash2 size={16} />
+                  </button>
+                )}
               </div>
             </motion.div>
           ))
@@ -438,9 +472,20 @@ export default function Forum() {
                     <p className="text-[10px] text-slate-400 font-bold uppercase tracking-wider">{selectedPost.category}</p>
                   </div>
                 </div>
-                <button onClick={() => setSelectedPost(null)} className="p-2 rounded-full hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-400">
-                  <Plus className="rotate-45" />
-                </button>
+                <div className="flex items-center gap-2">
+                  {selectedPost.user === username && (
+                    <button 
+                      onClick={(e) => handleDeletePost(e, selectedPost.id)}
+                      className="p-2 rounded-full hover:bg-red-50 dark:hover:bg-red-900/20 text-slate-400 hover:text-red-500 transition-colors"
+                      title="Delete Discussion"
+                    >
+                      <Trash2 size={18} />
+                    </button>
+                  )}
+                  <button onClick={() => setSelectedPost(null)} className="p-2 rounded-full hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-400">
+                    <Plus className="rotate-45" />
+                  </button>
+                </div>
               </div>
 
               {/* Modal Content */}
