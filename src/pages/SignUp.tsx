@@ -2,9 +2,10 @@ import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { motion } from 'motion/react';
 import { useAppContext } from '../context/AppContext';
+import { supabase } from '../lib/supabase';
 
 export default function SignUp() {
-  const [username, setUsername] = useState('');
+  const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
   const [isLoading, setIsLoading] = useState(false);
@@ -13,7 +14,7 @@ export default function SignUp() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!username || !password || !confirmPassword) {
+    if (!email || !password || !confirmPassword) {
       showToast("Please fill in all fields", "error");
       return;
     }
@@ -25,19 +26,42 @@ export default function SignUp() {
 
     setIsLoading(true);
     try {
-      const res = await fetch('/api/auth/signup', {
+      // 1. Sign up with Supabase
+      const { data: authData, error: authError } = await supabase.auth.signUp({
+        email,
+        password,
+      });
+
+      if (authError) {
+        showToast(authError.message, "error");
+        setIsLoading(false);
+        return;
+      }
+
+      if (!authData.user) {
+        showToast("Sign up failed, no user returned", "error");
+        setIsLoading(false);
+        return;
+      }
+
+      // 2. Sync user with local SQLite database
+      const res = await fetch('/api/auth/sync', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ username, password }),
+        body: JSON.stringify({ 
+          id: authData.user.id, 
+          email: authData.user.email 
+        }),
       });
+      
       const data = await res.json();
 
       if (res.ok && data.success) {
         login(data.user);
-        showToast("Account created successfully!", "success");
+        showToast("Account created successfully! Please check your email to verify.", "success");
         navigate('/dashboard');
       } else {
-        showToast(data.error || "Sign up failed", "error");
+        showToast(data.error || "Failed to sync user data", "error");
       }
     } catch (err) {
       showToast("Network error", "error");
@@ -63,15 +87,15 @@ export default function SignUp() {
 
         <form onSubmit={handleSubmit} className="space-y-6">
           <div className="space-y-2">
-            <label className="text-sm font-bold text-slate-700 dark:text-slate-300 ml-1">Username</label>
+            <label className="text-sm font-bold text-slate-700 dark:text-slate-300 ml-1">Email</label>
             <div className="relative">
-              <span className="material-symbols-outlined absolute left-4 top-1/2 -translate-y-1/2 text-slate-400">person</span>
+              <span className="material-symbols-outlined absolute left-4 top-1/2 -translate-y-1/2 text-slate-400">mail</span>
               <input 
-                type="text" 
-                value={username}
-                onChange={(e) => setUsername(e.target.value)}
+                type="email" 
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
                 className="w-full bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl py-3 pl-12 pr-4 text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-primary/50 transition-all"
-                placeholder="Choose a username"
+                placeholder="Enter your email"
               />
             </div>
           </div>

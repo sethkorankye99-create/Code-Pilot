@@ -91,6 +91,44 @@ async function startServer() {
     }
   });
 
+  app.post("/api/auth/sync", (req, res) => {
+    const { id, email } = req.body;
+    if (!id || !email) {
+      return res.status(400).json({ error: "ID and email required" });
+    }
+
+    try {
+      let user = db.prepare('SELECT * FROM users WHERE id = ?').get(id) as any;
+      
+      if (!user) {
+        const today = getCurrentDateStr();
+        db.prepare('INSERT INTO users (id, username, password, coins, last_reset_date, streak_count, last_streak_date, profile_picture) VALUES (?, ?, ?, ?, ?, ?, ?, ?)').run(id, email, '', 5, today, 0, '', null);
+        user = { id, username: email, coins: 5, streak_count: 0, profile_picture: null };
+      } else {
+        // Check if coins need reset (daily)
+        const today = getCurrentDateStr();
+        if (user.last_reset_date !== today) {
+          db.prepare('UPDATE users SET coins = 5, last_reset_date = ? WHERE id = ?').run(today, id);
+          user.coins = 5;
+        }
+      }
+
+      res.json({ 
+        success: true, 
+        user: { 
+          id: user.id, 
+          username: user.username, 
+          coins: user.coins, 
+          streak_count: user.streak_count,
+          profile_picture: user.profile_picture
+        } 
+      });
+    } catch (err: any) {
+      console.error("Sync error:", err);
+      res.status(500).json({ error: "Failed to sync user" });
+    }
+  });
+
   app.post("/api/auth/login", (req, res) => {
     const { username, password } = req.body;
     const user = db.prepare('SELECT * FROM users WHERE username = ? AND password = ?').get(username, password) as any;

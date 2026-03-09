@@ -1,5 +1,6 @@
 import { createContext, useContext, useState, useEffect, ReactNode } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
+import { supabase } from '../lib/supabase';
 
 interface Toast {
   id: number;
@@ -112,7 +113,12 @@ export function AppProvider({ children }: { children: ReactNode }) {
     setIsLoggedIn(true);
   };
 
-  const logout = () => {
+  const logout = async () => {
+    try {
+      await supabase.auth.signOut();
+    } catch (err) {
+      console.error("Error signing out from Supabase:", err);
+    }
     setUserId(null);
     setUsername('Guest');
     setCoins(5);
