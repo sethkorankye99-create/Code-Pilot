@@ -1,6 +1,6 @@
 import React, { useState, useRef } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { useAppContext } from '../context/AppContext';
 
 interface SettingsModalProps {
@@ -14,6 +14,7 @@ export default function SettingsModal({ isOpen, onClose }: SettingsModalProps) {
   const [editName, setEditName] = useState(username);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [isWatchingAd, setIsWatchingAd] = useState(false);
+  const navigate = useNavigate();
 
   const handleSaveName = () => {
     if (editName.trim()) {
@@ -48,6 +49,12 @@ export default function SettingsModal({ isOpen, onClose }: SettingsModalProps) {
       await addCoins(5);
       setIsWatchingAd(false);
     }, 2000);
+  };
+
+  const handleLogout = async () => {
+    await logout();
+    onClose();
+    navigate('/login');
   };
 
   return (
@@ -189,10 +196,7 @@ export default function SettingsModal({ isOpen, onClose }: SettingsModalProps) {
 
               {/* Logout Button */}
               <button 
-                onClick={() => {
-                  logout();
-                  onClose();
-                }}
+                onClick={handleLogout}
                 className="w-full py-4 rounded-2xl bg-red-50 dark:bg-red-900/10 text-red-600 dark:text-red-400 font-bold text-sm hover:bg-red-100 dark:hover:bg-red-900/20 transition-colors flex items-center justify-center gap-2 border border-red-100 dark:border-red-900/30"
               >
                 <span className="material-symbols-outlined text-lg">logout</span>
