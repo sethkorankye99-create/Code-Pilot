@@ -24,7 +24,9 @@ db.exec(`
     last_reset_date TEXT,
     streak_count INTEGER DEFAULT 0,
     last_streak_date TEXT,
-    profile_picture TEXT
+    profile_picture TEXT,
+    email TEXT,
+    created_at TEXT DEFAULT CURRENT_TIMESTAMP
   );
 
   CREATE TABLE IF NOT EXISTS course_progress (
@@ -38,6 +40,10 @@ db.exec(`
     UNIQUE(user_id, course_id, module_id)
   );
 `);
+
+// Add columns for existing databases
+try { db.exec("ALTER TABLE users ADD COLUMN email TEXT"); } catch (e) {}
+try { db.exec("ALTER TABLE users ADD COLUMN created_at TEXT DEFAULT CURRENT_TIMESTAMP"); } catch (e) {}
 
 // Helper to get current server date string (YYYY-MM-DD)
 const getCurrentDateStr = () => {
@@ -81,7 +87,7 @@ async function startServer() {
     try {
       const id = Date.now().toString();
       const today = getCurrentDateStr();
-      db.prepare('INSERT INTO users (id, username, password, coins, last_reset_date, streak_count, last_streak_date, profile_picture) VALUES (?, ?, ?, ?, ?, ?, ?, ?)').run(id, username, password, 5, today, 0, '', null);
+      db.prepare('INSERT INTO users (id, username, password, coins, last_reset_date, streak_count, last_streak_date, profile_picture, email) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)').run(id, username, password, 5, today, 0, '', null, username);
       res.json({ success: true, user: { id, username, coins: 5, streak_count: 0, profile_picture: null } });
     } catch (err: any) {
       if (err.message.includes('UNIQUE constraint failed')) {
@@ -102,7 +108,7 @@ async function startServer() {
       
       if (!user) {
         const today = getCurrentDateStr();
-        db.prepare('INSERT INTO users (id, username, password, coins, last_reset_date, streak_count, last_streak_date, profile_picture) VALUES (?, ?, ?, ?, ?, ?, ?, ?)').run(id, email, '', 5, today, 0, '', null);
+        db.prepare('INSERT INTO users (id, username, password, coins, last_reset_date, streak_count, last_streak_date, profile_picture, email) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)').run(id, email, '', 5, today, 0, '', null, email);
         user = { id, username: email, coins: 5, streak_count: 0, profile_picture: null };
       } else {
         // Check if coins need reset (daily)
