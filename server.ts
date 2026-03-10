@@ -39,6 +39,15 @@ db.exec(`
     FOREIGN KEY(user_id) REFERENCES users(id),
     UNIQUE(user_id, course_id, module_id)
   );
+
+  CREATE TABLE IF NOT EXISTS videos (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    title TEXT NOT NULL,
+    category TEXT NOT NULL,
+    url TEXT NOT NULL,
+    time TEXT NOT NULL,
+    created_at TEXT DEFAULT CURRENT_TIMESTAMP
+  );
 `);
 
 // Add columns for existing databases
@@ -366,6 +375,53 @@ async function startServer() {
       res.json({ success: true, users });
     } catch (err) {
       res.status(500).json({ error: "Database error" });
+    }
+  });
+
+  // Videos API routes
+  app.get("/api/videos", (req, res) => {
+    try {
+      const videos = db.prepare('SELECT * FROM videos ORDER BY created_at DESC').all();
+      res.json({ success: true, videos });
+    } catch (err) {
+      res.status(500).json({ error: "Database error" });
+    }
+  });
+
+  app.post("/api/admin/videos", (req, res) => {
+    const adminEmail = req.headers['x-admin-email'];
+    const expectedEmail = process.env.ADMIN_EMAIL ? process.env.ADMIN_EMAIL.trim() : null;
+    
+    if (!expectedEmail || !adminEmail || adminEmail.toString().trim().toLowerCase() !== expectedEmail.toLowerCase()) {
+      return res.status(401).json({ error: "Unauthorized" });
+    }
+
+    const { title, category, url, time } = req.body;
+    if (!title || !category || !url || !time) {
+      return res.status(400).json({ error: "Missing required fields" });
+    }
+
+    try {
+      const result = db.prepare('INSERT INTO videos (title, category, url, time) VALUES (?, ?, ?, ?)').run(title, category, url, time);
+      res.json({ success: true, id: result.lastInsertRowid });
+    } catch (err) {
+      res.status(500).json({ error: "Failed to add video" });
+    }
+  });
+
+  app.delete("/api/admin/videos/:id", (req, res) => {
+    const adminEmail = req.headers['x-admin-email'];
+    const expectedEmail = process.env.ADMIN_EMAIL ? process.env.ADMIN_EMAIL.trim() : null;
+    
+    if (!expectedEmail || !adminEmail || adminEmail.toString().trim().toLowerCase() !== expectedEmail.toLowerCase()) {
+      return res.status(401).json({ error: "Unauthorized" });
+    }
+
+    try {
+      db.prepare('DELETE FROM videos WHERE id = ?').run(req.params.id);
+      res.json({ success: true });
+    } catch (err) {
+      res.status(500).json({ error: "Failed to delete video" });
     }
   });
 

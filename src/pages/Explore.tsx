@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { motion, AnimatePresence } from 'motion/react';
 import SettingsModal from '../components/SettingsModal';
@@ -7,12 +7,14 @@ import StreakDisplay from '../components/StreakDisplay';
 import AdModal from '../components/AdModal';
 import { useAppContext } from '../context/AppContext';
 
-// Mock database for latest videos
-const LATEST_VIDEOS = [
-  { id: 1, title: 'Building a REST API with Node.js', category: 'Node.js', time: '10:24', added: '2 days ago' },
-  { id: 2, title: 'Python for Beginners', category: 'Python', time: '15:45', added: '1 day ago' },
-  { id: 3, title: 'React Hooks Masterclass', category: 'React', time: '22:10', added: '3 days ago' },
-];
+interface Video {
+  id: number;
+  title: string;
+  category: string;
+  url: string;
+  time: string;
+  created_at: string;
+}
 
 export default function Explore() {
   const { profilePicture } = useAppContext();
@@ -20,23 +22,39 @@ export default function Explore() {
   const [isSettingsOpen, setIsSettingsOpen] = useState(false);
   const [isAdOpen, setIsAdOpen] = useState(false);
   const [hasWatchedAd, setHasWatchedAd] = useState(false);
+  const [videos, setVideos] = useState<Video[]>([]);
+  const [selectedVideoUrl, setSelectedVideoUrl] = useState<string | null>(null);
 
-  const handleVideoClick = () => {
+  useEffect(() => {
+    fetch('/api/videos')
+      .then(res => res.json())
+      .then(data => {
+        if (data.success) {
+          setVideos(data.videos);
+        }
+      })
+      .catch(err => console.error("Failed to fetch videos", err));
+  }, []);
+
+  const handleVideoClick = (url: string) => {
     if (!hasWatchedAd) {
+      setSelectedVideoUrl(url);
       setIsAdOpen(true);
     } else {
-      // In a real app, this would navigate or open a player
-      alert("Opening video player...");
+      window.open(url, '_blank');
     }
   };
 
   const handleAdClose = () => {
     setIsAdOpen(false);
     setHasWatchedAd(true);
-    alert("Ad finished! In a real app, the video would start now.");
+    if (selectedVideoUrl) {
+      window.open(selectedVideoUrl, '_blank');
+      setSelectedVideoUrl(null);
+    }
   };
 
-  const filteredVideos = LATEST_VIDEOS.filter(video => 
+  const filteredVideos = videos.filter(video => 
     video.title.toLowerCase().includes(searchQuery.toLowerCase()) || 
     video.category.toLowerCase().includes(searchQuery.toLowerCase())
   );
@@ -97,7 +115,7 @@ export default function Explore() {
                   layout
                   initial={{ opacity: 0, y: 20 }}
                   animate={{ opacity: 1, y: 0 }}
-                  onClick={handleVideoClick}
+                  onClick={() => handleVideoClick(video.url)}
                   className="rounded-2xl border border-gray-200 dark:border-gray-800 overflow-hidden cursor-pointer group bg-white dark:bg-gray-900 shadow-sm hover:shadow-md transition-all"
                 >
                   <div className="h-48 bg-gray-100 dark:bg-gray-800 relative flex items-center justify-center">
@@ -110,7 +128,7 @@ export default function Explore() {
                       <span className="text-[10px] font-bold uppercase tracking-widest px-2 py-1 rounded-md bg-primary/10 text-primary">
                         {video.category}
                       </span>
-                      <span className="text-[10px] text-gray-400 font-medium">• {video.added}</span>
+                      <span className="text-[10px] text-gray-400 font-medium">• {new Date(video.created_at).toLocaleDateString()}</span>
                     </div>
                     <h4 className="font-bold text-lg leading-tight group-hover:text-primary transition-colors">{video.title}</h4>
                   </div>
