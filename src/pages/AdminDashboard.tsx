@@ -19,6 +19,7 @@ interface Video {
   category: string;
   url: string;
   time: string;
+  image_url: string;
   created_at: string;
 }
 
@@ -31,7 +32,7 @@ export default function AdminDashboard() {
   const [loading, setLoading] = useState(false);
   const [activeTab, setActiveTab] = useState<'users' | 'videos'>('users');
 
-  const [newVideo, setNewVideo] = useState({ title: '', category: '', url: '', time: '' });
+  const [newVideo, setNewVideo] = useState({ title: '', category: '', url: '', time: '', image_url: '' });
   const [videoLoading, setVideoLoading] = useState(false);
 
   const fetchUsers = async () => {
@@ -105,7 +106,7 @@ export default function AdminDashboard() {
         body: JSON.stringify(newVideo)
       });
       if (response.ok) {
-        setNewVideo({ title: '', category: '', url: '', time: '' });
+        setNewVideo({ title: '', category: '', url: '', time: '', image_url: '' });
         fetchVideos();
       } else {
         alert("Failed to add video.");
@@ -313,6 +314,13 @@ export default function AdminDashboard() {
                   onChange={e => setNewVideo({...newVideo, time: e.target.value})}
                   className="px-4 py-2 rounded-xl bg-slate-100 dark:bg-slate-800 border-none focus:ring-2 focus:ring-primary text-slate-900 dark:text-white"
                 />
+                <input 
+                  type="url" 
+                  placeholder="Thumbnail Image URL (Optional)" 
+                  value={newVideo.image_url}
+                  onChange={e => setNewVideo({...newVideo, image_url: e.target.value})}
+                  className="px-4 py-2 rounded-xl bg-slate-100 dark:bg-slate-800 border-none focus:ring-2 focus:ring-primary text-slate-900 dark:text-white"
+                />
                 <div className="md:col-span-2 flex justify-end">
                   <button 
                     type="submit" 
@@ -331,6 +339,7 @@ export default function AdminDashboard() {
                 <table className="w-full text-left border-collapse">
                   <thead>
                     <tr className="bg-slate-50 dark:bg-slate-800/50 border-b border-slate-200 dark:border-slate-800 text-sm text-slate-500 dark:text-slate-400">
+                      <th className="px-6 py-4 font-medium">Image</th>
                       <th className="px-6 py-4 font-medium">Title</th>
                       <th className="px-6 py-4 font-medium">Category</th>
                       <th className="px-6 py-4 font-medium">Duration</th>
@@ -341,6 +350,15 @@ export default function AdminDashboard() {
                   <tbody className="divide-y divide-slate-200 dark:divide-slate-800">
                     {videos.map((video) => (
                       <tr key={video.id} className="hover:bg-slate-50 dark:hover:bg-slate-800/30 transition-colors">
+                        <td className="px-6 py-4">
+                          {video.image_url ? (
+                            <img src={video.image_url} alt={video.title} className="w-16 h-10 object-cover rounded" />
+                          ) : (
+                            <div className="w-16 h-10 bg-slate-200 dark:bg-slate-700 rounded flex items-center justify-center">
+                              <span className="material-symbols-outlined text-slate-400 text-sm">image</span>
+                            </div>
+                          )}
+                        </td>
                         <td className="px-6 py-4 font-medium">{video.title}</td>
                         <td className="px-6 py-4 text-slate-500 dark:text-slate-400">
                           <span className="px-2 py-1 bg-slate-100 dark:bg-slate-800 rounded-md text-xs">{video.category}</span>

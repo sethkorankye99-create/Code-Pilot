@@ -46,6 +46,7 @@ db.exec(`
     category TEXT NOT NULL,
     url TEXT NOT NULL,
     time TEXT NOT NULL,
+    image_url TEXT,
     created_at TEXT DEFAULT CURRENT_TIMESTAMP
   );
 `);
@@ -53,6 +54,7 @@ db.exec(`
 // Add columns for existing databases
 try { db.exec("ALTER TABLE users ADD COLUMN email TEXT"); } catch (e) {}
 try { db.exec("ALTER TABLE users ADD COLUMN created_at TEXT DEFAULT CURRENT_TIMESTAMP"); } catch (e) {}
+try { db.exec("ALTER TABLE videos ADD COLUMN image_url TEXT"); } catch (e) {}
 
 // Helper to get current server date string (YYYY-MM-DD)
 const getCurrentDateStr = () => {
@@ -396,13 +398,13 @@ async function startServer() {
       return res.status(401).json({ error: "Unauthorized" });
     }
 
-    const { title, category, url, time } = req.body;
+    const { title, category, url, time, image_url } = req.body;
     if (!title || !category || !url || !time) {
       return res.status(400).json({ error: "Missing required fields" });
     }
 
     try {
-      const result = db.prepare('INSERT INTO videos (title, category, url, time) VALUES (?, ?, ?, ?)').run(title, category, url, time);
+      const result = db.prepare('INSERT INTO videos (title, category, url, time, image_url) VALUES (?, ?, ?, ?, ?)').run(title, category, url, time, image_url || null);
       res.json({ success: true, id: result.lastInsertRowid });
     } catch (err) {
       res.status(500).json({ error: "Failed to add video" });

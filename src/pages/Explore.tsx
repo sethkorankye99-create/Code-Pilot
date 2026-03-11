@@ -13,6 +13,7 @@ interface Video {
   category: string;
   url: string;
   time: string;
+  image_url: string;
   created_at: string;
 }
 
@@ -118,10 +119,13 @@ export default function Explore() {
                   onClick={() => handleVideoClick(video.url)}
                   className="rounded-2xl border border-gray-200 dark:border-gray-800 overflow-hidden cursor-pointer group bg-white dark:bg-gray-900 shadow-sm hover:shadow-md transition-all"
                 >
-                  <div className="h-48 bg-gray-100 dark:bg-gray-800 relative flex items-center justify-center">
-                    <div className="absolute inset-0 bg-black/0 group-hover:bg-black/10 transition-colors" />
-                    <span className="material-symbols-outlined text-6xl text-gray-400 group-hover:text-primary transition-colors group-hover:scale-110 duration-300">play_circle</span>
-                    <div className="absolute bottom-3 right-3 bg-black/80 backdrop-blur-md text-white text-xs px-2.5 py-1 rounded-lg font-mono font-bold">{video.time}</div>
+                  <div className="h-48 bg-gray-100 dark:bg-gray-800 relative flex items-center justify-center overflow-hidden">
+                    {video.image_url ? (
+                      <img src={video.image_url} alt={video.title} className="absolute inset-0 w-full h-full object-cover" />
+                    ) : null}
+                    <div className="absolute inset-0 bg-black/20 group-hover:bg-black/40 transition-colors z-10" />
+                    <span className="material-symbols-outlined text-6xl text-white/80 group-hover:text-white transition-colors group-hover:scale-110 duration-300 z-20 drop-shadow-lg">play_circle</span>
+                    <div className="absolute bottom-3 right-3 bg-black/80 backdrop-blur-md text-white text-xs px-2.5 py-1 rounded-lg font-mono font-bold z-20">{video.time}</div>
                   </div>
                   <div className="p-4">
                     <div className="flex items-center gap-2 mb-2">
