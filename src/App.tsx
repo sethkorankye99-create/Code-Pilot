@@ -20,15 +20,18 @@ import Community from './pages/Community';
 import Forum from './pages/Forum';
 import Explore from './pages/Explore';
 import SupportChat from './pages/SupportChat';
+import AITutor from './pages/AITutor';
 import AdminDashboard from './pages/AdminDashboard';
 import { AppProvider } from './context/AppContext';
 import NotificationHandler from './components/NotificationHandler';
+import FloatingAIChat from './components/FloatingAIChat';
 
 export default function App() {
   return (
     <AppProvider>
       <Router>
         <NotificationHandler />
+        <FloatingAIChat />
         <Routes>
           <Route path="/" element={<Landing />} />
           <Route path="/login" element={<Login />} />
@@ -46,6 +49,7 @@ export default function App() {
           <Route path="/forum" element={<Forum />} />
           <Route path="/explore" element={<Explore />} />
           <Route path="/support" element={<SupportChat />} />
+          <Route path="/ai-tutor" element={<AITutor />} />
           <Route path="/admin" element={<AdminDashboard />} />
         </Routes>
       </Router>

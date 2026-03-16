@@ -200,6 +200,28 @@ export default function Dashboard() {
         </motion.div>
       </div>
 
+      {/* AI Tutor Promo */}
+      <div className="px-4 pb-6">
+        <Link to="/ai-tutor">
+          <motion.div 
+            whileHover={{ scale: 1.02 }}
+            whileTap={{ scale: 0.98 }}
+            className="bg-indigo-500/10 border border-indigo-500/20 rounded-3xl p-5 flex items-center gap-4 group transition-all hover:bg-indigo-500/20"
+          >
+            <div className="size-14 rounded-2xl bg-indigo-500 flex items-center justify-center text-white shadow-lg shadow-indigo-500/20">
+              <span className="material-symbols-outlined text-3xl">psychology</span>
+            </div>
+            <div className="flex-1">
+              <h3 className="font-bold text-slate-900 dark:text-white">AI Programming Tutor</h3>
+              <p className="text-xs text-slate-500 dark:text-slate-400">Ask any programming question and get instant help!</p>
+            </div>
+            <div className="size-10 rounded-full bg-indigo-500/10 flex items-center justify-center text-indigo-500 group-hover:bg-indigo-500 group-hover:text-white transition-all">
+              <ChevronRight size={20} />
+            </div>
+          </motion.div>
+        </Link>
+      </div>
+
       {/* Filter Chips */}
       <div className="flex gap-3 px-4 pb-4 overflow-x-auto no-scrollbar">
         {['All Courses', 'Frontend', 'Backend', 'Systems'].map((category) => (
