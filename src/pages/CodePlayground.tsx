@@ -19,25 +19,28 @@ export default function CodePlayground() {
   const [js, setJs] = useState('const btn = document.getElementById("btn");\n\nbtn.addEventListener("click", () => {\n  alert("Button Clicked!");\n  document.body.style.background = "#e0e7ff";\n});');
   
   const [activeTab, setActiveTab] = useState<FileType>('html');
-  const [srcDoc, setSrcDoc] = useState('');
+  const [srcDoc, setSrcDoc] = useState(`
+    <html>
+      <body>${html}</body>
+      <style>${css}</style>
+      <script>${js}</script>
+    </html>
+  `);
   const [showPreview, setShowPreview] = useState(false);
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   
   const editorRef = useRef<any>(null);
 
-  useEffect(() => {
-    const timeout = setTimeout(() => {
-      setSrcDoc(`
-        <html>
-          <body>${html}</body>
-          <style>${css}</style>
-          <script>${js}</script>
-        </html>
-      `);
-    }, 250);
-
-    return () => clearTimeout(timeout);
-  }, [html, css, js]);
+  const handleRun = () => {
+    setSrcDoc(`
+      <html>
+        <body>${html}</body>
+        <style>${css}</style>
+        <script>${js}</script>
+      </html>
+    `);
+    setShowPreview(true);
+  };
 
   const insertSymbol = (symbol: string) => {
     const textarea = document.querySelector('.playground-editor textarea') as HTMLTextAreaElement;
@@ -57,15 +60,6 @@ export default function CodePlayground() {
       textarea.focus();
       textarea.setSelectionRange(start + symbol.length, start + symbol.length);
     }, 0);
-  };
-
-  const runLive = () => {
-    const newWindow = window.open();
-    if (newWindow) {
-      newWindow.document.open();
-      newWindow.document.write(srcDoc);
-      newWindow.document.close();
-    }
   };
 
   const shortcuts = [
@@ -105,10 +99,10 @@ export default function CodePlayground() {
         {/* Desktop Nav */}
         <nav className="hidden md:flex items-center gap-4">
           <button 
-            onClick={runLive}
+            onClick={handleRun}
             className="bg-emerald-500 hover:bg-emerald-600 text-white px-6 py-2 rounded-lg text-sm font-bold transition-all shadow-lg shadow-emerald-500/20 flex items-center gap-2"
           >
-            <Play size={16} fill="currentColor" /> Run Live
+            <Play size={16} fill="currentColor" /> Run
           </button>
         </nav>
 
@@ -129,12 +123,12 @@ export default function CodePlayground() {
           >
             <button 
               onClick={() => {
-                runLive();
+                handleRun();
                 setIsMenuOpen(false);
               }}
               className="w-full bg-emerald-500 text-white py-4 rounded-xl font-bold flex items-center justify-center gap-2"
             >
-              <Play size={20} fill="currentColor" /> Run Live
+              <Play size={20} fill="currentColor" /> Run
             </button>
           </motion.div>
         )}
@@ -196,10 +190,10 @@ export default function CodePlayground() {
             </div>
             <div className="ml-auto flex items-center gap-2 pl-4 border-l border-slate-800">
               <button 
-                onClick={runLive}
+                onClick={handleRun}
                 className="flex items-center gap-2 bg-emerald-500 text-white px-4 py-1.5 rounded-md text-xs font-bold"
               >
-                <Play size={14} fill="currentColor" /> Run Live
+                <Play size={14} fill="currentColor" /> Run
               </button>
             </div>
           </div>
@@ -274,9 +268,9 @@ export default function CodePlayground() {
 
         {/* Floating Run Button (Desktop) */}
         <button 
-          onClick={runLive}
+          onClick={handleRun}
           className="hidden md:flex absolute bottom-8 right-8 size-14 bg-emerald-500 text-white rounded-full items-center justify-center shadow-2xl shadow-emerald-500/40 hover:scale-110 transition-transform z-50"
-          title="Run Live"
+          title="Run Code"
         >
           <Play size={24} fill="currentColor" />
         </button>

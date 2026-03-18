@@ -427,6 +427,27 @@ async function startServer() {
     }
   });
 
+  app.put("/api/admin/videos/:id", (req, res) => {
+    const adminEmail = req.headers['x-admin-email'];
+    const expectedEmail = process.env.ADMIN_EMAIL ? process.env.ADMIN_EMAIL.trim() : null;
+    
+    if (!expectedEmail || !adminEmail || adminEmail.toString().trim().toLowerCase() !== expectedEmail.toLowerCase()) {
+      return res.status(401).json({ error: "Unauthorized" });
+    }
+
+    const { title, category, url, time, image_url } = req.body;
+    if (!title || !category || !url || !time) {
+      return res.status(400).json({ error: "Missing required fields" });
+    }
+
+    try {
+      db.prepare('UPDATE videos SET title = ?, category = ?, url = ?, time = ?, image_url = ? WHERE id = ?').run(title, category, url, time, image_url || null, req.params.id);
+      res.json({ success: true });
+    } catch (err) {
+      res.status(500).json({ error: "Failed to update video" });
+    }
+  });
+
   // Vite middleware for development
   if (process.env.NODE_ENV !== "production") {
     const vite = await createViteServer({

@@ -34,6 +34,7 @@ export default function AdminDashboard() {
 
   const [newVideo, setNewVideo] = useState({ title: '', category: '', url: '', time: '', image_url: '' });
   const [videoLoading, setVideoLoading] = useState(false);
+  const [editingVideoId, setEditingVideoId] = useState<number | null>(null);
 
   const fetchUsers = async () => {
     try {
@@ -97,25 +98,60 @@ export default function AdminDashboard() {
     e.preventDefault();
     setVideoLoading(true);
     try {
-      const response = await fetch('/api/admin/videos', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'x-admin-email': email.trim()
-        },
-        body: JSON.stringify(newVideo)
-      });
-      if (response.ok) {
-        setNewVideo({ title: '', category: '', url: '', time: '', image_url: '' });
-        fetchVideos();
+      if (editingVideoId) {
+        const response = await fetch(`/api/admin/videos/${editingVideoId}`, {
+          method: 'PUT',
+          headers: {
+            'Content-Type': 'application/json',
+            'x-admin-email': email.trim()
+          },
+          body: JSON.stringify(newVideo)
+        });
+        if (response.ok) {
+          setNewVideo({ title: '', category: '', url: '', time: '', image_url: '' });
+          setEditingVideoId(null);
+          fetchVideos();
+        } else {
+          alert("Failed to update video.");
+        }
       } else {
-        alert("Failed to add video.");
+        const response = await fetch('/api/admin/videos', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'x-admin-email': email.trim()
+          },
+          body: JSON.stringify(newVideo)
+        });
+        if (response.ok) {
+          setNewVideo({ title: '', category: '', url: '', time: '', image_url: '' });
+          fetchVideos();
+        } else {
+          alert("Failed to add video.");
+        }
       }
     } catch (err) {
-      alert("Error adding video.");
+      alert(`Error ${editingVideoId ? 'updating' : 'adding'} video.`);
     } finally {
       setVideoLoading(false);
     }
+  };
+
+  const handleEditClick = (video: Video) => {
+    setEditingVideoId(video.id);
+    setNewVideo({
+      title: video.title,
+      category: video.category,
+      url: video.url,
+      time: video.time,
+      image_url: video.image_url || ''
+    });
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  };
+
+  const handleCancelEdit = () => {
+    setEditingVideoId(null);
+    setNewVideo({ title: '', category: '', url: '', time: '', image_url: '' });
   };
 
   const handleDeleteVideo = async (id: number) => {
@@ -201,6 +237,28 @@ export default function AdminDashboard() {
 
       {/* Main Content */}
       <div className="p-6 max-w-7xl mx-auto">
+        {/* Stats Section */}
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+          <div className="bg-white dark:bg-slate-900 rounded-2xl p-6 border border-slate-200 dark:border-slate-800 shadow-sm flex items-center gap-4">
+            <div className="size-14 rounded-xl bg-primary/10 text-primary flex items-center justify-center">
+              <span className="material-symbols-outlined text-3xl">group</span>
+            </div>
+            <div>
+              <p className="text-sm font-medium text-slate-500 dark:text-slate-400 uppercase tracking-wider">Total Users</p>
+              <p className="text-3xl font-black text-slate-900 dark:text-white">{users.length}</p>
+            </div>
+          </div>
+          <div className="bg-white dark:bg-slate-900 rounded-2xl p-6 border border-slate-200 dark:border-slate-800 shadow-sm flex items-center gap-4">
+            <div className="size-14 rounded-xl bg-emerald-500/10 text-emerald-500 flex items-center justify-center">
+              <span className="material-symbols-outlined text-3xl">play_circle</span>
+            </div>
+            <div>
+              <p className="text-sm font-medium text-slate-500 dark:text-slate-400 uppercase tracking-wider">Total Videos</p>
+              <p className="text-3xl font-black text-slate-900 dark:text-white">{videos.length}</p>
+            </div>
+          </div>
+        </div>
+
         {/* Tabs */}
         <div className="flex gap-4 mb-6 border-b border-slate-200 dark:border-slate-800 pb-2">
           <button 
@@ -278,9 +336,9 @@ export default function AdminDashboard() {
 
         {activeTab === 'videos' && (
           <div className="space-y-6">
-            {/* Add Video Form */}
+            {/* Add/Edit Video Form */}
             <div className="bg-white dark:bg-slate-900 rounded-2xl shadow-sm border border-slate-200 dark:border-slate-800 p-6">
-              <h2 className="text-lg font-bold mb-4">Add New Video</h2>
+              <h2 className="text-lg font-bold mb-4">{editingVideoId ? 'Edit Video' : 'Add New Video'}</h2>
               <form onSubmit={handleAddVideo} className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <input 
                   type="text" 
@@ -321,13 +379,22 @@ export default function AdminDashboard() {
                   onChange={e => setNewVideo({...newVideo, image_url: e.target.value})}
                   className="px-4 py-2 rounded-xl bg-slate-100 dark:bg-slate-800 border-none focus:ring-2 focus:ring-primary text-slate-900 dark:text-white"
                 />
-                <div className="md:col-span-2 flex justify-end">
+                <div className="md:col-span-2 flex justify-end gap-3">
+                  {editingVideoId && (
+                    <button 
+                      type="button" 
+                      onClick={handleCancelEdit}
+                      className="px-6 py-2 rounded-xl bg-slate-200 dark:bg-slate-700 text-slate-700 dark:text-slate-200 font-bold hover:bg-slate-300 dark:hover:bg-slate-600 transition-colors"
+                    >
+                      Cancel
+                    </button>
+                  )}
                   <button 
                     type="submit" 
                     disabled={videoLoading}
                     className="px-6 py-2 rounded-xl bg-primary text-white font-bold hover:bg-primary/90 transition-colors disabled:opacity-70"
                   >
-                    {videoLoading ? 'Adding...' : 'Add Video'}
+                    {videoLoading ? (editingVideoId ? 'Updating...' : 'Adding...') : (editingVideoId ? 'Update Video' : 'Add Video')}
                   </button>
                 </div>
               </form>
@@ -367,10 +434,18 @@ export default function AdminDashboard() {
                         <td className="px-6 py-4 text-slate-500 dark:text-slate-400 text-sm truncate max-w-[200px]">
                           <a href={video.url} target="_blank" rel="noreferrer" className="hover:text-primary underline">{video.url}</a>
                         </td>
-                        <td className="px-6 py-4 text-right">
+                        <td className="px-6 py-4 text-right flex items-center justify-end gap-2">
+                          <button 
+                            onClick={() => handleEditClick(video)}
+                            className="text-indigo-500 hover:text-indigo-600 p-2 rounded-lg hover:bg-indigo-50 dark:hover:bg-indigo-900/20 transition-colors"
+                            title="Edit Video"
+                          >
+                            <span className="material-symbols-outlined text-sm">edit</span>
+                          </button>
                           <button 
                             onClick={() => handleDeleteVideo(video.id)}
                             className="text-red-500 hover:text-red-600 p-2 rounded-lg hover:bg-red-50 dark:hover:bg-red-900/20 transition-colors"
+                            title="Delete Video"
                           >
                             <span className="material-symbols-outlined text-sm">delete</span>
                           </button>
