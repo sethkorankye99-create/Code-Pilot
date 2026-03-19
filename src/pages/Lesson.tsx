@@ -1,6 +1,10 @@
+import { useState } from 'react';
 import { Link } from 'react-router-dom';
+import { motion, AnimatePresence } from 'motion/react';
 
 export default function Lesson() {
+  const [isSummaryOpen, setIsSummaryOpen] = useState(false);
+
   return (
     <div className="bg-background-light dark:bg-background-dark text-slate-900 dark:text-slate-100 min-h-screen flex flex-col transition-colors duration-300">
       {/* Top Navigation Bar */}
@@ -29,6 +33,45 @@ export default function Lesson() {
 
       {/* Main Content Area */}
       <main className="flex-1 overflow-y-auto px-4 pb-24">
+        {/* Lesson Summary (Collapsible) */}
+        <section className="mt-4">
+          <button 
+            onClick={() => setIsSummaryOpen(!isSummaryOpen)}
+            className="w-full flex items-center justify-between p-4 rounded-xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-card-dark shadow-sm hover:shadow-md transition-all"
+          >
+            <div className="flex items-center gap-3">
+              <div className="size-8 rounded-lg bg-primary/10 flex items-center justify-center text-primary">
+                <span className="material-symbols-outlined text-lg">summarize</span>
+              </div>
+              <span className="font-bold text-slate-900 dark:text-white">Lesson Summary</span>
+            </div>
+            <span className={`material-symbols-outlined transition-transform duration-300 ${isSummaryOpen ? 'rotate-180' : ''}`}>
+              expand_more
+            </span>
+          </button>
+          
+          <AnimatePresence>
+            {isSummaryOpen && (
+              <motion.div
+                initial={{ height: 0, opacity: 0 }}
+                animate={{ height: 'auto', opacity: 1 }}
+                exit={{ height: 0, opacity: 0 }}
+                className="overflow-hidden"
+              >
+                <div className="p-4 mt-2 rounded-xl bg-slate-50 dark:bg-white/5 border border-slate-200 dark:border-white/10 text-sm text-slate-600 dark:text-slate-400 leading-relaxed">
+                  <p className="mb-2 font-semibold text-slate-900 dark:text-white">Key Concepts:</p>
+                  <ul className="list-disc list-inside space-y-1">
+                    <li>Introduction to JavaScript output</li>
+                    <li>Using the console.log() function</li>
+                    <li>Basic syntax and string literals</li>
+                  </ul>
+                  <p className="mt-3">In this lesson, you will learn how to communicate with your computer by printing messages to the console, a fundamental skill for debugging and displaying information.</p>
+                </div>
+              </motion.div>
+            )}
+          </AnimatePresence>
+        </section>
+
         {/* Explanation Panel */}
         <section className="mt-4 p-4 rounded-xl border dark:border-slate-800 bg-slate-900/50 border-slate-800">
           <div className="flex items-center gap-2 mb-2 text-primary">
