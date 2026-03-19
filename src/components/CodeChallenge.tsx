@@ -10,8 +10,13 @@ import 'prismjs/components/prism-cpp';
 import 'prismjs/components/prism-css';
 import 'prismjs/components/prism-markup';
 import 'prismjs/themes/prism-tomorrow.css';
-import { Play, CheckCircle2, XCircle, RotateCcw, Lightbulb, Code2 } from 'lucide-react';
+import { Play, CheckCircle2, XCircle, RotateCcw, Lightbulb, Code2, Sparkles } from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';
+import prettier from 'prettier/standalone';
+import parserHtml from 'prettier/plugins/html';
+import parserCss from 'prettier/plugins/postcss';
+import parserBabel from 'prettier/plugins/babel';
+import parserEstree from 'prettier/plugins/estree';
 
 interface CodeChallengeProps {
   title: string;
@@ -28,6 +33,59 @@ export default function CodeChallenge({ title, description, initialCode, solutio
   const [isCorrect, setIsCorrect] = useState<boolean | null>(null);
   const [showHint, setShowHint] = useState(false);
   const [isRunning, setIsRunning] = useState(false);
+  const [isFormatting, setIsFormatting] = useState(false);
+
+  const handleFormat = async () => {
+    setIsFormatting(true);
+    try {
+      let formatted = '';
+      if (language === 'html') {
+        formatted = await prettier.format(code, {
+          parser: 'html',
+          plugins: [parserHtml],
+          printWidth: 80,
+          tabWidth: 2,
+        });
+      } else if (language === 'css') {
+        formatted = await prettier.format(code, {
+          parser: 'css',
+          plugins: [parserCss],
+          printWidth: 80,
+          tabWidth: 2,
+        });
+      } else if (language === 'javascript' || language === 'typescript') {
+        formatted = await prettier.format(code, {
+          parser: 'babel',
+          plugins: [parserBabel, parserEstree],
+          printWidth: 80,
+          tabWidth: 2,
+          semi: true,
+          singleQuote: true,
+        });
+      } else {
+        // For other languages, we don't have a formatter in this setup
+        return;
+      }
+      setCode(formatted);
+    } catch (error) {
+      console.error('Formatting error:', error);
+    } finally {
+      setIsFormatting(false);
+    }
+  };
+
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if ((e.ctrlKey || e.metaKey) && e.key === 's') {
+        e.preventDefault();
+        handleFormat();
+        runCode();
+      }
+    };
+
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [code, language]);
 
   const runCode = () => {
     setIsRunning(true);
@@ -123,6 +181,14 @@ export default function CodeChallenge({ title, description, initialCode, solutio
             <h3 className="font-bold text-lg">{title}</h3>
           </div>
           <div className="flex items-center gap-2">
+            <button 
+              onClick={handleFormat}
+              disabled={isFormatting || !['javascript', 'typescript', 'html', 'css'].includes(language)}
+              className="p-2 text-slate-500 hover:text-primary transition-colors disabled:opacity-30"
+              title="Format Code"
+            >
+              <Sparkles size={20} className={isFormatting ? 'animate-spin' : ''} />
+            </button>
             <button 
               onClick={() => setShowHint(!showHint)}
               className="p-2 text-slate-500 hover:text-primary transition-colors"

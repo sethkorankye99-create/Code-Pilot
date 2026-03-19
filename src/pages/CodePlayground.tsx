@@ -6,9 +6,14 @@ import 'prismjs/components/prism-javascript';
 import 'prismjs/components/prism-css';
 import 'prismjs/components/prism-markup';
 import 'prismjs/themes/prism-tomorrow.css';
-import { Play, Info, Mail, Menu, X, Code2, Eye, ArrowLeft } from 'lucide-react';
+import { Play, Info, Mail, Menu, X, Code2, Eye, ArrowLeft, Sparkles } from 'lucide-react';
 import { Link, useNavigate } from 'react-router-dom';
 import { AnimatePresence, motion } from 'motion/react';
+import prettier from 'prettier/standalone';
+import parserHtml from 'prettier/plugins/html';
+import parserCss from 'prettier/plugins/postcss';
+import parserBabel from 'prettier/plugins/babel';
+import parserEstree from 'prettier/plugins/estree';
 
 type FileType = 'html' | 'css' | 'js';
 
@@ -28,8 +33,22 @@ export default function CodePlayground() {
   `);
   const [showPreview, setShowPreview] = useState(false);
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const [isFormatting, setIsFormatting] = useState(false);
   
   const editorRef = useRef<any>(null);
+
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if ((e.ctrlKey || e.metaKey) && e.key === 's') {
+        e.preventDefault();
+        handleFormat();
+        handleRun();
+      }
+    };
+
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [html, css, js, activeTab]);
 
   const handleRun = () => {
     setSrcDoc(`
@@ -40,6 +59,44 @@ export default function CodePlayground() {
       </html>
     `);
     setShowPreview(true);
+  };
+
+  const handleFormat = async () => {
+    setIsFormatting(true);
+    try {
+      let formatted = '';
+      if (activeTab === 'html') {
+        formatted = await prettier.format(html, {
+          parser: 'html',
+          plugins: [parserHtml],
+          printWidth: 80,
+          tabWidth: 2,
+        });
+        setHtml(formatted);
+      } else if (activeTab === 'css') {
+        formatted = await prettier.format(css, {
+          parser: 'css',
+          plugins: [parserCss],
+          printWidth: 80,
+          tabWidth: 2,
+        });
+        setCss(formatted);
+      } else if (activeTab === 'js') {
+        formatted = await prettier.format(js, {
+          parser: 'babel',
+          plugins: [parserBabel, parserEstree],
+          printWidth: 80,
+          tabWidth: 2,
+          semi: true,
+          singleQuote: true,
+        });
+        setJs(formatted);
+      }
+    } catch (error) {
+      console.error('Formatting error:', error);
+    } finally {
+      setIsFormatting(false);
+    }
   };
 
   const insertSymbol = (symbol: string) => {
@@ -99,6 +156,14 @@ export default function CodePlayground() {
         {/* Desktop Nav */}
         <nav className="hidden md:flex items-center gap-4">
           <button 
+            onClick={handleFormat}
+            disabled={isFormatting}
+            className="flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-bold text-slate-400 hover:text-white hover:bg-white/5 transition-all disabled:opacity-50"
+          >
+            <Sparkles size={16} className={isFormatting ? 'animate-spin' : ''} />
+            {isFormatting ? 'Formatting...' : 'Format'}
+          </button>
+          <button 
             onClick={handleRun}
             className="bg-gradient-to-r from-emerald-500 to-teal-500 hover:from-emerald-600 hover:to-teal-600 text-white px-6 py-2 rounded-lg text-sm font-bold transition-all shadow-lg shadow-emerald-500/25 flex items-center gap-2 hover:-translate-y-0.5"
           >
@@ -121,6 +186,17 @@ export default function CodePlayground() {
             exit={{ opacity: 0, y: -20 }}
             className="absolute top-16 left-0 right-0 bg-[#0a0a0a]/95 backdrop-blur-xl border-b border-white/10 p-6 flex flex-col gap-4 z-40 md:hidden shadow-2xl"
           >
+            <button 
+              onClick={() => {
+                handleFormat();
+                setIsMenuOpen(false);
+              }}
+              disabled={isFormatting}
+              className="w-full bg-white/5 text-white py-4 rounded-xl font-bold flex items-center justify-center gap-2 border border-white/10 hover:bg-white/10 transition-all disabled:opacity-50"
+            >
+              <Sparkles size={20} className={isFormatting ? 'animate-spin' : ''} />
+              {isFormatting ? 'Formatting...' : 'Format Code'}
+            </button>
             <button 
               onClick={() => {
                 handleRun();
@@ -189,6 +265,14 @@ export default function CodePlayground() {
               ))}
             </div>
             <div className="ml-auto flex items-center gap-2 pl-4 border-l border-white/10">
+              <button 
+                onClick={handleFormat}
+                disabled={isFormatting}
+                className="flex items-center justify-center size-8 bg-white/5 text-slate-400 rounded-md hover:text-white transition-all active:scale-95 disabled:opacity-50"
+                title="Format Code"
+              >
+                <Sparkles size={14} className={isFormatting ? 'animate-spin' : ''} />
+              </button>
               <button 
                 onClick={handleRun}
                 className="flex items-center gap-2 bg-gradient-to-r from-emerald-500 to-teal-500 text-white px-4 py-1.5 rounded-md text-xs font-bold shadow-md shadow-emerald-500/20 hover:-translate-y-0.5 transition-all"
