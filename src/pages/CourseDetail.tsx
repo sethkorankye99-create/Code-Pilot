@@ -98,16 +98,16 @@ export default function CourseDetail() {
   return (
     <div className="relative flex h-auto min-h-screen w-full flex-col overflow-x-hidden bg-background-light dark:bg-background-dark transition-colors duration-300">
       {/* Header */}
-      <div className="flex items-center bg-background-light dark:bg-background-dark p-4 pb-2 justify-between sticky top-0 z-10 border-b border-slate-200 dark:border-slate-800/50">
-        <Link to="/dashboard" className="flex size-12 shrink-0 items-center justify-start">
-          <span className="material-symbols-outlined text-slate-900 dark:text-slate-100 cursor-pointer">arrow_back</span>
+      <div className="flex items-center bg-white/80 dark:bg-card-dark/80 backdrop-blur-xl p-4 pb-4 justify-between sticky top-0 z-40 border-b border-slate-200/50 dark:border-slate-800/50">
+        <Link to="/dashboard" className="flex size-10 shrink-0 items-center justify-center rounded-full bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-700 transition-colors">
+          <span className="material-symbols-outlined text-xl">arrow_back</span>
         </Link>
-        <h2 className="text-slate-900 dark:text-slate-100 text-lg font-bold leading-tight tracking-[-0.015em] flex-1 text-center">Code Pillot</h2>
+        <h2 className="text-slate-900 dark:text-white text-xl font-bold leading-tight tracking-tight flex-1 text-center">Code Pillot</h2>
         <div className="flex w-auto items-center justify-end gap-2">
           <StreakDisplay />
           <CoinDisplay />
-          <button className="flex cursor-pointer items-center justify-center rounded-lg h-10 w-10 bg-transparent text-slate-900 dark:text-slate-100 p-0">
-            <span className="material-symbols-outlined">share</span>
+          <button className="flex size-10 cursor-pointer items-center justify-center rounded-full bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-700 transition-colors">
+            <span className="material-symbols-outlined text-xl">share</span>
           </button>
         </div>
       </div>
@@ -271,22 +271,22 @@ export default function CourseDetail() {
       </div>
 
       {/* Bottom Navigation Bar */}
-      <div className="fixed bottom-0 left-0 right-0 flex gap-2 border-t border-slate-200 dark:border-slate-800 bg-white/95 dark:bg-background-dark/95 backdrop-blur-md px-4 pb-6 pt-2 z-20">
-        <Link to="/dashboard" className="flex flex-1 flex-col items-center justify-center gap-1 text-slate-500 dark:text-slate-400">
-          <span className="material-symbols-outlined">home</span>
-          <p className="text-[10px] font-medium leading-normal tracking-[0.015em]">Home</p>
+      <div className="fixed bottom-0 left-0 right-0 flex border-t border-slate-200/50 dark:border-slate-800/50 bg-white/80 dark:bg-card-dark/80 backdrop-blur-xl px-4 pb-6 pt-3 z-50">
+        <Link to="/dashboard" className="flex flex-1 flex-col items-center justify-center gap-1 text-primary">
+          <span className="material-symbols-outlined text-2xl" style={{fontVariationSettings: "'FILL' 1"}}>menu_book</span>
+          <p className="text-[10px] font-bold uppercase tracking-wider">Courses</p>
         </Link>
-        <Link to="/explore" className="flex flex-1 flex-col items-center justify-center gap-1 text-slate-500 dark:text-slate-400">
-          <span className="material-symbols-outlined">search</span>
-          <p className="text-[10px] font-medium leading-normal tracking-[0.015em]">Explore</p>
+        <Link to="/explore" className="flex flex-1 flex-col items-center justify-center gap-1 text-slate-400 hover:text-slate-600 dark:hover:text-slate-300 transition-colors">
+          <span className="material-symbols-outlined text-2xl">search</span>
+          <p className="text-[10px] font-bold uppercase tracking-wider">Explore</p>
         </Link>
-        <Link to="/community" className="flex flex-1 flex-col items-center justify-center gap-1 text-slate-500 dark:text-slate-400">
-          <span className="material-symbols-outlined">group</span>
-          <p className="text-[10px] font-medium leading-normal tracking-[0.015em]">Community</p>
+        <Link to="/community" className="flex flex-1 flex-col items-center justify-center gap-1 text-slate-400 hover:text-slate-600 dark:hover:text-slate-300 transition-colors">
+          <span className="material-symbols-outlined text-2xl">group</span>
+          <p className="text-[10px] font-bold uppercase tracking-wider">Community</p>
         </Link>
-        <button onClick={() => setIsSettingsOpen(true)} className="flex flex-1 flex-col items-center justify-center gap-1 text-slate-500 dark:text-slate-400">
-          <span className="material-symbols-outlined">person</span>
-          <p className="text-[10px] font-medium leading-normal tracking-[0.015em]">Profile</p>
+        <button onClick={() => setIsSettingsOpen(true)} className="flex flex-1 flex-col items-center justify-center gap-1 text-slate-400 hover:text-slate-600 dark:hover:text-slate-300 transition-colors">
+          <span className="material-symbols-outlined text-2xl">person</span>
+          <p className="text-[10px] font-bold uppercase tracking-wider">Profile</p>
         </button>
       </div>
 

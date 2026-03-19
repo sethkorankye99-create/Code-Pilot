@@ -4,14 +4,14 @@ export default function Lesson() {
   return (
     <div className="bg-background-light dark:bg-background-dark text-slate-900 dark:text-slate-100 min-h-screen flex flex-col transition-colors duration-300">
       {/* Top Navigation Bar */}
-      <header className="flex items-center bg-background-light dark:bg-background-dark p-4 pb-2 justify-between border-b dark:border-slate-800 border-slate-800">
-        <Link to="/dashboard" className="text-slate-900 dark:text-slate-100 flex size-10 shrink-0 items-center justify-center cursor-pointer">
-          <span className="material-symbols-outlined">close</span>
+      <header className="flex items-center bg-white/80 dark:bg-card-dark/80 backdrop-blur-xl p-4 pb-4 justify-between border-b border-slate-200/50 dark:border-slate-800/50 sticky top-0 z-40">
+        <Link to="/dashboard" className="flex size-10 shrink-0 items-center justify-center rounded-full bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-700 transition-colors">
+          <span className="material-symbols-outlined text-xl">close</span>
         </Link>
-        <h2 className="text-slate-900 dark:text-slate-100 text-lg font-bold leading-tight tracking-tight flex-1 text-center">Hello World in JS</h2>
+        <h2 className="text-slate-900 dark:text-white text-xl font-bold leading-tight tracking-tight flex-1 text-center">Hello World in JS</h2>
         <div className="flex items-center justify-end gap-2">
-          <button className="flex cursor-pointer items-center justify-center rounded-lg h-10 bg-transparent text-slate-900 dark:text-slate-100 p-0">
-            <span className="material-symbols-outlined">help</span>
+          <button className="flex size-10 cursor-pointer items-center justify-center rounded-full bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-700 transition-colors">
+            <span className="material-symbols-outlined text-xl">help</span>
           </button>
         </div>
       </header>
@@ -85,13 +85,13 @@ export default function Lesson() {
       </main>
 
       {/* Bottom Action Bar */}
-      <footer className="fixed bottom-0 left-0 right-0 p-4 bg-background-light dark:bg-background-dark border-t dark:border-slate-800 flex gap-3 border-slate-800">
-        <button className="flex-1 flex items-center justify-center gap-2 bg-primary hover:bg-primary/90 text-white font-bold py-3 px-6 rounded-xl transition-colors shadow-lg shadow-primary/20">
-          <span className="material-symbols-outlined">play_arrow</span>
+      <footer className="fixed bottom-0 left-0 right-0 p-4 bg-white/80 dark:bg-card-dark/80 backdrop-blur-xl border-t border-slate-200/50 dark:border-slate-800/50 flex gap-3 z-50">
+        <button className="flex-1 flex items-center justify-center gap-2 bg-primary hover:bg-primary/90 text-white font-bold py-3 px-6 rounded-xl transition-all shadow-lg shadow-primary/20 hover:shadow-primary/40 hover:-translate-y-0.5">
+          <span className="material-symbols-outlined text-xl">play_arrow</span>
           Run Code
         </button>
-        <button className="w-14 flex items-center justify-center bg-slate-200 dark:bg-slate-800 text-slate-700 dark:text-slate-300 rounded-xl hover:bg-slate-300 dark:hover:bg-slate-700 transition-colors">
-          <span className="material-symbols-outlined">restart_alt</span>
+        <button className="w-14 flex items-center justify-center bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 rounded-xl hover:bg-slate-200 dark:hover:bg-slate-700 transition-colors border border-slate-200/50 dark:border-slate-700/50">
+          <span className="material-symbols-outlined text-xl">restart_alt</span>
         </button>
       </footer>
     </div>

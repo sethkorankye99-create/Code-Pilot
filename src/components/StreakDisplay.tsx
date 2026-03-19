@@ -7,7 +7,7 @@ export default function StreakDisplay() {
   if (streak === 0) return null;
 
   return (
-    <div className="flex items-center gap-1 bg-orange-50 dark:bg-orange-900/20 border border-orange-100 dark:border-orange-800/50 px-3 py-1.5 rounded-full shadow-sm">
+    <div className="flex items-center gap-1 bg-orange-50/80 dark:bg-orange-900/20 backdrop-blur-sm border border-orange-200/50 dark:border-orange-800/50 px-3 py-1.5 rounded-full shadow-sm">
       <motion.span 
         animate={{ scale: [1, 1.2, 1] }}
         transition={{ repeat: Infinity, duration: 2 }}

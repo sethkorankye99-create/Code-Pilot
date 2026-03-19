@@ -45,7 +45,7 @@ export default function AdModal({ isOpen, onClose }: AdModalProps) {
             initial={{ scale: 0.9, opacity: 0, y: 20 }}
             animate={{ scale: 1, opacity: 1, y: 0 }}
             exit={{ scale: 0.9, opacity: 0, y: 20 }}
-            className="relative w-full max-w-lg bg-white dark:bg-slate-900 rounded-3xl overflow-hidden shadow-2xl border border-slate-200 dark:border-slate-800"
+            className="relative w-full max-w-lg bg-white/90 dark:bg-slate-900/90 backdrop-blur-2xl rounded-3xl overflow-hidden shadow-2xl shadow-slate-200/50 dark:shadow-black/50 border border-slate-200/50 dark:border-slate-800/50"
           >
             {/* Ad Content */}
             <div className="relative aspect-video w-full bg-slate-100 dark:bg-slate-800 flex items-center justify-center overflow-hidden">
@@ -88,16 +88,16 @@ export default function AdModal({ isOpen, onClose }: AdModalProps) {
               </div>
               
               <div className="flex gap-3">
-                <button className="flex-1 bg-slate-100 dark:bg-slate-800 text-slate-900 dark:text-white font-bold py-3 rounded-xl text-sm hover:bg-slate-200 dark:hover:bg-slate-700 transition-colors flex items-center justify-center gap-2">
+                <button className="flex-1 bg-slate-100/50 dark:bg-slate-800/50 text-slate-900 dark:text-white font-bold py-3 rounded-xl text-sm hover:bg-slate-200/50 dark:hover:bg-slate-700/50 transition-colors flex items-center justify-center gap-2 backdrop-blur-sm">
                   Learn More <ExternalLink size={14} />
                 </button>
                 <button 
                   onClick={onClose}
                   disabled={!canSkip}
-                  className={`flex-1 font-bold py-3 rounded-xl text-sm transition-all ${
+                  className={`flex-1 font-bold py-3 rounded-xl text-sm transition-all shadow-lg ${
                     canSkip 
-                    ? 'bg-primary text-white hover:bg-primary/90' 
-                    : 'bg-slate-200 dark:bg-slate-800 text-slate-400 cursor-not-allowed'
+                    ? 'bg-primary text-white hover:bg-primary/90 shadow-primary/20 hover:shadow-primary/30 hover:-translate-y-0.5' 
+                    : 'bg-slate-200/50 dark:bg-slate-800/50 text-slate-400 cursor-not-allowed shadow-none'
                   }`}
                 >
                   {canSkip ? 'Continue to Video' : `Wait ${timeLeft}s`}

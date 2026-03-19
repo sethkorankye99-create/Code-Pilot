@@ -6,11 +6,11 @@ import { motion } from 'motion/react';
 export default function Landing() {
   const { isLoggedIn } = useAppContext();
   return (
-    <div className="relative flex min-h-screen w-full flex-col overflow-x-hidden bg-background-light dark:bg-background-dark transition-colors duration-300 circuit-pattern">
+    <div className="relative flex min-h-screen w-full flex-col overflow-x-hidden bg-slate-50 dark:bg-background-dark transition-colors duration-300">
       {/* Top App Bar Component */}
-      <header className="flex items-center justify-between p-6">
+      <header className="sticky top-0 z-50 flex items-center justify-between p-4 md:px-6 bg-white/80 dark:bg-slate-900/80 backdrop-blur-xl border-b border-slate-200/50 dark:border-slate-800/50 shadow-sm">
         <div className="flex items-center gap-2">
-          <div className="bg-primary/20 p-2 rounded-lg">
+          <div className="bg-primary/10 p-2 rounded-xl border border-primary/20">
             <span className="material-symbols-outlined text-primary text-2xl">terminal</span>
           </div>
           <h2 className="text-slate-900 dark:text-slate-100 text-xl font-bold tracking-tight">Code Pillot</h2>
@@ -19,7 +19,7 @@ export default function Landing() {
           <Link to="/login" className="text-slate-600 dark:text-slate-400 font-medium hover:text-primary transition-colors">
             Log In
           </Link>
-          <Link to="/signup" className="bg-primary text-white px-5 py-2 rounded-xl font-bold text-sm hover:bg-primary/90 transition-all shadow-md shadow-primary/10">
+          <Link to="/signup" className="bg-primary text-white px-5 py-2.5 rounded-xl font-bold text-sm hover:bg-primary/90 transition-all shadow-lg shadow-primary/25 hover:shadow-primary/40 hover:-translate-y-0.5">
             Sign Up
           </Link>
         </div>
@@ -34,9 +34,9 @@ export default function Landing() {
             <div className="absolute inset-0 bg-primary/20 blur-[80px] rounded-full"></div>
             {/* Trophy Visual */}
             <div 
-              className="relative w-full h-full bg-slate-900/40 border border-slate-800/50 rounded-3xl overflow-hidden backdrop-blur-md flex items-center justify-center bg-cover bg-center" 
+              className="relative w-full h-full bg-slate-900/40 border border-slate-800/50 rounded-[2.5rem] overflow-hidden backdrop-blur-xl shadow-2xl flex items-center justify-center bg-cover bg-center" 
             >
-              <div className="absolute inset-0 bg-gradient-to-br from-primary/20 to-transparent"></div>
+              <div className="absolute inset-0 bg-gradient-to-br from-primary/20 via-primary/5 to-transparent"></div>
               
               <motion.div 
                 animate={{ 
@@ -58,9 +58,9 @@ export default function Landing() {
               </motion.div>
 
               {/* Floating Tech Tags */}
-              <div className="absolute top-8 left-8 bg-slate-900/80 border border-primary/30 px-3 py-1 rounded-full text-xs text-primary font-mono">JS</div>
-              <div className="absolute bottom-12 right-12 bg-slate-900/80 border border-primary/30 px-3 py-1 rounded-full text-xs text-primary font-mono">CSS</div>
-              <div className="absolute top-1/4 right-8 bg-slate-900/80 border border-primary/30 px-3 py-1 rounded-full text-xs text-primary font-mono">HTML</div>
+              <div className="absolute top-8 left-8 bg-slate-900/80 backdrop-blur-md border border-primary/30 px-3 py-1 rounded-full text-xs text-primary font-mono shadow-lg">JS</div>
+              <div className="absolute bottom-12 right-12 bg-slate-900/80 backdrop-blur-md border border-primary/30 px-3 py-1 rounded-full text-xs text-primary font-mono shadow-lg">CSS</div>
+              <div className="absolute top-1/4 right-8 bg-slate-900/80 backdrop-blur-md border border-primary/30 px-3 py-1 rounded-full text-xs text-primary font-mono shadow-lg">HTML</div>
             </div>
           </div>
         </div>
@@ -76,13 +76,13 @@ export default function Landing() {
         </div>
         
         {/* Action Area */}
-        <div className="w-full max-w-sm mt-12 space-y-4">
-          <Link to={isLoggedIn ? "/dashboard" : "/signup"} className="w-full bg-primary hover:bg-primary/90 text-white font-bold h-14 rounded-xl transition-all shadow-lg shadow-primary/20 flex items-center justify-center gap-2 group">
+        <div className="w-full max-w-sm mt-12 space-y-6">
+          <Link to={isLoggedIn ? "/dashboard" : "/signup"} className="w-full bg-gradient-to-r from-primary to-indigo-600 hover:from-primary/90 hover:to-indigo-600/90 text-white font-bold h-14 rounded-2xl transition-all shadow-xl shadow-primary/25 hover:shadow-primary/40 hover:-translate-y-1 flex items-center justify-center gap-2 group">
             <span>Get Started</span>
             <span className="material-symbols-outlined text-xl group-hover:translate-x-1 transition-transform">arrow_forward</span>
           </Link>
           
-          <div className="flex items-center justify-center gap-6 pt-4">
+          <div className="flex items-center justify-center gap-6 pt-6 border-t border-slate-200/50 dark:border-slate-800/50">
             <div className="flex flex-col items-center">
               <span className="text-slate-900 dark:text-slate-100 font-bold text-xl">50k+</span>
               <span className="text-slate-500 text-xs uppercase tracking-wider">Students</span>

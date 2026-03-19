@@ -18,7 +18,7 @@ export default function CoinDisplay() {
   if (coins === null) return null;
 
   return (
-    <div className="flex items-center gap-1.5 bg-slate-100 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 px-3 py-1.5 rounded-full mr-2 relative">
+    <div className="flex items-center gap-1.5 bg-slate-100/80 dark:bg-slate-800/80 backdrop-blur-sm border border-slate-200/50 dark:border-slate-700/50 px-3 py-1.5 rounded-full mr-2 relative shadow-sm">
       <motion.span 
         animate={isAnimating ? { rotateY: 360, scale: [1, 1.2, 1] } : {}}
         transition={{ duration: 0.6 }}

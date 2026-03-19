@@ -110,8 +110,8 @@ export default function JsReference() {
   return (
     <div className="flex h-screen bg-background-light dark:bg-background-dark text-slate-900 dark:text-slate-100 overflow-hidden font-sans">
       {/* Sidebar */}
-      <aside className="w-72 border-r border-slate-200 dark:border-slate-800 bg-white dark:bg-card-dark flex flex-col shrink-0 overflow-y-auto no-scrollbar hidden md:flex">
-        <div className="p-6 border-b border-slate-200 dark:border-slate-800 flex items-center gap-3">
+      <aside className="w-72 border-r border-slate-200/50 dark:border-white/10 bg-white/80 dark:bg-card-dark/80 backdrop-blur-xl flex flex-col shrink-0 overflow-y-auto no-scrollbar hidden md:flex">
+        <div className="p-6 border-b border-slate-200/50 dark:border-white/10 flex items-center gap-3">
           <div className="size-10 rounded-xl bg-accent-js flex items-center justify-center text-slate-900 shadow-lg shadow-accent-js/20">
             <BookOpen size={24} />
           </div>
@@ -132,7 +132,7 @@ export default function JsReference() {
               className={`w-full flex items-center gap-3 px-4 py-3 rounded-xl transition-all text-left ${
                 activeSectionId === section.id 
                   ? 'bg-accent-js/20 text-yellow-600 dark:text-yellow-500 font-semibold' 
-                  : 'hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-600 dark:text-slate-400'
+                  : 'hover:bg-slate-100 dark:hover:bg-white/5 text-slate-600 dark:text-slate-400'
               }`}
             >
               <span className={activeSectionId === section.id ? 'text-yellow-600 dark:text-yellow-500' : 'text-slate-400'}>
@@ -143,7 +143,7 @@ export default function JsReference() {
           ))}
         </nav>
 
-        <div className="mt-auto p-6 border-t border-slate-200 dark:border-slate-800">
+        <div className="mt-auto p-6 border-t border-slate-200/50 dark:border-white/10">
           <Link to="/dashboard" className="flex items-center gap-2 text-sm text-slate-500 hover:text-yellow-600 dark:hover:text-yellow-500 transition-colors">
             <Home size={16} />
             Back to Dashboard
@@ -152,9 +152,9 @@ export default function JsReference() {
       </aside>
 
       {/* Main Content */}
-      <main className="flex-1 flex flex-col relative overflow-hidden">
+      <main className="flex-1 flex flex-col relative overflow-hidden bg-slate-50/50 dark:bg-[#050505]">
         {/* Mobile Header */}
-        <header className="md:hidden flex items-center justify-between p-4 border-b border-slate-200 dark:border-slate-800 bg-white dark:bg-card-dark z-10">
+        <header className="md:hidden flex items-center justify-between p-4 border-b border-slate-200/50 dark:border-white/10 bg-white/80 dark:bg-card-dark/80 backdrop-blur-xl z-10">
           <Link to="/dashboard" className="text-slate-500">
             <ChevronLeft size={24} />
           </Link>
@@ -168,7 +168,7 @@ export default function JsReference() {
           <div className="hidden md:block absolute top-10 right-10 z-20">
             <Link 
               to="/dashboard" 
-              className="flex items-center gap-2 px-4 py-2 rounded-xl bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-600 dark:text-slate-300 hover:text-yellow-600 dark:hover:text-yellow-500 transition-all shadow-sm"
+              className="flex items-center gap-2 px-4 py-2 rounded-xl bg-white/80 dark:bg-card-dark/80 backdrop-blur-md border border-slate-200/50 dark:border-white/10 text-slate-600 dark:text-slate-300 hover:text-yellow-600 dark:hover:text-yellow-500 hover:shadow-md hover:-translate-y-0.5 transition-all shadow-sm"
             >
               <Home size={18} />
               <span className="text-sm font-bold">Home</span>
@@ -205,7 +205,7 @@ export default function JsReference() {
                   </div>
                   <div className="relative group">
                     <div className="absolute -inset-1 bg-gradient-to-r from-accent-js to-yellow-600 rounded-2xl blur opacity-10 group-hover:opacity-20 transition duration-1000"></div>
-                    <pre className="relative p-6 rounded-xl bg-slate-900 text-slate-300 font-mono text-sm overflow-x-auto border border-slate-800 shadow-2xl">
+                    <pre className="relative p-6 rounded-xl bg-slate-900/90 dark:bg-[#0a0a0a]/90 backdrop-blur-xl text-slate-300 font-mono text-sm overflow-x-auto border border-slate-800/50 dark:border-white/10 shadow-2xl">
                       <code>{activeSection.example}</code>
                     </pre>
                   </div>
@@ -232,7 +232,7 @@ export default function JsReference() {
                 <div className="flex flex-col sm:flex-row gap-4 pt-6">
                   <button 
                     onClick={handleQuizStart}
-                    className="flex-1 flex items-center justify-center gap-2 bg-accent-js hover:bg-yellow-400 text-slate-900 font-bold py-4 px-8 rounded-2xl transition-all shadow-xl shadow-accent-js/20 group"
+                    className="flex-1 flex items-center justify-center gap-2 bg-accent-js hover:bg-yellow-400 text-slate-900 font-bold py-4 px-8 rounded-2xl transition-all shadow-xl shadow-accent-js/20 hover:shadow-accent-js/40 hover:-translate-y-0.5 group"
                   >
                     <CheckCircle2 size={20} className="group-hover:scale-110 transition-transform" />
                     Take Section Quiz (1 Coin)
@@ -241,14 +241,14 @@ export default function JsReference() {
                     <button 
                       onClick={handlePrevSection}
                       disabled={jsContent.findIndex(s => s.id === activeSectionId) === 0}
-                      className="size-14 flex items-center justify-center bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-2xl hover:bg-slate-50 dark:hover:bg-slate-700 disabled:opacity-30 transition-all"
+                      className="size-14 flex items-center justify-center bg-white/80 dark:bg-card-dark/80 backdrop-blur-md border border-slate-200/50 dark:border-white/10 rounded-2xl hover:bg-slate-50 dark:hover:bg-white/5 disabled:opacity-30 transition-all shadow-sm hover:shadow-md hover:-translate-y-0.5"
                     >
                       <ChevronLeft size={24} />
                     </button>
                     <button 
                       onClick={handleNextSection}
                       disabled={jsContent.findIndex(s => s.id === activeSectionId) === jsContent.length - 1}
-                      className="size-14 flex items-center justify-center bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-2xl hover:bg-slate-50 dark:hover:bg-slate-700 disabled:opacity-30 transition-all"
+                      className="size-14 flex items-center justify-center bg-white/80 dark:bg-card-dark/80 backdrop-blur-md border border-slate-200/50 dark:border-white/10 rounded-2xl hover:bg-slate-50 dark:hover:bg-white/5 disabled:opacity-30 transition-all shadow-sm hover:shadow-md hover:-translate-y-0.5"
                     >
                       <ChevronRight size={24} />
                     </button>
@@ -270,7 +270,7 @@ export default function JsReference() {
                         <h3 className="text-sm font-bold text-slate-500 uppercase tracking-widest">Question {currentQuizIndex + 1} of 10</h3>
                         <span className="text-yellow-600 dark:text-yellow-500 font-black text-xl">{score}/{activeSection.quizzes.length}</span>
                       </div>
-                      <div className="h-2 w-full bg-slate-200 dark:bg-slate-800 rounded-full overflow-hidden">
+                      <div className="h-2 w-full bg-slate-200 dark:bg-white/10 rounded-full overflow-hidden">
                         <motion.div 
                           className="h-full bg-accent-js"
                           initial={{ width: 0 }}
@@ -290,21 +290,21 @@ export default function JsReference() {
                         const isSelected = selectedOption === idx;
                         const isCorrectOption = idx === activeSection.quizzes[currentQuizIndex].correctAnswer;
                         
-                        let bgColor = "bg-white dark:bg-slate-800 hover:border-accent-js/50";
-                        let borderColor = "border-slate-200 dark:border-slate-700";
+                        let bgColor = "bg-white/80 dark:bg-card-dark/80 backdrop-blur-md hover:border-accent-js/50";
+                        let borderColor = "border-slate-200/50 dark:border-white/10";
                         let textColor = "text-slate-700 dark:text-slate-300";
 
                         if (selectedOption !== null) {
                           if (isCorrectOption) {
-                            bgColor = "bg-emerald-500/10";
-                            borderColor = "border-emerald-500";
+                            bgColor = "bg-emerald-500/10 backdrop-blur-md";
+                            borderColor = "border-emerald-500/50";
                             textColor = "text-emerald-500";
                           } else if (isSelected) {
-                            bgColor = "bg-rose-500/10";
-                            borderColor = "border-rose-500";
+                            bgColor = "bg-rose-500/10 backdrop-blur-md";
+                            borderColor = "border-rose-500/50";
                             textColor = "text-rose-500";
                           } else {
-                            bgColor = "bg-slate-50 dark:bg-slate-900 opacity-50";
+                            bgColor = "bg-slate-50/50 dark:bg-slate-900/50 backdrop-blur-md opacity-50";
                           }
                         }
 
@@ -313,7 +313,7 @@ export default function JsReference() {
                             key={idx}
                             onClick={() => handleOptionSelect(idx)}
                             disabled={selectedOption !== null}
-                            className={`w-full p-5 rounded-2xl border-2 text-left transition-all flex items-center justify-between group ${bgColor} ${borderColor} ${textColor}`}
+                            className={`w-full p-5 rounded-2xl border-2 text-left transition-all flex items-center justify-between group shadow-sm hover:shadow-md hover:-translate-y-0.5 ${bgColor} ${borderColor} ${textColor}`}
                           >
                             <span className="font-semibold">{option}</span>
                             {selectedOption !== null && isCorrectOption && <CheckCircle2 size={20} />}
@@ -339,7 +339,7 @@ export default function JsReference() {
                     <div className="flex flex-col sm:flex-row gap-4">
                       <button 
                         onClick={resetQuiz}
-                        className="flex-1 flex items-center justify-center gap-2 bg-slate-900 dark:bg-white dark:text-slate-900 text-white font-bold py-4 px-8 rounded-2xl hover:opacity-90 transition-all"
+                        className="flex-1 flex items-center justify-center gap-2 bg-slate-900 dark:bg-white dark:text-slate-900 text-white font-bold py-4 px-8 rounded-2xl hover:opacity-90 transition-all shadow-lg hover:shadow-xl hover:-translate-y-0.5"
                       >
                         <RefreshCcw size={20} />
                         Retake Quiz
@@ -349,7 +349,7 @@ export default function JsReference() {
                           handleNextSection();
                           resetQuiz();
                         }}
-                        className="flex-1 flex items-center justify-center gap-2 bg-accent-js text-slate-900 font-bold py-4 px-8 rounded-2xl hover:bg-yellow-400 transition-all"
+                        className="flex-1 flex items-center justify-center gap-2 bg-accent-js text-slate-900 font-bold py-4 px-8 rounded-2xl hover:bg-yellow-400 transition-all shadow-lg shadow-accent-js/20 hover:shadow-xl hover:shadow-accent-js/40 hover:-translate-y-0.5"
                       >
                         Next Section
                         <ChevronRight size={20} />
@@ -363,7 +363,7 @@ export default function JsReference() {
         </div>
 
         {/* Mobile Navigation Footer */}
-        <div className="md:hidden p-4 border-t border-slate-200 dark:border-slate-800 bg-white dark:bg-card-dark flex gap-2 overflow-x-auto no-scrollbar">
+        <div className="md:hidden p-4 border-t border-slate-200/50 dark:border-white/10 bg-white/80 dark:bg-card-dark/80 backdrop-blur-xl flex gap-2 overflow-x-auto no-scrollbar">
           {jsContent.map((section) => (
             <button
               key={section.id}
@@ -374,7 +374,7 @@ export default function JsReference() {
               className={`shrink-0 size-12 rounded-xl flex items-center justify-center transition-all ${
                 activeSectionId === section.id 
                   ? 'bg-accent-js text-slate-900 shadow-lg shadow-accent-js/20' 
-                  : 'bg-slate-100 dark:bg-slate-800 text-slate-400'
+                  : 'bg-slate-100 dark:bg-white/5 text-slate-400'
               }`}
             >
               {sectionIcons[section.id]}

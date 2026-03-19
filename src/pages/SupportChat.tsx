@@ -104,9 +104,13 @@ export default function SupportChat() {
   };
 
   return (
-    <div className="flex h-screen w-full flex-col bg-background-light dark:bg-background-dark transition-colors duration-300 overflow-hidden">
+    <div className="flex h-screen w-full flex-col bg-slate-50 dark:bg-background-dark transition-colors duration-300 overflow-hidden relative">
+      {/* Decorative background elements */}
+      <div className="absolute top-[-10%] right-[-10%] w-[40%] h-[40%] rounded-full bg-primary/5 blur-[120px] pointer-events-none" />
+      <div className="absolute bottom-[-10%] left-[-10%] w-[40%] h-[40%] rounded-full bg-blue-500/5 blur-[120px] pointer-events-none" />
+
       {/* Header */}
-      <header className="flex items-center justify-between p-4 border-b border-slate-200 dark:border-slate-800 bg-white dark:bg-card-dark z-10">
+      <header className="flex items-center justify-between p-4 border-b border-slate-200/50 dark:border-slate-800/50 bg-white/80 dark:bg-card-dark/80 backdrop-blur-xl z-10 shrink-0">
         <div className="flex items-center gap-3">
           <Link to="/dashboard" className="p-2 rounded-full hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-500">
             <span className="material-symbols-outlined">arrow_back</span>
@@ -146,10 +150,10 @@ export default function SupportChat() {
               className={`flex ${msg.sender === 'user' ? 'justify-end' : 'justify-start'}`}
             >
               <div className={`max-w-[80%] flex flex-col ${msg.sender === 'user' ? 'items-end' : 'items-start'}`}>
-                <div className={`px-4 py-2.5 rounded-2xl text-sm leading-relaxed shadow-sm ${
+                <div className={`px-4 py-2.5 rounded-2xl text-sm leading-relaxed shadow-sm backdrop-blur-sm ${
                   msg.sender === 'user' 
-                    ? 'bg-primary text-white rounded-tr-none' 
-                    : 'bg-white dark:bg-slate-800 text-slate-900 dark:text-slate-100 border border-slate-200 dark:border-slate-700 rounded-tl-none'
+                    ? 'bg-primary text-white rounded-tr-none shadow-primary/20' 
+                    : 'bg-white/80 dark:bg-slate-800/80 text-slate-900 dark:text-slate-100 border border-slate-200/50 dark:border-slate-700/50 rounded-tl-none'
                 }`}>
                   {msg.text}
                 </div>
@@ -167,7 +171,7 @@ export default function SupportChat() {
             animate={{ opacity: 1, y: 0 }}
             className="flex justify-start"
           >
-            <div className="bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 px-4 py-3 rounded-2xl rounded-tl-none flex gap-1 items-center">
+            <div className="bg-white/80 dark:bg-slate-800/80 backdrop-blur-sm border border-slate-200/50 dark:border-slate-700/50 px-4 py-3 rounded-2xl rounded-tl-none flex gap-1 items-center shadow-sm">
               <div className="size-1.5 bg-slate-400 dark:bg-slate-500 rounded-full animate-bounce"></div>
               <div className="size-1.5 bg-slate-400 dark:bg-slate-500 rounded-full animate-bounce [animation-delay:0.2s]"></div>
               <div className="size-1.5 bg-slate-400 dark:bg-slate-500 rounded-full animate-bounce [animation-delay:0.4s]"></div>
@@ -177,10 +181,10 @@ export default function SupportChat() {
       </div>
 
       {/* Input Area */}
-      <div className="p-4 bg-white dark:bg-card-dark border-t border-slate-200 dark:border-slate-800">
+      <div className="p-4 bg-white/80 dark:bg-card-dark/80 backdrop-blur-xl border-t border-slate-200/50 dark:border-slate-800/50 shrink-0 relative z-10">
         <form 
           onSubmit={handleSendMessage}
-          className="flex items-center gap-2 bg-slate-100 dark:bg-slate-900 rounded-2xl p-1.5 border border-slate-200 dark:border-slate-800 focus-within:border-primary transition-colors"
+          className="flex items-center gap-2 bg-slate-50/50 dark:bg-slate-900/50 rounded-2xl p-1.5 border border-slate-200/50 dark:border-slate-800/50 focus-within:border-primary/50 focus-within:ring-2 focus-within:ring-primary/20 transition-all backdrop-blur-sm"
         >
           <input
             type="text"
@@ -192,7 +196,7 @@ export default function SupportChat() {
           <button
             type="submit"
             disabled={!inputValue.trim() || isTyping}
-            className="size-10 rounded-xl bg-primary text-white flex items-center justify-center hover:bg-primary/90 disabled:opacity-50 disabled:cursor-not-allowed transition-all"
+            className="size-10 rounded-xl bg-primary text-white flex items-center justify-center hover:bg-primary/90 disabled:opacity-50 disabled:cursor-not-allowed transition-all shadow-lg shadow-primary/20 shrink-0"
           >
             <span className="material-symbols-outlined">send</span>
           </button>

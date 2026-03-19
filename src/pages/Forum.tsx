@@ -233,14 +233,14 @@ export default function Forum() {
   return (
     <div className="relative flex h-auto min-h-screen w-full flex-col bg-background-light dark:bg-background-dark transition-colors duration-300 overflow-x-hidden">
       {/* Header */}
-      <div className="flex items-center bg-background-light dark:bg-card-dark p-4 pb-2 justify-between border-b border-slate-200 dark:border-slate-800 sticky top-0 z-40">
-        <Link to="/community" className="flex size-12 shrink-0 items-center justify-start">
-          <ArrowLeft className="text-slate-900 dark:text-slate-100" />
+      <div className="flex items-center bg-white/80 dark:bg-card-dark/80 backdrop-blur-xl p-4 pb-4 justify-between border-b border-slate-200/50 dark:border-slate-800/50 sticky top-0 z-40">
+        <Link to="/community" className="flex size-10 shrink-0 items-center justify-center rounded-full bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-700 transition-colors">
+          <ArrowLeft size={20} />
         </Link>
         <h2 className="text-slate-900 dark:text-white text-xl font-bold leading-tight tracking-tight flex-1 text-center">Discussion Forum</h2>
         <div className="flex w-auto items-center justify-end gap-3">
           <CoinDisplay />
-          <button onClick={() => setIsSettingsOpen(true)} className="flex size-10 cursor-pointer items-center justify-center rounded-full bg-primary/10 text-primary overflow-hidden border border-primary/20">
+          <button onClick={() => setIsSettingsOpen(true)} className="flex size-10 cursor-pointer items-center justify-center rounded-full bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-700 transition-colors overflow-hidden border border-slate-200 dark:border-slate-700">
             {profilePicture ? (
               <img src={profilePicture} alt="Profile" className="w-full h-full object-cover" />
             ) : (
@@ -576,21 +576,27 @@ export default function Forum() {
       </AnimatePresence>
 
       {/* Bottom Navigation Bar */}
-      <div className="fixed bottom-0 left-0 right-0 flex border-t border-slate-200 dark:border-slate-800 bg-white dark:bg-card-dark px-4 pb-6 pt-3 z-50">
-        <Link to="/dashboard" className="flex flex-1 flex-col items-center justify-center gap-1 text-slate-400">
-          <span className="material-symbols-outlined">menu_book</span>
+      <div className="fixed bottom-0 left-0 right-0 flex border-t border-slate-200/50 dark:border-slate-800/50 bg-white/80 dark:bg-card-dark/80 backdrop-blur-xl px-4 pb-6 pt-3 z-50">
+        <Link to="/dashboard" className="flex flex-1 flex-col items-center justify-center gap-1 text-slate-400 hover:text-slate-600 dark:hover:text-slate-300 transition-colors">
+          <span className="material-symbols-outlined text-2xl">menu_book</span>
           <p className="text-[10px] font-bold uppercase tracking-wider">Courses</p>
         </Link>
-        <Link to="/explore" className="flex flex-1 flex-col items-center justify-center gap-1 text-slate-400">
-          <span className="material-symbols-outlined">search</span>
+        <Link to="/explore" className="flex flex-1 flex-col items-center justify-center gap-1 text-slate-400 hover:text-slate-600 dark:hover:text-slate-300 transition-colors">
+          <span className="material-symbols-outlined text-2xl">search</span>
           <p className="text-[10px] font-bold uppercase tracking-wider">Explore</p>
         </Link>
         <Link to="/community" className="flex flex-1 flex-col items-center justify-center gap-1 text-primary">
-          <span className="material-symbols-outlined" style={{fontVariationSettings: "'FILL' 1"}}>group</span>
+          <div className="relative">
+            <span className="material-symbols-outlined text-2xl" style={{fontVariationSettings: "'FILL' 1"}}>group</span>
+            <span className="absolute -top-1 -right-1 flex h-3 w-3">
+              <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-primary opacity-75"></span>
+              <span className="relative inline-flex rounded-full h-3 w-3 bg-primary"></span>
+            </span>
+          </div>
           <p className="text-[10px] font-bold uppercase tracking-wider">Community</p>
         </Link>
-        <button onClick={() => setIsSettingsOpen(true)} className="flex flex-1 flex-col items-center justify-center gap-1 text-slate-400">
-          <span className="material-symbols-outlined">person</span>
+        <button onClick={() => setIsSettingsOpen(true)} className="flex flex-1 flex-col items-center justify-center gap-1 text-slate-400 hover:text-slate-600 dark:hover:text-slate-300 transition-colors">
+          <span className="material-symbols-outlined text-2xl">person</span>
           <p className="text-[10px] font-bold uppercase tracking-wider">Profile</p>
         </button>
       </div>

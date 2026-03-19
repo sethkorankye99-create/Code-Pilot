@@ -75,7 +75,7 @@ export default function SettingsModal({ isOpen, onClose }: SettingsModalProps) {
             initial={{ opacity: 0, y: 100, scale: 0.95 }}
             animate={{ opacity: 1, y: 0, scale: 1 }}
             exit={{ opacity: 0, y: 100, scale: 0.95 }}
-            className="fixed bottom-0 left-0 right-0 md:top-1/2 md:left-1/2 md:-translate-x-1/2 md:-translate-y-1/2 md:bottom-auto md:w-full md:max-w-md bg-white dark:bg-card-dark rounded-t-3xl md:rounded-3xl p-6 z-50 shadow-2xl border border-slate-200 dark:border-slate-800 max-h-[90vh] overflow-y-auto transition-colors duration-300"
+            className="fixed bottom-0 left-0 right-0 md:top-1/2 md:left-1/2 md:-translate-x-1/2 md:-translate-y-1/2 md:bottom-auto md:w-full md:max-w-md bg-white/90 dark:bg-card-dark/90 backdrop-blur-2xl rounded-t-3xl md:rounded-3xl p-6 z-50 shadow-2xl shadow-slate-200/50 dark:shadow-black/50 border border-slate-200/50 dark:border-slate-800/50 max-h-[90vh] overflow-y-auto transition-colors duration-300"
           >
             <div className="flex justify-between items-center mb-6">
               <h2 className="text-xl font-bold text-slate-900 dark:text-white">Profile & Settings</h2>
@@ -86,7 +86,7 @@ export default function SettingsModal({ isOpen, onClose }: SettingsModalProps) {
 
             <div className="space-y-6">
               {/* Profile Section */}
-              <div className="flex flex-col items-center gap-4 p-6 rounded-2xl bg-slate-50 dark:bg-slate-800/50 border border-slate-100 dark:border-slate-800 text-center">
+              <div className="flex flex-col items-center gap-4 p-6 rounded-2xl bg-slate-50/50 dark:bg-slate-800/30 border border-slate-200/50 dark:border-slate-800/50 text-center backdrop-blur-sm">
                 <div 
                   className="relative size-24 rounded-full bg-primary/20 flex items-center justify-center text-primary text-3xl font-bold cursor-pointer overflow-hidden group shadow-lg"
                   onClick={() => fileInputRef.current?.click()}
@@ -144,7 +144,7 @@ export default function SettingsModal({ isOpen, onClose }: SettingsModalProps) {
               </div>
 
               {/* Coins Card */}
-              <div className="p-5 rounded-2xl bg-gradient-to-br from-yellow-50 to-yellow-100 dark:from-yellow-900/20 dark:to-yellow-800/10 border border-yellow-200 dark:border-yellow-700/30 flex flex-col items-center justify-center text-center">
+              <div className="p-5 rounded-2xl bg-gradient-to-br from-yellow-50/80 to-yellow-100/80 dark:from-yellow-900/20 dark:to-yellow-800/10 border border-yellow-200/50 dark:border-yellow-700/30 backdrop-blur-sm flex flex-col items-center justify-center text-center">
                 <div className="flex items-center gap-2 mb-2">
                   <span className="material-symbols-outlined text-yellow-500 text-3xl" style={{fontVariationSettings: "'FILL' 1"}}>monetization_on</span>
                   <span className="text-2xl font-bold text-slate-900 dark:text-white">{coins !== null ? coins : 5} Coins</span>
@@ -160,7 +160,7 @@ export default function SettingsModal({ isOpen, onClose }: SettingsModalProps) {
               </div>
 
               {/* Theme Toggle */}
-              <div className="flex items-center justify-between p-4 rounded-2xl bg-slate-50 dark:bg-slate-800/50 border border-slate-100 dark:border-slate-800">
+              <div className="flex items-center justify-between p-4 rounded-2xl bg-slate-50/50 dark:bg-slate-800/30 border border-slate-200/50 dark:border-slate-800/50 backdrop-blur-sm">
                 <div className="flex items-center gap-3">
                   <span className="material-symbols-outlined text-slate-700 dark:text-slate-300">
                     {theme === 'dark' ? 'dark_mode' : 'light_mode'}
@@ -182,7 +182,7 @@ export default function SettingsModal({ isOpen, onClose }: SettingsModalProps) {
               <Link 
                 to="/support"
                 onClick={onClose}
-                className="flex items-center justify-between p-4 rounded-2xl bg-slate-50 dark:bg-slate-800/50 border border-slate-100 dark:border-slate-800 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors"
+                className="flex items-center justify-between p-4 rounded-2xl bg-slate-50/50 dark:bg-slate-800/30 border border-slate-200/50 dark:border-slate-800/50 hover:bg-slate-100/50 dark:hover:bg-slate-800/50 transition-colors backdrop-blur-sm"
               >
                 <div className="flex items-center gap-3">
                   <span className="material-symbols-outlined text-primary">support_agent</span>
@@ -197,7 +197,7 @@ export default function SettingsModal({ isOpen, onClose }: SettingsModalProps) {
               {/* Logout Button */}
               <button 
                 onClick={handleLogout}
-                className="w-full py-4 rounded-2xl bg-red-50 dark:bg-red-900/10 text-red-600 dark:text-red-400 font-bold text-sm hover:bg-red-100 dark:hover:bg-red-900/20 transition-colors flex items-center justify-center gap-2 border border-red-100 dark:border-red-900/30"
+                className="w-full py-4 rounded-2xl bg-red-50/50 dark:bg-red-900/10 text-red-600 dark:text-red-400 font-bold text-sm hover:bg-red-100/50 dark:hover:bg-red-900/20 transition-colors flex items-center justify-center gap-2 border border-red-100/50 dark:border-red-900/30 backdrop-blur-sm"
               >
                 <span className="material-symbols-outlined text-lg">logout</span>
                 Log Out
