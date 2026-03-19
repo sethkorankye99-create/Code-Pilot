@@ -5,6 +5,8 @@ import 'prismjs/components/prism-clike';
 import 'prismjs/components/prism-javascript';
 import 'prismjs/components/prism-typescript';
 import 'prismjs/components/prism-python';
+import 'prismjs/components/prism-c';
+import 'prismjs/components/prism-cpp';
 import 'prismjs/components/prism-css';
 import 'prismjs/components/prism-markup';
 import 'prismjs/themes/prism-tomorrow.css';
@@ -16,7 +18,7 @@ interface CodeChallengeProps {
   description: string;
   initialCode: string;
   solution: string;
-  language: 'javascript' | 'html' | 'css' | 'typescript' | 'python';
+  language: 'javascript' | 'html' | 'css' | 'typescript' | 'python' | 'cpp';
   onSuccess?: () => void;
 }
 
@@ -72,6 +74,11 @@ export default function CodeChallenge({ title, description, initialCode, solutio
         setOutput(['Python execution is simulated in this demo.', 'Output: Hello from Python!']);
         setIsCorrect(true);
         if (onSuccess) onSuccess();
+      } else if (language === 'cpp') {
+        // Simulated C++ execution
+        setOutput(['C++ execution is simulated in this demo.', 'Output: Hello from C++!']);
+        setIsCorrect(true);
+        if (onSuccess) onSuccess();
       } else {
         // For HTML/CSS
         setOutput(['Preview updated (HTML/CSS challenges are visual)']);
@@ -97,6 +104,7 @@ export default function CodeChallenge({ title, description, initialCode, solutio
       case 'javascript': return highlight(code, languages.javascript, 'javascript');
       case 'typescript': return highlight(code, languages.typescript, 'typescript');
       case 'python': return highlight(code, languages.python, 'python');
+      case 'cpp': return highlight(code, languages.cpp, 'cpp');
       case 'css': return highlight(code, languages.css, 'css');
       case 'html': return highlight(code, languages.markup, 'markup');
       default: return code;

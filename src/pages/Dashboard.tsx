@@ -74,6 +74,19 @@ const COURSES = [
     bgFillClass: 'bg-accent-python',
     categories: ['Backend', 'Systems'],
     link: '/python-mastery'
+  },
+  {
+    id: 'cpp',
+    title: 'C++ Mastery',
+    description: 'High-performance computing and systems programming.',
+    progress: 15,
+    icon: 'memory',
+    tag: 'PERFORMANCE',
+    colorClass: 'text-accent-cpp',
+    bgClass: 'bg-accent-cpp/10',
+    bgFillClass: 'bg-accent-cpp',
+    categories: ['Backend', 'Systems'],
+    link: '/cpp-mastery'
   }
 ];
 

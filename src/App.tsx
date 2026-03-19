@@ -14,6 +14,7 @@ import CssReference from './pages/CssReference';
 import JsReference from './pages/JsReference';
 import TsReference from './pages/TsReference';
 import PythonReference from './pages/PythonReference';
+import CppReference from './pages/CppReference';
 import CodePlayground from './pages/CodePlayground';
 import CourseDetail from './pages/CourseDetail';
 import Community from './pages/Community';
@@ -43,6 +44,7 @@ export default function App() {
           <Route path="/js-mastery" element={<JsReference />} />
           <Route path="/ts-mastery" element={<TsReference />} />
           <Route path="/python-mastery" element={<PythonReference />} />
+          <Route path="/cpp-mastery" element={<CppReference />} />
           <Route path="/playground" element={<CodePlayground />} />
           <Route path="/course" element={<CourseDetail />} />
           <Route path="/community" element={<Community />} />
