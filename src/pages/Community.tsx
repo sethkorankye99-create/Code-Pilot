@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { io, Socket } from 'socket.io-client';
 import { useAppContext } from '../context/AppContext';
 import SettingsModal from '../components/SettingsModal';
@@ -10,6 +10,7 @@ import { MessageSquare } from 'lucide-react';
 interface ChatMessage {
   id: string;
   user: string;
+  sender_id?: string; // Add sender_id
   avatar?: string | null;
   text: string;
   timestamp: number;
@@ -22,7 +23,8 @@ interface MenuPosition {
 }
 
 export default function Community() {
-  const { username, profilePicture } = useAppContext();
+  const { userId, username, profilePicture } = useAppContext();
+  const navigate = useNavigate(); // Add navigate
   const [messages, setMessages] = useState<ChatMessage[]>([]);
   const [inputValue, setInputValue] = useState('');
   const [isSettingsOpen, setIsSettingsOpen] = useState(false);
@@ -93,6 +95,7 @@ export default function Community() {
     const newMsg: ChatMessage = {
       id: Date.now().toString() + Math.random().toString(36).substring(2, 9),
       user: username,
+      sender_id: userId, // Add sender_id
       avatar: profilePicture,
       text: inputValue.trim(),
       timestamp: Date.now(),
@@ -255,6 +258,15 @@ export default function Community() {
             }}
             onClick={(e) => e.stopPropagation()}
           >
+            {selectedMessage && selectedMessage.sender_id && selectedMessage.sender_id !== userId && (
+              <button 
+                onClick={() => navigate(`/messages?user=${selectedMessage.sender_id}`)}
+                className="w-full flex items-center gap-3 px-4 py-2 text-sm text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-white/5 transition-colors border-b border-slate-100 dark:border-white/5"
+              >
+                <span className="material-symbols-outlined text-lg">chat</span>
+                <span>Message</span>
+              </button>
+            )}
             <button 
               onClick={handleDelete}
               className="w-full flex items-center gap-3 px-4 py-2 text-sm text-red-500 hover:bg-red-50 dark:hover:bg-red-900/20 transition-colors"
@@ -316,6 +328,12 @@ export default function Community() {
               </span>
             </div>
             <p className="text-[10px] font-bold uppercase tracking-wider">Community</p>
+          </Link>
+          <Link to="/messages" className="flex flex-col items-center justify-center gap-1 p-2 text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 transition-colors">
+            <div className="p-1.5 rounded-xl hover:bg-slate-100 dark:hover:bg-white/5 transition-colors">
+              <span className="material-symbols-outlined">chat</span>
+            </div>
+            <p className="text-[10px] font-bold uppercase tracking-wider">Messages</p>
           </Link>
           <button onClick={() => setIsSettingsOpen(true)} className="flex flex-col items-center justify-center gap-1 p-2 text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 transition-colors">
             <div className="p-1.5 rounded-xl hover:bg-slate-100 dark:hover:bg-white/5 transition-colors">

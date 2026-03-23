@@ -311,6 +311,12 @@ export default function Dashboard() {
             </div>
             <p className="text-[10px] font-bold uppercase tracking-wider">Community</p>
           </Link>
+          <Link to="/messages" className="flex flex-col items-center justify-center gap-1 p-2 text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 transition-colors">
+            <div className="p-1.5 rounded-xl hover:bg-slate-100 dark:hover:bg-white/5 transition-colors relative">
+              <span className="material-symbols-outlined">chat</span>
+            </div>
+            <p className="text-[10px] font-bold uppercase tracking-wider">Messages</p>
+          </Link>
           <button onClick={() => setIsSettingsOpen(true)} className="flex flex-col items-center justify-center gap-1 p-2 text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 transition-colors">
             <div className="p-1.5 rounded-xl hover:bg-slate-100 dark:hover:bg-white/5 transition-colors">
               <span className="material-symbols-outlined">person</span>

@@ -18,6 +18,7 @@ import CppReference from './pages/CppReference';
 import CodePlayground from './pages/CodePlayground';
 import CourseDetail from './pages/CourseDetail';
 import Community from './pages/Community';
+import Messages from './pages/Messages';
 import Forum from './pages/Forum';
 import Explore from './pages/Explore';
 import SupportChat from './pages/SupportChat';
@@ -48,6 +49,7 @@ export default function App() {
           <Route path="/playground" element={<CodePlayground />} />
           <Route path="/course" element={<CourseDetail />} />
           <Route path="/community" element={<Community />} />
+          <Route path="/messages" element={<Messages />} />
           <Route path="/forum" element={<Forum />} />
           <Route path="/explore" element={<Explore />} />
           <Route path="/support" element={<SupportChat />} />
