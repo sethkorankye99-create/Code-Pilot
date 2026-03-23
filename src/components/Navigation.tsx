@@ -126,7 +126,7 @@ export default function Navigation() {
             >
               <div className="size-8 rounded-full bg-slate-100 dark:bg-white/10 overflow-hidden border border-slate-200 dark:border-white/10">
                 {profilePicture ? (
-                  <img src={profilePicture} alt="Profile" className="w-full h-full object-cover" />
+                  <img src={profilePicture} alt="Profile" referrerPolicy="no-referrer" className="w-full h-full object-cover" />
                 ) : (
                   <div className="w-full h-full flex items-center justify-center text-slate-400">
                     <User size={18} />

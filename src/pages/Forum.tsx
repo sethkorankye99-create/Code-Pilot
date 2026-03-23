@@ -242,7 +242,7 @@ export default function Forum() {
           <CoinDisplay />
           <button onClick={() => setIsSettingsOpen(true)} className="flex size-10 cursor-pointer items-center justify-center rounded-full bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-700 transition-colors overflow-hidden border border-slate-200 dark:border-slate-700">
             {profilePicture ? (
-              <img src={profilePicture} alt="Profile" className="w-full h-full object-cover" />
+              <img src={profilePicture} alt="Profile" referrerPolicy="no-referrer" className="w-full h-full object-cover" />
             ) : (
               <User size={20} />
             )}
@@ -312,7 +312,7 @@ export default function Forum() {
               <div className="flex items-center gap-3 mb-3">
                 <div className="size-10 rounded-full bg-primary/10 text-primary overflow-hidden border border-primary/20 flex items-center justify-center">
                   {post.avatar ? (
-                    <img src={post.avatar} alt={post.user} className="w-full h-full object-cover" />
+                    <img src={post.avatar} alt={post.user} referrerPolicy="no-referrer" className="w-full h-full object-cover" />
                   ) : (
                     <User size={18} />
                   )}
@@ -462,7 +462,7 @@ export default function Forum() {
                 <div className="flex items-center gap-3">
                   <div className="size-10 rounded-full bg-primary/10 text-primary overflow-hidden border border-primary/20 flex items-center justify-center">
                     {selectedPost.avatar ? (
-                      <img src={selectedPost.avatar} alt={selectedPost.user} className="w-full h-full object-cover" />
+                      <img src={selectedPost.avatar} alt={selectedPost.user} referrerPolicy="no-referrer" className="w-full h-full object-cover" />
                     ) : (
                       <User size={18} />
                     )}
@@ -532,7 +532,7 @@ export default function Forum() {
                         <div key={comment.id} className="flex gap-3">
                           <div className="size-8 rounded-full bg-primary/10 text-primary overflow-hidden border border-primary/20 flex items-center justify-center shrink-0">
                             {comment.avatar ? (
-                              <img src={comment.avatar} alt={comment.user} className="w-full h-full object-cover" />
+                              <img src={comment.avatar} alt={comment.user} referrerPolicy="no-referrer" className="w-full h-full object-cover" />
                             ) : (
                               <User size={14} />
                             )}

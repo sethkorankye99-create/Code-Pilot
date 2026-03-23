@@ -116,7 +116,7 @@ export default function CourseDetail() {
       {/* Video Player Section */}
       <div 
         className="relative flex items-center justify-center bg-slate-900 bg-cover bg-center aspect-video group" 
-        style={{backgroundImage: 'url("https://lh3.googleusercontent.com/aida-public/AB6AXuBtAidPR6i1qZxxAnmoC51FmdcQyEHIx-i48l8i58hZj3dHI9EAy4U67AHMkgecfC_YgogSOerPE7kIYALavgCtWizguLe7UxmcrWoVwWRZCq22ioeTQaSPiGUOTt-0zrdt6sa-eyJ1VA87xK867FFH0o5cGTdli_ZKcfGjNHdsFyYjJz43lpUesU-riQxAxWeVDO47FgWsj_8CyyBqdygRdR9jG2dv6sk9goB1n3SlkXcThvILIk3sfSKYT-6nsnrdAdIzpRxsI8E")'}}
+        style={{backgroundImage: 'url("https://picsum.photos/seed/coding/1920/1080")'}}
       >
         <div className={`absolute inset-0 bg-black/40 group-hover:bg-black/20 transition-colors ${isVideoPlaying ? 'opacity-0' : 'opacity-100'}`}></div>
         

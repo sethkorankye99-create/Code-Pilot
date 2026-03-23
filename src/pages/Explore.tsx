@@ -24,6 +24,33 @@ export default function Explore() {
   const [videos, setVideos] = useState<Video[]>([]);
   const [selectedVideoUrl, setSelectedVideoUrl] = useState<string | null>(null);
 
+  const getThumbnailUrl = (video: Video) => {
+    let urlToCheck = video.image_url;
+    
+    // If no image_url, try to extract from the main video url
+    if (!urlToCheck && video.url) {
+      urlToCheck = video.url;
+    }
+
+    if (urlToCheck) {
+      try {
+        if (urlToCheck.includes('youtube.com/watch')) {
+          const urlObj = new URL(urlToCheck);
+          const videoId = urlObj.searchParams.get('v');
+          if (videoId) return `https://img.youtube.com/vi/${videoId}/maxresdefault.jpg`;
+        }
+        if (urlToCheck.includes('youtu.be/')) {
+          const videoId = urlToCheck.split('youtu.be/')[1]?.split('?')[0];
+          if (videoId) return `https://img.youtube.com/vi/${videoId}/maxresdefault.jpg`;
+        }
+      } catch (e) {
+        // Ignore URL parsing errors
+      }
+    }
+    
+    return video.image_url || null;
+  };
+
   useEffect(() => {
     fetch('/api/videos')
       .then(res => res.json())
@@ -103,8 +130,8 @@ export default function Explore() {
                   className="group bg-white/80 dark:bg-card-dark/80 backdrop-blur-xl rounded-[2rem] border border-slate-200/50 dark:border-white/10 shadow-lg shadow-slate-200/50 dark:shadow-black/50 hover:shadow-xl hover:shadow-primary/20 hover:border-primary/30 dark:hover:border-primary/30 hover:-translate-y-1 transition-all duration-300 overflow-hidden cursor-pointer flex flex-col"
                 >
                   <div className="h-48 bg-slate-100 dark:bg-slate-800 relative flex items-center justify-center overflow-hidden">
-                    {video.image_url ? (
-                      <img src={video.image_url} alt={video.title} className="absolute inset-0 w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
+                    {getThumbnailUrl(video) ? (
+                      <img src={getThumbnailUrl(video)!} alt={video.title} referrerPolicy="no-referrer" className="absolute inset-0 w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
                     ) : null}
                     <div className="absolute inset-0 bg-black/20 group-hover:bg-black/40 transition-colors z-10" />
                     

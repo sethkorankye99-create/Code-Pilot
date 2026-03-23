@@ -27,6 +27,7 @@ export default function Community() {
   const navigate = useNavigate(); // Add navigate
   const [messages, setMessages] = useState<ChatMessage[]>([]);
   const [inputValue, setInputValue] = useState('');
+  const [isSettingsOpen, setIsSettingsOpen] = useState(false);
   const [menuPosition, setMenuPosition] = useState<MenuPosition | null>(null);
   const [selectedMessage, setSelectedMessage] = useState<ChatMessage | null>(null);
   const socketRef = useRef<Socket | null>(null);
@@ -173,6 +174,27 @@ export default function Community() {
 
   return (
     <div className="relative flex h-auto min-h-screen w-full flex-col bg-background-light dark:bg-background-dark transition-colors duration-300 overflow-x-hidden">
+      {/* Header */}
+      <div className="flex items-center bg-white/80 dark:bg-[#0a0a0a]/80 backdrop-blur-xl p-4 pb-4 justify-between border-b border-slate-200/50 dark:border-white/10 sticky top-0 z-40">
+        <Link to="/dashboard" className="flex size-10 shrink-0 items-center justify-center rounded-full bg-slate-100 dark:bg-white/5 text-slate-600 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-white/10 transition-colors">
+          <span className="material-symbols-outlined text-xl">arrow_back</span>
+        </Link>
+        <h2 className="text-slate-900 dark:text-white text-xl font-bold leading-tight tracking-tight flex-1 text-center">Community Chat</h2>
+        <div className="flex w-auto items-center justify-end gap-3">
+          <Link to="/forum" className="flex size-10 items-center justify-center rounded-full bg-primary/10 text-primary border border-primary/20 hover:bg-primary/20 transition-colors">
+            <MessageSquare size={18} />
+          </Link>
+          <CoinDisplay />
+          <button onClick={() => setIsSettingsOpen(true)} className="flex size-10 cursor-pointer items-center justify-center rounded-full bg-slate-100 dark:bg-white/5 text-slate-600 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-white/10 transition-colors overflow-hidden border border-slate-200 dark:border-white/10">
+            {profilePicture ? (
+              <img src={profilePicture} alt="Profile" referrerPolicy="no-referrer" className="w-full h-full object-cover" />
+            ) : (
+              <span className="material-symbols-outlined text-xl">person</span>
+            )}
+          </button>
+        </div>
+      </div>
+
       {/* Chat Area */}
       <div className="flex-1 flex flex-col overflow-hidden pb-24">
         {/* Messages List */}
@@ -191,7 +213,7 @@ export default function Community() {
                   <div className="flex-shrink-0 mt-1">
                     <div className="size-8 rounded-full bg-primary/10 text-primary overflow-hidden border border-primary/20 flex items-center justify-center">
                       {msg.avatar ? (
-                        <img src={msg.avatar} alt={msg.user} className="w-full h-full object-cover" />
+                        <img src={msg.avatar} alt={msg.user} referrerPolicy="no-referrer" className="w-full h-full object-cover" />
                       ) : (
                         <span className="material-symbols-outlined text-lg">account_circle</span>
                       )}
@@ -275,6 +297,54 @@ export default function Community() {
           </form>
         </div>
       </div>
+
+      {/* Bottom Navigation Bar */}
+      <div className="fixed bottom-0 left-0 right-0 border-t border-slate-200/50 dark:border-white/10 bg-white/80 dark:bg-[#0a0a0a]/80 backdrop-blur-xl px-4 pb-safe pt-2 z-50 sm:pb-2 shadow-[0_-10px_40px_rgba(0,0,0,0.05)] dark:shadow-[0_-10px_40px_rgba(0,0,0,0.2)]">
+        <div className="max-w-md mx-auto flex justify-between items-center">
+          <Link to="/dashboard" className="flex flex-col items-center justify-center gap-1 p-2 text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 transition-colors">
+            <div className="p-1.5 rounded-xl hover:bg-slate-100 dark:hover:bg-white/5 transition-colors">
+              <span className="material-symbols-outlined">menu_book</span>
+            </div>
+            <p className="text-[10px] font-bold uppercase tracking-wider">Courses</p>
+          </Link>
+          <Link to="/playground" className="flex flex-col items-center justify-center gap-1 p-2 text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 transition-colors">
+            <div className="p-1.5 rounded-xl hover:bg-slate-100 dark:hover:bg-white/5 transition-colors">
+              <span className="material-symbols-outlined">code</span>
+            </div>
+            <p className="text-[10px] font-bold uppercase tracking-wider">Editor</p>
+          </Link>
+          <Link to="/explore" className="flex flex-col items-center justify-center gap-1 p-2 text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 transition-colors">
+            <div className="p-1.5 rounded-xl hover:bg-slate-100 dark:hover:bg-white/5 transition-colors">
+              <span className="material-symbols-outlined">search</span>
+            </div>
+            <p className="text-[10px] font-bold uppercase tracking-wider">Explore</p>
+          </Link>
+          <Link to="/community" className="flex flex-col items-center justify-center gap-1 p-2 text-primary">
+            <div className="bg-primary/10 p-1.5 rounded-xl relative">
+              <span className="material-symbols-outlined" style={{fontVariationSettings: "'FILL' 1"}}>group</span>
+              <span className="absolute -top-1 -right-1 flex h-3 w-3">
+                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-primary opacity-75"></span>
+                <span className="relative inline-flex rounded-full h-3 w-3 bg-primary"></span>
+              </span>
+            </div>
+            <p className="text-[10px] font-bold uppercase tracking-wider">Community</p>
+          </Link>
+          <Link to="/messages" className="flex flex-col items-center justify-center gap-1 p-2 text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 transition-colors">
+            <div className="p-1.5 rounded-xl hover:bg-slate-100 dark:hover:bg-white/5 transition-colors">
+              <span className="material-symbols-outlined">chat</span>
+            </div>
+            <p className="text-[10px] font-bold uppercase tracking-wider">Messages</p>
+          </Link>
+          <button onClick={() => setIsSettingsOpen(true)} className="flex flex-col items-center justify-center gap-1 p-2 text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 transition-colors">
+            <div className="p-1.5 rounded-xl hover:bg-slate-100 dark:hover:bg-white/5 transition-colors">
+              <span className="material-symbols-outlined">person</span>
+            </div>
+            <p className="text-[10px] font-bold uppercase tracking-wider">Profile</p>
+          </button>
+        </div>
+      </div>
+
+      <SettingsModal isOpen={isSettingsOpen} onClose={() => setIsSettingsOpen(false)} />
     </div>
   );
 }

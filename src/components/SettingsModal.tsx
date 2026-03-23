@@ -92,7 +92,7 @@ export default function SettingsModal({ isOpen, onClose }: SettingsModalProps) {
                   onClick={() => fileInputRef.current?.click()}
                 >
                   {profilePicture ? (
-                    <img src={profilePicture} alt="Profile" className="w-full h-full object-cover" />
+                    <img src={profilePicture} alt="Profile" referrerPolicy="no-referrer" className="w-full h-full object-cover" />
                   ) : (
                     username.charAt(0).toUpperCase()
                   )}

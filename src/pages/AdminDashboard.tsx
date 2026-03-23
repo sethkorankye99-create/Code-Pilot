@@ -36,6 +36,33 @@ export default function AdminDashboard() {
   const [videoLoading, setVideoLoading] = useState(false);
   const [editingVideoId, setEditingVideoId] = useState<number | null>(null);
 
+  const getThumbnailUrl = (video: Video) => {
+    let urlToCheck = video.image_url;
+    
+    // If no image_url, try to extract from the main video url
+    if (!urlToCheck && video.url) {
+      urlToCheck = video.url;
+    }
+
+    if (urlToCheck) {
+      try {
+        if (urlToCheck.includes('youtube.com/watch')) {
+          const urlObj = new URL(urlToCheck);
+          const videoId = urlObj.searchParams.get('v');
+          if (videoId) return `https://img.youtube.com/vi/${videoId}/maxresdefault.jpg`;
+        }
+        if (urlToCheck.includes('youtu.be/')) {
+          const videoId = urlToCheck.split('youtu.be/')[1]?.split('?')[0];
+          if (videoId) return `https://img.youtube.com/vi/${videoId}/maxresdefault.jpg`;
+        }
+      } catch (e) {
+        // Ignore URL parsing errors
+      }
+    }
+    
+    return video.image_url || null;
+  };
+
   const fetchUsers = async () => {
     try {
       const response = await fetch('/api/admin/users', {
@@ -431,8 +458,8 @@ export default function AdminDashboard() {
                     {videos.map((video) => (
                       <tr key={video.id} className="hover:bg-slate-50/50 dark:hover:bg-slate-800/30 transition-colors">
                         <td className="px-6 py-4">
-                          {video.image_url ? (
-                            <img src={video.image_url} alt={video.title} className="w-16 h-10 object-cover rounded-lg border border-slate-200/50 dark:border-slate-700/50 shadow-sm" />
+                          {getThumbnailUrl(video) ? (
+                            <img src={getThumbnailUrl(video)!} alt={video.title} referrerPolicy="no-referrer" className="w-16 h-10 object-cover rounded-lg border border-slate-200/50 dark:border-slate-700/50 shadow-sm" />
                           ) : (
                             <div className="w-16 h-10 bg-slate-100 dark:bg-slate-800 rounded-lg flex items-center justify-center border border-slate-200/50 dark:border-slate-700/50">
                               <span className="material-symbols-outlined text-slate-400 text-sm">image</span>
