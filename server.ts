@@ -54,6 +54,7 @@ db.exec(`
 // Add columns for existing databases
 try { db.exec("ALTER TABLE users ADD COLUMN email TEXT"); } catch (e) {}
 try { db.exec("ALTER TABLE users ADD COLUMN created_at TEXT DEFAULT CURRENT_TIMESTAMP"); } catch (e) {}
+try { db.exec("ALTER TABLE users ADD COLUMN profile_picture TEXT"); } catch (e) {}
 try { db.exec("ALTER TABLE videos ADD COLUMN image_url TEXT"); } catch (e) {}
 
 // Helper to get current server date string (YYYY-MM-DD)
@@ -74,7 +75,8 @@ async function startServer() {
   const PORT = 3000;
   const httpServer = createServer(app);
   
-  app.use(express.json());
+  app.use(express.json({ limit: '10mb' }));
+  app.use(express.urlencoded({ limit: '10mb', extended: true }));
 
   const io = new Server(httpServer, {
     cors: {
