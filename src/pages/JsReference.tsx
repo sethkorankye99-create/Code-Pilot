@@ -42,7 +42,7 @@ const sectionIcons: Record<string, React.ReactNode> = {
 };
 
 export default function JsReference() {
-  const { deductCoin, updateStreak } = useAppContext();
+  const { deductCoin, updateStreak, addCoins } = useAppContext();
   const [activeSectionId, setActiveSectionId] = useState(jsContent[0].id);
   const [quizMode, setQuizMode] = useState(false);
   const [currentQuizIndex, setCurrentQuizIndex] = useState(0);
@@ -103,6 +103,10 @@ export default function JsReference() {
       } else {
         setQuizFinished(true);
         setIsTrophyModalOpen(true);
+        const finalScore = correct ? score + 1 : score;
+        if (finalScore > 0) {
+          addCoins(finalScore);
+        }
       }
     }, 1500);
   };

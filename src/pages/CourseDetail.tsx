@@ -8,7 +8,7 @@ import AdModal from '../components/AdModal';
 import { motion, AnimatePresence } from 'motion/react';
 
 export default function CourseDetail() {
-  const { deductCoin, updateStreak, userId, showToast } = useAppContext();
+  const { deductCoin, updateStreak, userId, showToast, addCoins } = useAppContext();
   const [isQuizStarted, setIsQuizStarted] = useState(false);
   const [isSettingsOpen, setIsSettingsOpen] = useState(false);
   const [isAdOpen, setIsAdOpen] = useState(false);
@@ -75,7 +75,8 @@ export default function CourseDetail() {
         const score = Math.floor(Math.random() * 3) + 8; // Random score 8-10
         setQuizScore(score);
         saveProgress(isCompleted, score);
-        showToast(`Quiz completed! You scored ${score}/10`, "success");
+        addCoins(score); // Earn coins based on score
+        showToast(`Quiz completed! You scored ${score}/10 and earned ${score} coins!`, "success");
         setIsQuizStarted(false);
       }, 3000);
     }

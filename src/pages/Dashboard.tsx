@@ -91,8 +91,6 @@ const COURSES = [
 ];
 
 export default function Dashboard() {
-  const { profilePicture } = useAppContext();
-  const [isSettingsOpen, setIsSettingsOpen] = useState(false);
   const [activeCategory, setActiveCategory] = useState('All Courses');
   const [searchQuery, setSearchQuery] = useState('');
 
@@ -106,29 +104,6 @@ export default function Dashboard() {
 
   return (
     <div className="relative flex h-auto min-h-screen w-full flex-col bg-background-light dark:bg-background-dark transition-colors duration-300 overflow-x-hidden">
-      {/* Header / Navigation */}
-      <div className="sticky top-0 z-40 flex items-center bg-white/80 dark:bg-[#0a0a0a]/80 backdrop-blur-xl p-4 justify-between border-b border-slate-200/50 dark:border-white/10 shadow-sm">
-        <div className="text-primary flex size-10 shrink-0 items-center justify-center bg-primary/10 rounded-xl border border-primary/20 shadow-sm">
-          <span className="material-symbols-outlined text-2xl">terminal</span>
-        </div>
-        <h2 className="text-slate-900 dark:text-white text-xl font-bold leading-tight tracking-tight flex-1 ml-3">Code Pillot</h2>
-        <div className="flex w-auto items-center justify-end gap-3">
-          <Link to="/playground" className="hidden sm:flex items-center gap-2 bg-slate-900 dark:bg-white text-white dark:text-slate-900 hover:bg-slate-800 dark:hover:bg-slate-200 px-4 py-2 rounded-xl text-sm font-bold transition-all shadow-md hover:-translate-y-0.5">
-            <span className="material-symbols-outlined text-sm">code</span>
-            Playground
-          </Link>
-          <StreakDisplay />
-          <CoinDisplay />
-          <button onClick={() => setIsSettingsOpen(true)} className="flex size-10 cursor-pointer items-center justify-center rounded-full bg-slate-100 dark:bg-white/5 text-slate-600 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-white/10 transition-colors overflow-hidden border border-slate-200 dark:border-white/10">
-            {profilePicture ? (
-              <img src={profilePicture} alt="Profile" className="w-full h-full object-cover" />
-            ) : (
-              <span className="material-symbols-outlined">account_circle</span>
-            )}
-          </button>
-        </div>
-      </div>
-
       {/* Search Section */}
       <div className="px-4 py-6">
         <label className="flex flex-col w-full group">
@@ -283,50 +258,6 @@ export default function Dashboard() {
           )}
         </div>
       </div>
-
-      {/* Bottom Navigation Bar */}
-      <div className="fixed bottom-0 left-0 right-0 border-t border-slate-200/50 dark:border-white/10 bg-white/80 dark:bg-[#0a0a0a]/80 backdrop-blur-xl px-4 pb-safe pt-2 z-50 sm:pb-2 shadow-[0_-10px_40px_rgba(0,0,0,0.05)] dark:shadow-[0_-10px_40px_rgba(0,0,0,0.2)]">
-        <div className="max-w-md mx-auto flex justify-between items-center">
-          <Link to="/dashboard" className="flex flex-col items-center justify-center gap-1 p-2 text-primary">
-            <div className="bg-primary/10 p-1.5 rounded-xl">
-              <span className="material-symbols-outlined" style={{fontVariationSettings: "'FILL' 1"}}>menu_book</span>
-            </div>
-            <p className="text-[10px] font-bold uppercase tracking-wider">Courses</p>
-          </Link>
-          <Link to="/playground" className="flex flex-col items-center justify-center gap-1 p-2 text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 transition-colors">
-            <div className="p-1.5 rounded-xl hover:bg-slate-100 dark:hover:bg-white/5 transition-colors">
-              <span className="material-symbols-outlined">code</span>
-            </div>
-            <p className="text-[10px] font-bold uppercase tracking-wider">Editor</p>
-          </Link>
-          <Link to="/explore" className="flex flex-col items-center justify-center gap-1 p-2 text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 transition-colors">
-            <div className="p-1.5 rounded-xl hover:bg-slate-100 dark:hover:bg-white/5 transition-colors">
-              <span className="material-symbols-outlined">search</span>
-            </div>
-            <p className="text-[10px] font-bold uppercase tracking-wider">Explore</p>
-          </Link>
-          <Link to="/community" className="flex flex-col items-center justify-center gap-1 p-2 text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 transition-colors">
-            <div className="p-1.5 rounded-xl hover:bg-slate-100 dark:hover:bg-white/5 transition-colors">
-              <span className="material-symbols-outlined">group</span>
-            </div>
-            <p className="text-[10px] font-bold uppercase tracking-wider">Community</p>
-          </Link>
-          <Link to="/messages" className="flex flex-col items-center justify-center gap-1 p-2 text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 transition-colors">
-            <div className="p-1.5 rounded-xl hover:bg-slate-100 dark:hover:bg-white/5 transition-colors relative">
-              <span className="material-symbols-outlined">chat</span>
-            </div>
-            <p className="text-[10px] font-bold uppercase tracking-wider">Messages</p>
-          </Link>
-          <button onClick={() => setIsSettingsOpen(true)} className="flex flex-col items-center justify-center gap-1 p-2 text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 transition-colors">
-            <div className="p-1.5 rounded-xl hover:bg-slate-100 dark:hover:bg-white/5 transition-colors">
-              <span className="material-symbols-outlined">person</span>
-            </div>
-            <p className="text-[10px] font-bold uppercase tracking-wider">Profile</p>
-          </button>
-        </div>
-      </div>
-
-      <SettingsModal isOpen={isSettingsOpen} onClose={() => setIsSettingsOpen(false)} />
     </div>
   );
 }

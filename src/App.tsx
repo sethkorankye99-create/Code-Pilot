@@ -24,6 +24,7 @@ import Explore from './pages/Explore';
 import SupportChat from './pages/SupportChat';
 import AITutor from './pages/AITutor';
 import AdminDashboard from './pages/AdminDashboard';
+import Store from './pages/Store';
 import { AppProvider } from './context/AppContext';
 import NotificationHandler from './components/NotificationHandler';
 import FloatingAIChat from './components/FloatingAIChat';
@@ -55,6 +56,7 @@ export default function App() {
           <Route path="/support" element={<SupportChat />} />
           <Route path="/ai-tutor" element={<AITutor />} />
           <Route path="/admin" element={<AdminDashboard />} />
+          <Route path="/store" element={<Store />} />
         </Routes>
       </Router>
     </AppProvider>

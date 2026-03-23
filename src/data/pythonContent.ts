@@ -101,8 +101,8 @@ unique_numbers = {1, 2, 2, 3, 4, 4}
   },
   {
     id: 'functions-modules',
-    title: 'Functions & Modules',
-    note: 'Functions are defined using "def". Lambda functions are small anonymous functions. *args and **kwargs allow passing variable numbers of arguments. Modules are Python files imported using "import", and the Standard Library provides many built-in modules.',
+    title: 'Functions',
+    note: 'Functions are defined using "def". Lambda functions are small anonymous functions. *args and **kwargs allow passing variable numbers of arguments.',
     example: `# Function with default parameter
 def greet(name, greeting="Hello"):
     return f"{greeting}, {name}!"
@@ -115,25 +115,53 @@ def print_info(*args, **kwargs):
     print("Positional:", args)
     print("Keyword:", kwargs)
 
-print_info(1, 2, 3, name="Alice", age=30)
-
-# Importing from Standard Library
-import math
-from datetime import datetime
-
-print(math.pi)
-print(datetime.now())`,
+print_info(1, 2, 3, name="Alice", age=30)`,
     quizzes: [
       { question: 'Which keyword is used to define a function in Python?', options: ['function', 'def', 'func', 'define'], correctAnswer: 1 },
       { question: 'What is a lambda function?', options: ['A function that runs infinitely', 'A small anonymous function defined with the lambda keyword', 'A built-in math function', 'A function that handles errors'], correctAnswer: 1 },
       { question: 'What does *args allow a function to do?', options: ['Accept a variable number of positional arguments', 'Accept a variable number of keyword arguments', 'Return multiple values', 'Unpack a dictionary'], correctAnswer: 0 },
       { question: 'What does **kwargs allow a function to do?', options: ['Accept a variable number of positional arguments', 'Accept a variable number of keyword arguments', 'Return multiple values', 'Unpack a list'], correctAnswer: 1 },
-      { question: 'How do you import a specific function "sqrt" from the "math" module?', options: ['import sqrt from math', 'from math import sqrt', 'include math.sqrt', 'import math.sqrt'], correctAnswer: 1 },
-      { question: 'What is the Python Standard Library?', options: ['A third-party package manager', 'A collection of modules included with Python by default', 'A database system', 'A web framework'], correctAnswer: 1 },
       { question: 'Which keyword is used to return a value from a function?', options: ['yield', 'output', 'return', 'send'], correctAnswer: 2 },
       { question: 'What happens if a function does not have a return statement?', options: ['It throws an error', 'It returns 0', 'It returns None', 'It returns False'], correctAnswer: 2 },
       { question: 'How do you call a function named "my_func"?', options: ['call my_func()', 'my_func()', 'execute my_func()', 'run my_func()'], correctAnswer: 1 },
-      { question: 'What is the purpose of the "pass" statement in a function?', options: ['To return a value', 'To skip an iteration', 'To act as a placeholder for future code (does nothing)', 'To stop the function'], correctAnswer: 2 }
+      { question: 'What is the purpose of the "pass" statement in a function?', options: ['To return a value', 'To skip an iteration', 'To act as a placeholder for future code (does nothing)', 'To stop the function'], correctAnswer: 2 },
+      { question: 'Can a function return multiple values in Python?', options: ['Yes, by returning them as a tuple', 'No, only one value can be returned', 'Yes, by returning a list', 'Yes, by returning a dictionary'], correctAnswer: 0 },
+      { question: 'What is a docstring?', options: ['A string that documents a function, class, or module', 'A string that contains code', 'A string that is used as a variable name', 'A string that is used as a comment'], correctAnswer: 0 }
+    ]
+  },
+  {
+    id: 'python-modules',
+    title: 'Python Modules & Packages',
+    note: 'A module is a file containing Python definitions and statements. The "import" statement is used to bring modules into your code. The Standard Library includes built-in modules like "math", "datetime", and "json". Third-party modules are installed via pip.',
+    example: `# Importing a built-in module
+import math
+print(f"Pi is approximately {math.pi:.2f}")
+
+# Importing specific functions
+from datetime import datetime, timedelta
+now = datetime.now()
+tomorrow = now + timedelta(days=1)
+print(f"Tomorrow is {tomorrow.strftime('%Y-%m-%d')}")
+
+# Using the json module
+import json
+data = {'name': 'Alice', 'age': 30}
+json_string = json.dumps(data)
+print(json_string)
+
+# Third-party modules require installation (e.g., pip install requests)
+# import requests`,
+    quizzes: [
+      { question: 'What is a Python module?', options: ['A function inside a class', 'A file containing Python code', 'A built-in data type', 'A type of loop'], correctAnswer: 1 },
+      { question: 'Which keyword is used to bring a module into your script?', options: ['include', 'require', 'import', 'load'], correctAnswer: 2 },
+      { question: 'How do you import only the "sqrt" function from the "math" module?', options: ['import math.sqrt', 'from math import sqrt', 'import sqrt from math', 'include math.sqrt'], correctAnswer: 1 },
+      { question: 'What is the Python Standard Library?', options: ['A collection of third-party packages', 'A set of built-in modules that come with Python', 'A database system', 'A web framework'], correctAnswer: 1 },
+      { question: 'Which module would you use to perform complex mathematical operations like trigonometry?', options: ['calc', 'numbers', 'math', 'algebra'], correctAnswer: 2 },
+      { question: 'Which module is used to work with dates and times?', options: ['time', 'date', 'datetime', 'clock'], correctAnswer: 2 },
+      { question: 'What does the "json.dumps()" function do?', options: ['Parses a JSON string into a Python dictionary', 'Converts a Python object into a JSON string', 'Saves data to a file', 'Downloads JSON from an API'], correctAnswer: 1 },
+      { question: 'What is the difference between built-in and third-party modules?', options: ['Built-in modules are faster', 'Third-party modules come with Python, built-in must be downloaded', 'Built-in modules come with Python, third-party must be installed via pip', 'There is no difference'], correctAnswer: 2 },
+      { question: 'What package manager is typically used to install third-party Python modules?', options: ['npm', 'brew', 'apt', 'pip'], correctAnswer: 3 },
+      { question: 'How do you give an imported module an alias (e.g., importing pandas as pd)?', options: ['import pandas alias pd', 'import pandas as pd', 'from pandas import pd', 'import pd = pandas'], correctAnswer: 1 }
     ]
   },
   {

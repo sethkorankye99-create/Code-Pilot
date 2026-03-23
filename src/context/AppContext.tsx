@@ -40,7 +40,18 @@ export function AppProvider({ children }: { children: ReactNode }) {
     }
     return 'dark';
   });
-  const [coins, setCoins] = useState<number | null>(null);
+  const [coins, setCoins] = useState<number | null>(() => {
+    const stored = localStorage.getItem('coins');
+    return stored ? parseInt(stored, 10) : null;
+  });
+
+  useEffect(() => {
+    if (coins !== null) {
+      localStorage.setItem('coins', coins.toString());
+    } else {
+      localStorage.removeItem('coins');
+    }
+  }, [coins]);
   const [streak, setStreak] = useState<number>(0);
   const [toasts, setToasts] = useState<Toast[]>([]);
 

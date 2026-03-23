@@ -127,8 +127,8 @@ async function startServer() {
         // Check if coins need reset (daily)
         const today = getCurrentDateStr();
         if (user.last_reset_date !== today) {
-          db.prepare('UPDATE users SET coins = 5, last_reset_date = ? WHERE id = ?').run(today, id);
-          user.coins = 5;
+          db.prepare('UPDATE users SET coins = coins + 5, last_reset_date = ? WHERE id = ?').run(today, id);
+          user.coins += 5;
         }
       }
 
@@ -157,8 +157,8 @@ async function startServer() {
       const yesterday = getYesterdayDateStr();
       
       if (user.last_reset_date !== today) {
-        db.prepare('UPDATE users SET coins = 5, last_reset_date = ? WHERE id = ?').run(today, user.id);
-        user.coins = 5;
+        db.prepare('UPDATE users SET coins = coins + 5, last_reset_date = ? WHERE id = ?').run(today, user.id);
+        user.coins += 5;
       }
 
       // Check streak reset on login
@@ -311,6 +311,30 @@ async function startServer() {
       }
 
       const newCoins = user.coins + amount;
+      db.prepare('UPDATE users SET coins = ? WHERE id = ?').run(newCoins, userId);
+      res.json({ success: true, coins: newCoins });
+    } catch (err) {
+      res.status(500).json({ error: "Database error" });
+    }
+  });
+
+  app.post("/api/coins/purchase", (req, res) => {
+    const { userId, amount } = req.body;
+    if (!userId || !amount) {
+      return res.status(400).json({ error: "User ID and amount required" });
+    }
+
+    try {
+      const user = db.prepare('SELECT coins FROM users WHERE id = ?').get(userId) as any;
+      if (!user) {
+        return res.status(404).json({ error: "User not found" });
+      }
+
+      if (user.coins < amount) {
+        return res.status(400).json({ error: "Not enough coins" });
+      }
+
+      const newCoins = user.coins - amount;
       db.prepare('UPDATE users SET coins = ? WHERE id = ?').run(newCoins, userId);
       res.json({ success: true, coins: newCoins });
     } catch (err) {

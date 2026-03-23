@@ -18,9 +18,7 @@ interface Video {
 }
 
 export default function Explore() {
-  const { profilePicture } = useAppContext();
   const [searchQuery, setSearchQuery] = useState('');
-  const [isSettingsOpen, setIsSettingsOpen] = useState(false);
   const [isAdOpen, setIsAdOpen] = useState(false);
   const [hasWatchedAd, setHasWatchedAd] = useState(false);
   const [videos, setVideos] = useState<Video[]>([]);
@@ -62,25 +60,6 @@ export default function Explore() {
 
   return (
     <div className="relative flex h-auto min-h-screen w-full flex-col bg-background-light dark:bg-background-dark transition-colors duration-300 text-black dark:text-white overflow-x-hidden">
-      {/* Header */}
-      <div className="sticky top-0 z-40 flex items-center bg-white/80 dark:bg-card-dark/80 backdrop-blur-xl p-4 justify-between border-b border-slate-200/50 dark:border-white/10 shadow-sm dark:shadow-none">
-        <Link to="/dashboard" className="flex size-10 shrink-0 items-center justify-center bg-slate-100 dark:bg-slate-800 rounded-xl hover:bg-slate-200 dark:hover:bg-slate-700 transition-colors text-slate-600 dark:text-slate-300">
-          <span className="material-symbols-outlined">arrow_back</span>
-        </Link>
-        <h2 className="text-xl font-bold leading-tight tracking-tight flex-1 text-center text-slate-900 dark:text-white">Explore</h2>
-        <div className="flex w-auto items-center justify-end gap-3">
-          <StreakDisplay />
-          <CoinDisplay />
-          <button onClick={() => setIsSettingsOpen(true)} className="flex size-10 cursor-pointer items-center justify-center rounded-full bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-700 transition-colors overflow-hidden border border-slate-200 dark:border-slate-700">
-            {profilePicture ? (
-              <img src={profilePicture} alt="Profile" className="w-full h-full object-cover" />
-            ) : (
-              <span className="material-symbols-outlined">account_circle</span>
-            )}
-          </button>
-        </div>
-      </div>
-
       {/* Main Content */}
       <div className="flex-1 overflow-y-auto pb-32">
         {/* Search Bar */}
@@ -167,43 +146,6 @@ export default function Explore() {
         </div>
       </div>
 
-      {/* Bottom Navigation Bar */}
-      <div className="fixed bottom-0 left-0 right-0 border-t border-slate-200/50 dark:border-white/10 bg-white/80 dark:bg-card-dark/80 backdrop-blur-xl px-4 pb-safe pt-2 z-50 sm:pb-2 shadow-[0_-8px_30px_rgba(0,0,0,0.05)] dark:shadow-[0_-8px_30px_rgba(0,0,0,0.2)]">
-        <div className="max-w-md mx-auto flex justify-between items-center">
-          <Link to="/dashboard" className="flex flex-col items-center justify-center gap-1 p-2 text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 transition-colors">
-            <div className="p-1.5 rounded-xl hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors">
-              <span className="material-symbols-outlined">menu_book</span>
-            </div>
-            <p className="text-[10px] font-bold uppercase tracking-wider">Courses</p>
-          </Link>
-          <Link to="/playground" className="flex flex-col items-center justify-center gap-1 p-2 text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 transition-colors">
-            <div className="p-1.5 rounded-xl hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors">
-              <span className="material-symbols-outlined">code</span>
-            </div>
-            <p className="text-[10px] font-bold uppercase tracking-wider">Editor</p>
-          </Link>
-          <Link to="/explore" className="flex flex-col items-center justify-center gap-1 p-2 text-primary">
-            <div className="bg-primary/10 p-1.5 rounded-xl">
-              <span className="material-symbols-outlined" style={{fontVariationSettings: "'FILL' 1"}}>search</span>
-            </div>
-            <p className="text-[10px] font-bold uppercase tracking-wider">Explore</p>
-          </Link>
-          <Link to="/community" className="flex flex-col items-center justify-center gap-1 p-2 text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 transition-colors">
-            <div className="p-1.5 rounded-xl hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors">
-              <span className="material-symbols-outlined">group</span>
-            </div>
-            <p className="text-[10px] font-bold uppercase tracking-wider">Community</p>
-          </Link>
-          <button onClick={() => setIsSettingsOpen(true)} className="flex flex-col items-center justify-center gap-1 p-2 text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 transition-colors">
-            <div className="p-1.5 rounded-xl hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors">
-              <span className="material-symbols-outlined">person</span>
-            </div>
-            <p className="text-[10px] font-bold uppercase tracking-wider">Profile</p>
-          </button>
-        </div>
-      </div>
-
-      <SettingsModal isOpen={isSettingsOpen} onClose={() => setIsSettingsOpen(false)} />
       <AdModal isOpen={isAdOpen} onClose={handleAdClose} />
     </div>
   );
