@@ -110,7 +110,7 @@ export default function JsReference() {
             addCoins(finalScore);
           }
         }
-      }, 1500);
+      }, 3500);
     }
     setIsDeducting(false);
   };
@@ -340,6 +340,31 @@ export default function JsReference() {
                         );
                       })}
                     </div>
+
+                    {/* Explanation */}
+                    <AnimatePresence>
+                      {selectedOption !== null && activeSection.quizzes[currentQuizIndex].explanation && (
+                        <motion.div
+                          initial={{ opacity: 0, y: 10 }}
+                          animate={{ opacity: 1, y: 0 }}
+                          className={`p-4 rounded-xl border ${
+                            isCorrect 
+                              ? 'bg-emerald-500/5 border-emerald-500/20 text-emerald-700 dark:text-emerald-400' 
+                              : 'bg-rose-500/5 border-rose-500/20 text-rose-700 dark:text-rose-400'
+                          }`}
+                        >
+                          <div className="flex gap-2">
+                            <BrainCircuit size={18} className="shrink-0 mt-0.5" />
+                            <div className="space-y-1">
+                              <p className="text-xs font-bold uppercase tracking-wider">Explanation</p>
+                              <p className="text-sm leading-relaxed">
+                                {activeSection.quizzes[currentQuizIndex].explanation}
+                              </p>
+                            </div>
+                          </div>
+                        </motion.div>
+                      )}
+                    </AnimatePresence>
                   </div>
                 ) : (
                   <motion.div 

@@ -2,6 +2,7 @@ export interface Quiz {
   question: string;
   options: string[];
   correctAnswer: number;
+  explanation?: string;
 }
 
 export interface Challenge {
@@ -45,16 +46,66 @@ function greet(person) {
 }
 console.log(greet(name));`,
     quizzes: [
-      { question: 'Which keyword is used to declare a block-scoped variable that can be reassigned?', options: ['var', 'let', 'const', 'int'], correctAnswer: 1 },
-      { question: 'Which of the following is NOT a primitive data type in JavaScript?', options: ['String', 'Number', 'Object', 'Boolean'], correctAnswer: 2 },
-      { question: 'What is the result of typeof null?', options: ['"null"', '"undefined"', '"object"', '"number"'], correctAnswer: 2 },
-      { question: 'Which operator is used for strict equality (checks value and type)?', options: ['=', '==', '===', '!='], correctAnswer: 2 },
-      { question: 'What does the % operator do?', options: ['Calculates percentages', 'Returns the remainder of a division', 'Multiplies two numbers', 'Divides two numbers'], correctAnswer: 1 },
-      { question: 'Which loop is guaranteed to execute at least once?', options: ['for loop', 'while loop', 'do...while loop', 'for...in loop'], correctAnswer: 2 },
-      { question: 'How do you write an IF statement in JavaScript?', options: ['if i = 5 then', 'if i == 5 then', 'if (i == 5)', 'if i = 5'], correctAnswer: 2 },
-      { question: 'What is the correct way to call a function named "myFunction"?', options: ['call function myFunction()', 'call myFunction()', 'myFunction()', 'execute myFunction()'], correctAnswer: 2 },
-      { question: 'What will console.log(1 + "2") output?', options: ['3', '"12"', 'NaN', 'Error'], correctAnswer: 1 },
-      { question: 'Which keyword is used to return a value from a function?', options: ['get', 'return', 'output', 'yield'], correctAnswer: 1 }
+      { 
+        question: 'Which keyword is used to declare a block-scoped variable that can be reassigned?', 
+        options: ['var', 'let', 'const', 'int'], 
+        correctAnswer: 1,
+        explanation: 'let is the keyword for block-scoped variables that can be reassigned. var is function-scoped, and const is for variables that cannot be reassigned.'
+      },
+      { 
+        question: 'Which of the following is NOT a primitive data type in JavaScript?', 
+        options: ['String', 'Number', 'Object', 'Boolean'], 
+        correctAnswer: 2,
+        explanation: 'Object is a complex data type, not a primitive one. Primitives include String, Number, Boolean, Null, Undefined, Symbol, and BigInt.'
+      },
+      { 
+        question: 'What is the result of typeof null?', 
+        options: ['"null"', '"undefined"', '"object"', '"number"'], 
+        correctAnswer: 2,
+        explanation: 'typeof null returns "object" due to a historical bug in the first version of JavaScript that was never fixed for backward compatibility.'
+      },
+      { 
+        question: 'Which operator is used for strict equality (checks value and type)?', 
+        options: ['=', '==', '===', '!='], 
+        correctAnswer: 2,
+        explanation: '=== is the strict equality operator that checks both the value and the type of the operands without performing type coercion.'
+      },
+      { 
+        question: 'What does the % operator do?', 
+        options: ['Calculates percentages', 'Returns the remainder of a division', 'Multiplies two numbers', 'Divides two numbers'], 
+        correctAnswer: 1,
+        explanation: 'The % (remainder) operator returns the remainder left over when one operand is divided by a second operand.'
+      },
+      { 
+        question: 'Which loop is guaranteed to execute at least once?', 
+        options: ['for loop', 'while loop', 'do...while loop', 'for...in loop'], 
+        correctAnswer: 2,
+        explanation: 'do...while loops always execute the code block at least once because the condition is evaluated after the block has run.'
+      },
+      { 
+        question: 'How do you write an IF statement in JavaScript?', 
+        options: ['if i = 5 then', 'if i == 5 then', 'if (i == 5)', 'if i = 5'], 
+        correctAnswer: 2,
+        explanation: 'The correct syntax for an IF statement is if (condition) { ... }. Parentheses are required around the condition.'
+      },
+      { 
+        question: 'What is the correct way to call a function named "myFunction"?', 
+        options: ['call function myFunction()', 'call myFunction()', 'myFunction()', 'execute myFunction()'], 
+        correctAnswer: 2,
+        explanation: 'Functions are invoked by using their name followed by parentheses: myFunction().'
+      },
+      { 
+        question: 'What will console.log(1 + "2") output?', 
+        options: ['3', '"12"', 'NaN', 'Error'], 
+        correctAnswer: 1,
+        explanation: 'JavaScript performs type coercion: when adding a number and a string, the number is converted to a string and concatenated.'
+      },
+      { 
+        question: 'Which keyword is used to return a value from a function?', 
+        options: ['get', 'return', 'output', 'yield'], 
+        correctAnswer: 1,
+        explanation: 'The return keyword is used to specify the value that a function should send back to the code that called it.'
+      }
     ],
     challenge: {
       title: "Variable Declaration",

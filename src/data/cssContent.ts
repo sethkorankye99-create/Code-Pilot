@@ -2,6 +2,7 @@ export interface Quiz {
   question: string;
   options: string[];
   correctAnswer: number;
+  explanation?: string;
 }
 
 export interface Challenge {
@@ -253,36 +254,102 @@ h1 {
   {
     id: 'animations-transitions',
     title: 'Animations & Transitions',
-    note: 'Transitions animate property changes smoothly (e.g., on hover). Animations use @keyframes for complex, multi-step sequences. Transforms (translate, scale, rotate) move/alter elements in 2D/3D space without affecting layout.',
-    example: `/* Transition */
-.btn {
+    note: 'CSS Transitions allow you to change property values smoothly over a given duration, triggered by state changes like :hover. CSS Animations (@keyframes) allow for complex, multi-step sequences that can run automatically. Transitions are best for simple "A to B" changes, while Animations are for continuous or multi-stage motion. Transforms (translate, scale, rotate) are often used with both to move or alter elements without affecting document flow.',
+    example: `/* Transitions: Smooth state changes */
+.box {
+  width: 100px;
+  height: 100px;
   background: blue;
-  transition: background 0.3s ease-in-out, transform 0.2s;
-}
-.btn:hover {
-  background: red;
-  transform: scale(1.1);
+  /* Shorthand: property duration timing-function delay */
+  transition: background 0.5s ease-in-out, transform 0.3s;
 }
 
-/* Animation */
-@keyframes bounce {
-  0%, 100% { transform: translateY(0); }
-  50% { transform: translateY(-20px); }
+.box:hover {
+  background: red;
+  transform: rotate(45deg) scale(1.2);
 }
-.ball {
-  animation: bounce 1s infinite;
+
+/* Animations: Complex sequences */
+@keyframes slideIn {
+  from { transform: translateX(-100%); opacity: 0; }
+  to { transform: translateX(0); opacity: 1; }
+}
+
+.element {
+  animation-name: slideIn;
+  animation-duration: 1s;
+  animation-timing-function: ease-out;
+  animation-iteration-count: 1;
+  animation-fill-mode: forwards; /* Stay at end state */
+}
+
+/* Common Transforms */
+.transformed {
+  transform: translate(20px, 50px); /* Move */
+  transform: scale(1.5); /* Resize */
+  transform: rotate(90deg); /* Turn */
 }`,
     quizzes: [
-      { question: 'Which property smoothly changes values over a specified duration?', options: ['animation', 'transform', 'transition', 'morph'], correctAnswer: 2 },
-      { question: 'Which rule defines the steps of a CSS animation?', options: ['@steps', '@keyframes', '@animate', '@sequence'], correctAnswer: 1 },
-      { question: 'Which transform function moves an element?', options: ['scale()', 'rotate()', 'translate()', 'move()'], correctAnswer: 2 },
-      { question: 'What does transform: scale(2) do?', options: ['Doubles the element\'s size', 'Halves the element\'s size', 'Moves it 2px', 'Rotates it 2 degrees'], correctAnswer: 0 },
-      { question: 'Which property specifies the speed curve of a transition?', options: ['transition-speed', 'transition-timing-function', 'transition-curve', 'transition-ease'], correctAnswer: 1 },
-      { question: 'How do you make an animation run forever?', options: ['animation-iteration-count: infinite', 'animation-run: forever', 'animation-loop: true', 'animation-time: endless'], correctAnswer: 0 },
-      { question: 'Which transform function rotates an element?', options: ['spin()', 'turn()', 'rotate()', 'circle()'], correctAnswer: 2 },
-      { question: 'What does transform-origin do?', options: ['Sets the starting point of an animation', 'Sets the point around which a transform is applied', 'Resets transforms', 'None'], correctAnswer: 1 },
-      { question: 'Which property is required for a transition to work?', options: ['transition-duration', 'transition-delay', 'transition-property', 'Both duration and property'], correctAnswer: 3 },
-      { question: 'Can you animate display: none?', options: ['Yes', 'No', 'Only with keyframes', 'Only in WebKit'], correctAnswer: 1 }
+      { 
+        question: 'Which property is used to define a smooth change between two states of a CSS property?', 
+        options: ['animation', 'transition', 'transform', 'morph'], 
+        correctAnswer: 1,
+        explanation: 'The transition property is used to define the transition between two states of an element, such as when a user hovers over a button.'
+      },
+      { 
+        question: 'Which rule is used to define the keyframes for a CSS animation?', 
+        options: ['@animate', '@keyframes', '@steps', '@sequence'], 
+        correctAnswer: 1,
+        explanation: 'The @keyframes rule specifies the animation code, defining what styles the element will have at certain times.'
+      },
+      { 
+        question: 'Which transform function is used to move an element from its current position?', 
+        options: ['move()', 'shift()', 'translate()', 'locate()'], 
+        correctAnswer: 2,
+        explanation: 'The translate() function moves an element from its current position (left, top, or both).'
+      },
+      { 
+        question: 'What does transform: scale(0.5) do to an element?', 
+        options: ['Moves it 0.5px', 'Rotates it 0.5 degrees', 'Shrinks it to half its original size', 'Makes it half transparent'], 
+        correctAnswer: 2,
+        explanation: 'scale(0.5) reduces the size of the element to 50% of its original width and height.'
+      },
+      { 
+        question: 'Which property specifies the speed curve of a transition or animation?', 
+        options: ['timing-function', 'speed-curve', 'ease-mode', 'velocity'], 
+        correctAnswer: 0,
+        explanation: 'The timing-function (e.g., transition-timing-function or animation-timing-function) specifies the speed curve (ease, linear, ease-in, etc.).'
+      },
+      { 
+        question: 'How do you make a CSS animation repeat indefinitely?', 
+        options: ['animation-repeat: always', 'animation-iteration-count: infinite', 'animation-loop: true', 'animation-run: forever'], 
+        correctAnswer: 1,
+        explanation: 'Setting animation-iteration-count to infinite ensures the animation plays over and over without stopping.'
+      },
+      { 
+        question: 'Which property determines if an animation should be paused or running?', 
+        options: ['animation-state', 'animation-status', 'animation-play-state', 'animation-mode'], 
+        correctAnswer: 2,
+        explanation: 'The animation-play-state property specifies whether the animation is running or paused.'
+      },
+      { 
+        question: 'What does animation-fill-mode: forwards do?', 
+        options: ['Plays the animation faster', 'Makes the element retain the styles set by the last keyframe', 'Plays the animation in reverse', 'Skips the first keyframe'], 
+        correctAnswer: 1,
+        explanation: 'forwards makes the element stay at the style values set by the last keyframe (100% or "to") after the animation finishes.'
+      },
+      { 
+        question: 'Which transform function rotates an element around a fixed point?', 
+        options: ['spin()', 'turn()', 'rotate()', 'angle()'], 
+        correctAnswer: 2,
+        explanation: 'The rotate() function rotates an element clockwise or counter-clockwise by a given degree.'
+      },
+      { 
+        question: 'Can you transition the "display" property (e.g., from none to block)?', 
+        options: ['Yes, it fades in', 'No, display is not an animatable property', 'Only in modern browsers', 'Only if you use keyframes'], 
+        correctAnswer: 1,
+        explanation: 'The display property cannot be transitioned or animated. To show/hide with animation, use opacity or visibility instead.'
+      }
     ]
   },
   {
