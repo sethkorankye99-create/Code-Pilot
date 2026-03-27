@@ -17,23 +17,18 @@ import PythonReference from './pages/PythonReference';
 import CppReference from './pages/CppReference';
 import CodePlayground from './pages/CodePlayground';
 import CourseDetail from './pages/CourseDetail';
-import Community from './pages/Community';
-import Messages from './pages/Messages';
-import Forum from './pages/Forum';
 import Explore from './pages/Explore';
 import SupportChat from './pages/SupportChat';
 import AITutor from './pages/AITutor';
 import AdminDashboard from './pages/AdminDashboard';
 import Store from './pages/Store';
 import { AppProvider } from './context/AppContext';
-import NotificationHandler from './components/NotificationHandler';
 import FloatingAIChat from './components/FloatingAIChat';
 
 export default function App() {
   return (
     <AppProvider>
       <Router>
-        <NotificationHandler />
         <FloatingAIChat />
         <Routes>
           <Route path="/" element={<Landing />} />
@@ -49,9 +44,6 @@ export default function App() {
           <Route path="/cpp-mastery" element={<CppReference />} />
           <Route path="/playground" element={<CodePlayground />} />
           <Route path="/course" element={<CourseDetail />} />
-          <Route path="/community" element={<Community />} />
-          <Route path="/messages" element={<Messages />} />
-          <Route path="/forum" element={<Forum />} />
           <Route path="/explore" element={<Explore />} />
           <Route path="/support" element={<SupportChat />} />
           <Route path="/ai-tutor" element={<AITutor />} />

@@ -281,10 +281,6 @@ export default function CourseDetail() {
           <span className="material-symbols-outlined text-2xl">search</span>
           <p className="text-[10px] font-bold uppercase tracking-wider">Explore</p>
         </Link>
-        <Link to="/community" className="flex flex-1 flex-col items-center justify-center gap-1 text-slate-400 hover:text-slate-600 dark:hover:text-slate-300 transition-colors">
-          <span className="material-symbols-outlined text-2xl">group</span>
-          <p className="text-[10px] font-bold uppercase tracking-wider">Community</p>
-        </Link>
         <button onClick={() => setIsSettingsOpen(true)} className="flex flex-1 flex-col items-center justify-center gap-1 text-slate-400 hover:text-slate-600 dark:hover:text-slate-300 transition-colors">
           <span className="material-symbols-outlined text-2xl">person</span>
           <p className="text-[10px] font-bold uppercase tracking-wider">Profile</p>

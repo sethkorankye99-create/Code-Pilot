@@ -1,7 +1,6 @@
 import express from "express";
 import { createServer as createViteServer } from "vite";
 import { createServer } from "http";
-import { Server } from "socket.io";
 import path from "path";
 import { fileURLToPath } from "url";
 import Database from "better-sqlite3";
@@ -77,13 +76,6 @@ async function startServer() {
   
   app.use(express.json({ limit: '10mb' }));
   app.use(express.urlencoded({ limit: '10mb', extended: true }));
-
-  const io = new Server(httpServer, {
-    cors: {
-      origin: "*",
-      methods: ["GET", "POST"]
-    }
-  });
 
   // API routes FIRST
   app.get("/api/health", (req, res) => {
@@ -277,25 +269,6 @@ async function startServer() {
     } catch (err) {
       res.status(500).json({ error: "Failed to update progress" });
     }
-  });
-
-  // Socket.IO logic
-  io.on("connection", (socket) => {
-    console.log("A user connected:", socket.id);
-
-    socket.on("chat message", (msg) => {
-      // Broadcast to all clients
-      io.emit("chat message", msg);
-    });
-
-    socket.on("delete message", (id) => {
-      // Broadcast deletion to all clients
-      io.emit("delete message", id);
-    });
-
-    socket.on("disconnect", () => {
-      console.log("User disconnected:", socket.id);
-    });
   });
 
   app.post("/api/coins/add", (req, res) => {

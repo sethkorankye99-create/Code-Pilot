@@ -13,7 +13,6 @@ import {
   Menu, 
   X, 
   ChevronDown,
-  Mail,
   Settings,
   LogOut,
   Sparkles,
@@ -42,9 +41,7 @@ const NAV_ITEMS = [
   },
   { id: 'playground', label: 'Playground', icon: Sparkles, path: '/playground' },
   { id: 'ai', label: 'AI Tutor', icon: Bot, path: '/ai-tutor' },
-  { id: 'community', label: 'Community', icon: MessageSquare, path: '/community' },
   { id: 'store', label: 'Store', icon: ShoppingCart, path: '/store' },
-  { id: 'messages', label: 'Messages', icon: Mail, path: '/messages', badge: true },
 ];
 
 export default function Navigation() {
@@ -88,9 +85,6 @@ export default function Navigation() {
                   <item.icon size={18} />
                   <span>{item.label}</span>
                   {item.submenu && <ChevronDown size={14} className="opacity-50" />}
-                  {item.badge && (
-                    <span className="absolute -top-1 -right-1 size-4 bg-rose-500 border-2 border-white dark:border-[#0a0a0a] rounded-full" />
-                  )}
                 </Link>
 
                 {item.submenu && (
