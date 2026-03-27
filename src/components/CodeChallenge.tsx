@@ -12,6 +12,7 @@ import 'prismjs/components/prism-markup';
 import 'prismjs/themes/prism-tomorrow.css';
 import { Play, CheckCircle2, XCircle, RotateCcw, Lightbulb, Code2, Sparkles } from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';
+import { useAppContext } from '../context/AppContext';
 import prettier from 'prettier/standalone';
 import parserHtml from 'prettier/plugins/html';
 import parserCss from 'prettier/plugins/postcss';
@@ -28,6 +29,7 @@ interface CodeChallengeProps {
 }
 
 export default function CodeChallenge({ title, description, initialCode, solution, language, onSuccess }: CodeChallengeProps) {
+  const { deductCoin } = useAppContext();
   const [code, setCode] = useState(initialCode);
   const [output, setOutput] = useState<string[]>([]);
   const [isCorrect, setIsCorrect] = useState<boolean | null>(null);
@@ -87,10 +89,16 @@ export default function CodeChallenge({ title, description, initialCode, solutio
     return () => window.removeEventListener('keydown', handleKeyDown);
   }, [code, language]);
 
-  const runCode = () => {
+  const runCode = async () => {
     setIsRunning(true);
     setOutput([]);
     setIsCorrect(null);
+
+    const result = await deductCoin();
+    if (!result.success) {
+      setIsRunning(false);
+      return;
+    }
 
     const logs: string[] = [];
     const customConsole = {

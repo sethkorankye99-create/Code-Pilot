@@ -13,7 +13,7 @@ interface Message {
 }
 
 export default function SupportChat() {
-  const { username } = useAppContext();
+  const { username, deductCoin } = useAppContext();
   const [messages, setMessages] = useState<Message[]>([
     {
       id: '1',
@@ -50,6 +50,9 @@ export default function SupportChat() {
   const handleSendMessage = async (e?: React.FormEvent) => {
     e?.preventDefault();
     if (!inputValue.trim()) return;
+    
+    const result = await deductCoin();
+    if (!result.success) return;
 
     const userMsg: Message = {
       id: Date.now().toString() + Math.random().toString(36).substring(2, 9),

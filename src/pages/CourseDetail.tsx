@@ -7,15 +7,46 @@ import SettingsModal from '../components/SettingsModal';
 import AdModal from '../components/AdModal';
 import { motion, AnimatePresence } from 'motion/react';
 
+const QUIZ_QUESTIONS = [
+  {
+    question: "What property is used to align items along the main axis in Flexbox?",
+    options: ["align-items", "justify-content", "flex-direction", "align-content"],
+    correct: 1
+  },
+  {
+    question: "Which property controls the ability of a flex item to grow if necessary?",
+    options: ["flex-shrink", "flex-basis", "flex-grow", "flex-wrap"],
+    correct: 2
+  },
+  {
+    question: "What is the default value of the flex-direction property?",
+    options: ["column", "row-reverse", "column-reverse", "row"],
+    correct: 3
+  },
+  {
+    question: "How do you define a container as a flex container?",
+    options: ["display: flex", "position: flex", "float: flex", "align: flex"],
+    correct: 0
+  },
+  {
+    question: "Which property aligns flex items along the cross axis?",
+    options: ["justify-content", "align-content", "align-items", "flex-start"],
+    correct: 2
+  }
+];
+
 export default function CourseDetail() {
   const { deductCoin, updateStreak, userId, showToast, addCoins } = useAppContext();
   const [isQuizStarted, setIsQuizStarted] = useState(false);
+  const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
+  const [quizScore, setQuizScore] = useState(0);
+  const [isQuizFinished, setIsQuizFinished] = useState(false);
   const [isSettingsOpen, setIsSettingsOpen] = useState(false);
   const [isAdOpen, setIsAdOpen] = useState(false);
   const [isVideoPlaying, setIsVideoPlaying] = useState(false);
   const [hasWatchedAd, setHasWatchedAd] = useState(false);
   const [isCompleted, setIsCompleted] = useState(false);
-  const [quizScore, setQuizScore] = useState(0);
+  const [isDeducting, setIsDeducting] = useState(false);
 
   const courseId = "css-advanced";
   const moduleId = "module-3";
@@ -65,21 +96,38 @@ export default function CourseDetail() {
     }
   };
 
-  const handleStartQuiz = async () => {
+  const handleStartQuiz = () => {
+    setIsQuizStarted(true);
+    setCurrentQuestionIndex(0);
+    setQuizScore(0);
+    setIsQuizFinished(false);
+    updateStreak();
+  };
+
+  const handleAnswerQuestion = async (optionIndex: number) => {
+    if (isDeducting) return;
+    
+    setIsDeducting(true);
     const result = await deductCoin();
+    
     if (result.success) {
-      setIsQuizStarted(true);
-      await updateStreak();
-      // Simulate quiz completion for demo purposes
-      setTimeout(() => {
-        const score = Math.floor(Math.random() * 3) + 8; // Random score 8-10
-        setQuizScore(score);
-        saveProgress(isCompleted, score);
-        addCoins(score); // Earn coins based on score
-        showToast(`Quiz completed! You scored ${score}/10 and earned ${score} coins!`, "success");
-        setIsQuizStarted(false);
-      }, 3000);
+      const isCorrect = optionIndex === QUIZ_QUESTIONS[currentQuestionIndex].correct;
+      const newScore = isCorrect ? quizScore + 1 : quizScore;
+      setQuizScore(newScore);
+
+      if (currentQuestionIndex < QUIZ_QUESTIONS.length - 1) {
+        setCurrentQuestionIndex(currentQuestionIndex + 1);
+      } else {
+        setIsQuizFinished(true);
+        const finalScore = Math.round((newScore / QUIZ_QUESTIONS.length) * 10);
+        saveProgress(isCompleted, finalScore);
+        showToast(`Quiz completed! Final Score: ${finalScore}/10`, "success");
+      }
+    } else {
+      // deductCoin already handles showing the ad modal or error if needed
+      // but we might want to stay on the same question
     }
+    setIsDeducting(false);
   };
 
   const handlePlayClick = () => {
@@ -186,34 +234,111 @@ export default function CourseDetail() {
       {/* Course Content List */}
       <div className="flex-1 px-4 pb-24">
         {/* Quiz Section */}
-        <div className="mb-6 bg-slate-50 dark:bg-slate-900 rounded-2xl p-5 border border-slate-200 dark:border-slate-800 text-center">
-          <div className="w-12 h-12 bg-yellow-100 dark:bg-yellow-900/30 text-yellow-600 dark:text-yellow-500 rounded-full flex items-center justify-center mx-auto mb-3">
-            <span className="material-symbols-outlined text-2xl" style={{fontVariationSettings: "'FILL' 1"}}>quiz</span>
-          </div>
-          <h3 className="text-lg font-bold text-slate-900 dark:text-white mb-2">Module Quiz</h3>
-          <p className="text-sm text-slate-500 dark:text-slate-400 mb-4">Test your knowledge on Advanced CSS Flexbox. Costs 1 coin.</p>
+        <div className="mb-6 bg-slate-50 dark:bg-slate-900 rounded-[2rem] p-6 border border-slate-200 dark:border-slate-800 shadow-xl overflow-hidden relative">
+          <div className="absolute top-0 right-0 w-32 h-32 bg-yellow-500/5 blur-3xl rounded-full"></div>
           
-          {quizScore > 0 && !isQuizStarted && (
-            <div className="mb-4 bg-emerald-100 dark:bg-emerald-900/30 text-emerald-700 dark:text-emerald-400 p-3 rounded-xl text-sm font-bold flex items-center justify-center gap-2">
-              <span className="material-symbols-outlined">workspace_premium</span>
-              Previous Score: {quizScore}/10
-            </div>
-          )}
-          
-          {isQuizStarted ? (
-            <div className="bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-400 p-3 rounded-xl text-sm font-bold flex items-center justify-center gap-2">
-              <div className="size-4 rounded-full border-2 border-green-700 dark:border-green-400 border-t-transparent animate-spin"></div>
-              Quiz in progress...
-            </div>
-          ) : (
-            <button 
-              onClick={handleStartQuiz}
-              className="w-full py-3 rounded-xl bg-slate-900 dark:bg-white text-white dark:text-slate-900 font-bold text-sm hover:opacity-90 transition-opacity flex items-center justify-center gap-2"
-            >
-              <span className="material-symbols-outlined text-yellow-500 text-lg" style={{fontVariationSettings: "'FILL' 1"}}>monetization_on</span>
-              Start Quiz (1 Coin)
-            </button>
-          )}
+          <AnimatePresence mode="wait">
+            {!isQuizStarted ? (
+              <motion.div 
+                key="start"
+                initial={{ opacity: 0, y: 10 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: -10 }}
+                className="text-center"
+              >
+                <div className="w-16 h-16 bg-yellow-100 dark:bg-yellow-900/30 text-yellow-600 dark:text-yellow-500 rounded-2xl flex items-center justify-center mx-auto mb-4 shadow-inner">
+                  <span className="material-symbols-outlined text-3xl" style={{fontVariationSettings: "'FILL' 1"}}>quiz</span>
+                </div>
+                <h3 className="text-xl font-bold text-slate-900 dark:text-white mb-2">Module Quiz</h3>
+                <p className="text-sm text-slate-500 dark:text-slate-400 mb-6">
+                  Test your knowledge on Advanced CSS Flexbox.<br/>
+                  <span className="font-bold text-yellow-600 dark:text-yellow-500">Each question costs 1 coin.</span>
+                </p>
+                
+                {quizScore > 0 && (
+                  <div className="mb-6 bg-emerald-100 dark:bg-emerald-900/30 text-emerald-700 dark:text-emerald-400 p-4 rounded-2xl text-sm font-bold flex items-center justify-center gap-2 border border-emerald-200 dark:border-emerald-800/50">
+                    <span className="material-symbols-outlined">workspace_premium</span>
+                    Last Score: {quizScore}/10
+                  </div>
+                )}
+                
+                <button 
+                  onClick={handleStartQuiz}
+                  className="w-full py-4 rounded-2xl bg-slate-900 dark:bg-white text-white dark:text-slate-900 font-bold text-base hover:opacity-90 transition-all shadow-lg active:scale-[0.98]"
+                >
+                  Start Quiz
+                </button>
+              </motion.div>
+            ) : isQuizFinished ? (
+              <motion.div 
+                key="finished"
+                initial={{ opacity: 0, scale: 0.9 }}
+                animate={{ opacity: 1, scale: 1 }}
+                className="text-center py-4"
+              >
+                <div className="size-20 bg-emerald-100 dark:bg-emerald-900/30 text-emerald-600 dark:text-emerald-500 rounded-full flex items-center justify-center mx-auto mb-4">
+                  <span className="material-symbols-outlined text-5xl">check_circle</span>
+                </div>
+                <h3 className="text-2xl font-bold text-slate-900 dark:text-white mb-2">Quiz Finished!</h3>
+                <p className="text-slate-500 dark:text-slate-400 mb-6">You scored {quizScore} out of {QUIZ_QUESTIONS.length}</p>
+                <button 
+                  onClick={() => setIsQuizStarted(false)}
+                  className="w-full py-4 rounded-2xl bg-primary text-white font-bold text-base hover:bg-primary/90 transition-all shadow-lg"
+                >
+                  Return to Module
+                </button>
+              </motion.div>
+            ) : (
+              <motion.div 
+                key="question"
+                initial={{ opacity: 0, x: 20 }}
+                animate={{ opacity: 1, x: 0 }}
+                exit={{ opacity: 0, x: -20 }}
+                className="space-y-6"
+              >
+                <div className="flex justify-between items-center mb-2">
+                  <span className="text-[10px] font-black uppercase tracking-widest text-slate-400">Question {currentQuestionIndex + 1} of {QUIZ_QUESTIONS.length}</span>
+                  <div className="flex items-center gap-1 text-yellow-500 font-bold text-xs">
+                    <span className="material-symbols-outlined text-sm" style={{fontVariationSettings: "'FILL' 1"}}>monetization_on</span>
+                    -1
+                  </div>
+                </div>
+                
+                <div className="w-full bg-slate-200 dark:bg-slate-800 h-1.5 rounded-full overflow-hidden mb-6">
+                  <motion.div 
+                    className="h-full bg-primary"
+                    initial={{ width: 0 }}
+                    animate={{ width: `${((currentQuestionIndex + 1) / QUIZ_QUESTIONS.length) * 100}%` }}
+                  />
+                </div>
+
+                <h4 className="text-lg font-bold text-slate-900 dark:text-white leading-tight">
+                  {QUIZ_QUESTIONS[currentQuestionIndex].question}
+                </h4>
+
+                <div className="space-y-3">
+                  {QUIZ_QUESTIONS[currentQuestionIndex].options.map((option, idx) => (
+                    <button
+                      key={idx}
+                      onClick={() => handleAnswerQuestion(idx)}
+                      disabled={isDeducting}
+                      className="w-full p-4 text-left rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 hover:border-primary hover:bg-primary/5 transition-all group flex items-center justify-between disabled:opacity-50"
+                    >
+                      <span className="font-medium text-slate-700 dark:text-slate-300 group-hover:text-primary">{option}</span>
+                      <div className="size-5 rounded-full border-2 border-slate-200 dark:border-slate-700 group-hover:border-primary transition-colors"></div>
+                    </button>
+                  ))}
+                </div>
+                
+                {isDeducting && (
+                  <div className="flex items-center justify-center gap-2 text-xs text-slate-400 animate-pulse">
+                    <div className="size-3 border-2 border-slate-400 border-t-transparent rounded-full animate-spin"></div>
+                    Processing coin deduction...
+                  </div>
+                )}
+              </motion.div>
+            )}
+          </AnimatePresence>
         </div>
 
         <div className="flex items-center justify-between mb-4 mt-2">

@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
-import { X, ExternalLink, ShieldAlert } from 'lucide-react';
+import { X, ExternalLink, ShieldAlert, Coins } from 'lucide-react';
+import { useAppContext } from '../context/AppContext';
 
 interface AdModalProps {
   isOpen: boolean;
@@ -8,13 +9,16 @@ interface AdModalProps {
 }
 
 export default function AdModal({ isOpen, onClose }: AdModalProps) {
+  const { addCoins } = useAppContext();
   const [timeLeft, setTimeLeft] = useState(5);
   const [canSkip, setCanSkip] = useState(false);
+  const [isRewarded, setIsRewarded] = useState(false);
 
   useEffect(() => {
     if (isOpen) {
       setTimeLeft(5);
       setCanSkip(false);
+      setIsRewarded(false);
       const timer = setInterval(() => {
         setTimeLeft((prev) => {
           if (prev <= 1) {
@@ -29,6 +33,13 @@ export default function AdModal({ isOpen, onClose }: AdModalProps) {
     }
   }, [isOpen]);
 
+  const handleReward = async () => {
+    if (isRewarded) return;
+    setIsRewarded(true);
+    await addCoins(5); // Reward 5 coins for watching an ad
+    onClose();
+  };
+
   return (
     <AnimatePresence>
       {isOpen && (
@@ -38,7 +49,7 @@ export default function AdModal({ isOpen, onClose }: AdModalProps) {
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
             className="absolute inset-0 bg-black/80 backdrop-blur-sm"
-            onClick={() => canSkip && onClose()}
+            onClick={() => canSkip && handleReward()}
           />
           
           <motion.div
@@ -67,11 +78,11 @@ export default function AdModal({ isOpen, onClose }: AdModalProps) {
               
               {canSkip && (
                 <button 
-                  onClick={onClose}
+                  onClick={handleReward}
                   className="absolute bottom-4 right-4 bg-primary text-white text-xs font-bold px-4 py-2 rounded-full flex items-center gap-2 shadow-lg hover:bg-primary/90 transition-all active:scale-95"
                 >
-                  <span>Skip Ad</span>
-                  <X size={14} />
+                  <span>Skip Ad & Get Coins</span>
+                  <Coins size={14} />
                 </button>
               )}
             </div>
@@ -92,7 +103,7 @@ export default function AdModal({ isOpen, onClose }: AdModalProps) {
                   Learn More <ExternalLink size={14} />
                 </button>
                 <button 
-                  onClick={onClose}
+                  onClick={handleReward}
                   disabled={!canSkip}
                   className={`flex-1 font-bold py-3 rounded-xl text-sm transition-all shadow-lg ${
                     canSkip 
@@ -100,7 +111,7 @@ export default function AdModal({ isOpen, onClose }: AdModalProps) {
                     : 'bg-slate-200/50 dark:bg-slate-800/50 text-slate-400 cursor-not-allowed shadow-none'
                   }`}
                 >
-                  {canSkip ? 'Continue to Video' : `Wait ${timeLeft}s`}
+                  {canSkip ? 'Claim Reward' : `Wait ${timeLeft}s`}
                 </button>
               </div>
             </div>

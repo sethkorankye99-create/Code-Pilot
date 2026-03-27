@@ -50,15 +50,13 @@ export default function PythonReference() {
   const [selectedOption, setSelectedOption] = useState<number | null>(null);
   const [isCorrect, setIsCorrect] = useState<boolean | null>(null);
   const [isTrophyModalOpen, setIsTrophyModalOpen] = useState(false);
+  const [isDeducting, setIsDeducting] = useState(false);
 
   const activeSection = pythonContent.find(s => s.id === activeSectionId) || pythonContent[0];
 
   const handleQuizStart = async () => {
-    const result = await deductCoin();
-    if (result.success) {
-      setQuizMode(true);
-      await updateStreak();
-    }
+    setQuizMode(true);
+    await updateStreak();
   };
 
   const handleNextSection = () => {
@@ -86,28 +84,34 @@ export default function PythonReference() {
     setIsCorrect(null);
   };
 
-  const handleOptionSelect = (index: number) => {
-    if (selectedOption !== null) return;
+  const handleOptionSelect = async (index: number) => {
+    if (selectedOption !== null || isDeducting) return;
     
-    setSelectedOption(index);
-    const correct = index === activeSection.quizzes[currentQuizIndex].correctAnswer;
-    setIsCorrect(correct);
-    if (correct) setScore(s => s + 1);
+    setIsDeducting(true);
+    const result = await deductCoin();
+    
+    if (result.success) {
+      setSelectedOption(index);
+      const correct = index === activeSection.quizzes[currentQuizIndex].correctAnswer;
+      setIsCorrect(correct);
+      if (correct) setScore(s => s + 1);
 
-    setTimeout(() => {
-      if (currentQuizIndex < activeSection.quizzes.length - 1) {
-        setCurrentQuizIndex(i => i + 1);
-        setSelectedOption(null);
-        setIsCorrect(null);
-      } else {
-        setQuizFinished(true);
-        setIsTrophyModalOpen(true);
-        const finalScore = correct ? score + 1 : score;
-        if (finalScore > 0) {
-          addCoins(finalScore);
+      setTimeout(() => {
+        if (currentQuizIndex < activeSection.quizzes.length - 1) {
+          setCurrentQuizIndex(i => i + 1);
+          setSelectedOption(null);
+          setIsCorrect(null);
+        } else {
+          setQuizFinished(true);
+          setIsTrophyModalOpen(true);
+          const finalScore = correct ? score + 1 : score;
+          if (finalScore > 0) {
+            addCoins(finalScore);
+          }
         }
-      }
-    }, 1500);
+      }, 1500);
+    }
+    setIsDeducting(false);
   };
 
   return (
@@ -238,7 +242,7 @@ export default function PythonReference() {
                     className="flex-1 flex items-center justify-center gap-2 bg-accent-python hover:bg-accent-python/90 text-white font-bold py-4 px-8 rounded-2xl transition-all shadow-xl shadow-accent-python/20 hover:shadow-accent-python/40 hover:-translate-y-0.5 group"
                   >
                     <CheckCircle2 size={20} className="group-hover:scale-110 transition-transform" />
-                    Take Section Quiz (1 Coin)
+                    Take Section Quiz
                   </button>
                   <div className="flex gap-2">
                     <button 
@@ -270,7 +274,10 @@ export default function PythonReference() {
                     {/* Quiz Progress */}
                     <div className="space-y-2">
                       <div className="flex justify-between items-end">
-                        <h3 className="text-sm font-bold text-slate-500 uppercase tracking-widest">Question {currentQuizIndex + 1} of 10</h3>
+                        <div className="space-y-1">
+                          <h3 className="text-sm font-bold text-slate-500 uppercase tracking-widest">Question {currentQuizIndex + 1} of {activeSection.quizzes.length}</h3>
+                          <p className="text-[10px] font-bold text-accent-python uppercase tracking-tighter">Each question costs 1 coin</p>
+                        </div>
                         <span className="text-accent-python font-black text-xl">{score}/{activeSection.quizzes.length}</span>
                       </div>
                       <div className="h-2 w-full bg-slate-200 dark:bg-white/10 rounded-full overflow-hidden">
@@ -283,9 +290,17 @@ export default function PythonReference() {
                     </div>
 
                     {/* Question */}
-                    <h2 className="text-2xl md:text-3xl font-bold leading-tight">
-                      {activeSection.quizzes[currentQuizIndex].question}
-                    </h2>
+                    <div className="space-y-4">
+                      <h2 className="text-2xl md:text-3xl font-bold leading-tight">
+                        {activeSection.quizzes[currentQuizIndex].question}
+                      </h2>
+                      {isDeducting && (
+                        <div className="flex items-center gap-2 text-xs text-slate-400 animate-pulse font-medium">
+                          <div className="size-3 border-2 border-slate-400 border-t-transparent rounded-full animate-spin"></div>
+                          Deducting 1 coin...
+                        </div>
+                      )}
+                    </div>
 
                     {/* Options */}
                     <div className="grid gap-3">
@@ -315,8 +330,8 @@ export default function PythonReference() {
                           <button
                             key={idx}
                             onClick={() => handleOptionSelect(idx)}
-                            disabled={selectedOption !== null}
-                            className={`w-full p-5 rounded-2xl border-2 text-left transition-all flex items-center justify-between group shadow-sm hover:shadow-md hover:-translate-y-0.5 ${bgColor} ${borderColor} ${textColor}`}
+                            disabled={selectedOption !== null || isDeducting}
+                            className={`w-full p-5 rounded-2xl border-2 text-left transition-all flex items-center justify-between group shadow-sm hover:shadow-md hover:-translate-y-0.5 disabled:cursor-not-allowed ${bgColor} ${borderColor} ${textColor}`}
                           >
                             <span className="font-semibold">{option}</span>
                             {selectedOption !== null && isCorrectOption && <CheckCircle2 size={20} />}

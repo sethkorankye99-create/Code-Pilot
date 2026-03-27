@@ -19,6 +19,8 @@ interface AppContextType {
   toggleTheme: () => void;
   coins: number | null;
   streak: number;
+  isAdModalOpen: boolean;
+  setIsAdModalOpen: (isOpen: boolean) => void;
   deductCoin: () => Promise<{success: boolean, coins?: number, error?: string}>;
   addCoins: (amount: number) => Promise<{success: boolean, coins?: number, error?: string}>;
   updateStreak: () => Promise<void>;
@@ -44,6 +46,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
     const stored = localStorage.getItem('coins');
     return stored ? parseInt(stored, 10) : null;
   });
+  const [isAdModalOpen, setIsAdModalOpen] = useState(false);
 
   useEffect(() => {
     if (coins !== null) {
@@ -163,7 +166,12 @@ export function AppProvider({ children }: { children: ReactNode }) {
         showToast(`1 coin used. ${data.coins} coins remaining.`, 'info');
         return { success: true, coins: data.coins };
       } else {
-        showToast(data.error || "You have no coins left. Come back tomorrow for 5 new coins.", 'error');
+        if (coins === 0) {
+          setIsAdModalOpen(true);
+          showToast("You have no coins left! Watch an ad to get more.", 'info');
+        } else {
+          showToast(data.error || "Failed to deduct coin.", 'error');
+        }
         return { success: false, error: data.error };
       }
     } catch (err) {
@@ -245,7 +253,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
   };
 
   return (
-    <AppContext.Provider value={{ userId, username, profilePicture, isLoggedIn, login, logout, theme, toggleTheme, coins, streak, deductCoin, addCoins, updateStreak, updateProfilePicture, refreshCoins, showToast }}>
+    <AppContext.Provider value={{ userId, username, profilePicture, isLoggedIn, login, logout, theme, toggleTheme, coins, streak, isAdModalOpen, setIsAdModalOpen, deductCoin, addCoins, updateStreak, updateProfilePicture, refreshCoins, showToast }}>
       {children}
       {/* Toast Container */}
       <div className="fixed top-20 left-1/2 -translate-x-1/2 z-[100] flex flex-col gap-2 pointer-events-none w-full max-w-sm px-4">

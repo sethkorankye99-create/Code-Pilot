@@ -22,35 +22,45 @@ import SupportChat from './pages/SupportChat';
 import AITutor from './pages/AITutor';
 import AdminDashboard from './pages/AdminDashboard';
 import Store from './pages/Store';
-import { AppProvider } from './context/AppContext';
+import { AppProvider, useAppContext } from './context/AppContext';
 import FloatingAIChat from './components/FloatingAIChat';
+import AdModal from './components/AdModal';
+
+function AppContent() {
+  const { isAdModalOpen, setIsAdModalOpen } = useAppContext();
+  
+  return (
+    <Router>
+      <FloatingAIChat />
+      <AdModal isOpen={isAdModalOpen} onClose={() => setIsAdModalOpen(false)} />
+      <Routes>
+        <Route path="/" element={<Landing />} />
+        <Route path="/login" element={<Login />} />
+        <Route path="/signup" element={<SignUp />} />
+        <Route path="/dashboard" element={<Dashboard />} />
+        <Route path="/lesson" element={<Lesson />} />
+        <Route path="/html-mastery" element={<HtmlReference />} />
+        <Route path="/css-mastery" element={<CssReference />} />
+        <Route path="/js-mastery" element={<JsReference />} />
+        <Route path="/ts-mastery" element={<TsReference />} />
+        <Route path="/python-mastery" element={<PythonReference />} />
+        <Route path="/cpp-mastery" element={<CppReference />} />
+        <Route path="/playground" element={<CodePlayground />} />
+        <Route path="/course" element={<CourseDetail />} />
+        <Route path="/explore" element={<Explore />} />
+        <Route path="/support" element={<SupportChat />} />
+        <Route path="/ai-tutor" element={<AITutor />} />
+        <Route path="/admin" element={<AdminDashboard />} />
+        <Route path="/store" element={<Store />} />
+      </Routes>
+    </Router>
+  );
+}
 
 export default function App() {
   return (
     <AppProvider>
-      <Router>
-        <FloatingAIChat />
-        <Routes>
-          <Route path="/" element={<Landing />} />
-          <Route path="/login" element={<Login />} />
-          <Route path="/signup" element={<SignUp />} />
-          <Route path="/dashboard" element={<Dashboard />} />
-          <Route path="/lesson" element={<Lesson />} />
-          <Route path="/html-mastery" element={<HtmlReference />} />
-          <Route path="/css-mastery" element={<CssReference />} />
-          <Route path="/js-mastery" element={<JsReference />} />
-          <Route path="/ts-mastery" element={<TsReference />} />
-          <Route path="/python-mastery" element={<PythonReference />} />
-          <Route path="/cpp-mastery" element={<CppReference />} />
-          <Route path="/playground" element={<CodePlayground />} />
-          <Route path="/course" element={<CourseDetail />} />
-          <Route path="/explore" element={<Explore />} />
-          <Route path="/support" element={<SupportChat />} />
-          <Route path="/ai-tutor" element={<AITutor />} />
-          <Route path="/admin" element={<AdminDashboard />} />
-          <Route path="/store" element={<Store />} />
-        </Routes>
-      </Router>
+      <AppContent />
     </AppProvider>
   );
 }

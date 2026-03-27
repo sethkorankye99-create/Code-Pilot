@@ -17,7 +17,7 @@ interface AIChatInterfaceProps {
 }
 
 export default function AIChatInterface({ onClose, isModal = false }: AIChatInterfaceProps) {
-  const { username } = useAppContext();
+  const { username, deductCoin } = useAppContext();
   const [messages, setMessages] = useState<Message[]>(() => {
     const saved = localStorage.getItem(`ai_tutor_history_${username}`);
     if (saved) {
@@ -58,6 +58,9 @@ export default function AIChatInterface({ onClose, isModal = false }: AIChatInte
   const handleSendMessage = async (e?: React.FormEvent) => {
     e?.preventDefault();
     if (!inputValue.trim()) return;
+    
+    const result = await deductCoin();
+    if (!result.success) return;
 
     const userMsg: Message = {
       id: Date.now().toString(),
