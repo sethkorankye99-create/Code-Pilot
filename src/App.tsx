@@ -3,7 +3,7 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import Landing from './pages/Landing';
 import Login from './pages/Login';
 import SignUp from './pages/SignUp';
@@ -52,6 +52,7 @@ function AppContent() {
         <Route path="/ai-tutor" element={<AITutor />} />
         <Route path="/admin" element={<AdminDashboard />} />
         <Route path="/store" element={<Store />} />
+        <Route path="*" element={<Navigate to="/" replace />} />
       </Routes>
     </Router>
   );

@@ -8,8 +8,9 @@ export default function FloatingAIChat() {
   const [isOpen, setIsOpen] = useState(false);
   
   // Don't show on login, signup, landing, or the AI Tutor page itself
-  const hideOn = ['/', '/login', '/signup', '/ai-tutor'];
-  if (hideOn.includes(location.pathname)) return null;
+  const hideOn = ['/', '/login', '/signup', '/ai-tutor', '/index.html'];
+  const currentPath = location.pathname.replace(/\/$/, '') || '/';
+  if (hideOn.includes(currentPath)) return null;
 
   return (
     <>
