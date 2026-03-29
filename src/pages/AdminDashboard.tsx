@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { motion } from 'motion/react';
+import VideoPlayerModal from '../components/VideoPlayerModal';
 
 interface User {
   id: string;
@@ -35,6 +36,7 @@ export default function AdminDashboard() {
   const [newVideo, setNewVideo] = useState({ title: '', category: '', url: '', time: '', image_url: '' });
   const [videoLoading, setVideoLoading] = useState(false);
   const [editingVideoId, setEditingVideoId] = useState<number | null>(null);
+  const [playingVideoUrl, setPlayingVideoUrl] = useState<string | null>(null);
 
   const getThumbnailUrl = (video: Video) => {
     let urlToCheck = video.image_url;
@@ -472,7 +474,7 @@ export default function AdminDashboard() {
                         </td>
                         <td className="px-6 py-4 text-slate-500 dark:text-slate-400 text-sm">{video.time}</td>
                         <td className="px-6 py-4 text-slate-500 dark:text-slate-400 text-sm truncate max-w-[200px]">
-                          <a href={video.url} target="_blank" rel="noreferrer" className="hover:text-primary underline transition-colors">{video.url}</a>
+                          <button onClick={() => setPlayingVideoUrl(video.url)} className="hover:text-primary underline transition-colors text-left">{video.url}</button>
                         </td>
                         <td className="px-6 py-4 text-right">
                           <div className="flex items-center justify-end gap-2">
@@ -511,6 +513,7 @@ export default function AdminDashboard() {
           </div>
         )}
       </div>
+      <VideoPlayerModal url={playingVideoUrl} onClose={() => setPlayingVideoUrl(null)} />
     </div>
   );
 }

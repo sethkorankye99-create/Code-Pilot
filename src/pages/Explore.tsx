@@ -5,6 +5,7 @@ import SettingsModal from '../components/SettingsModal';
 import CoinDisplay from '../components/CoinDisplay';
 import StreakDisplay from '../components/StreakDisplay';
 import AdModal from '../components/AdModal';
+import VideoPlayerModal from '../components/VideoPlayerModal';
 import { useAppContext } from '../context/AppContext';
 
 interface Video {
@@ -23,6 +24,7 @@ export default function Explore() {
   const [hasWatchedAd, setHasWatchedAd] = useState(false);
   const [videos, setVideos] = useState<Video[]>([]);
   const [selectedVideoUrl, setSelectedVideoUrl] = useState<string | null>(null);
+  const [playingVideoUrl, setPlayingVideoUrl] = useState<string | null>(null);
 
   const getThumbnailUrl = (video: Video) => {
     let urlToCheck = video.image_url;
@@ -67,7 +69,7 @@ export default function Explore() {
       setSelectedVideoUrl(url);
       setIsAdOpen(true);
     } else {
-      window.open(url, '_blank');
+      setPlayingVideoUrl(url);
     }
   };
 
@@ -75,7 +77,7 @@ export default function Explore() {
     setIsAdOpen(false);
     setHasWatchedAd(true);
     if (selectedVideoUrl) {
-      window.open(selectedVideoUrl, '_blank');
+      setPlayingVideoUrl(selectedVideoUrl);
       setSelectedVideoUrl(null);
     }
   };
@@ -174,6 +176,7 @@ export default function Explore() {
       </div>
 
       <AdModal isOpen={isAdOpen} onClose={handleAdClose} />
+      <VideoPlayerModal url={playingVideoUrl} onClose={() => setPlayingVideoUrl(null)} />
     </div>
   );
 }
