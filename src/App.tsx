@@ -17,7 +17,6 @@ import PythonReference from './pages/PythonReference';
 import CppReference from './pages/CppReference';
 import CodePlayground from './pages/CodePlayground';
 import CourseDetail from './pages/CourseDetail';
-import Explore from './pages/Explore';
 import SupportChat from './pages/SupportChat';
 import AITutor from './pages/AITutor';
 import AdminDashboard from './pages/AdminDashboard';
@@ -47,7 +46,6 @@ function AppContent() {
         <Route path="/cpp-mastery" element={<CppReference />} />
         <Route path="/playground" element={<CodePlayground />} />
         <Route path="/course" element={<CourseDetail />} />
-        <Route path="/explore" element={<Explore />} />
         <Route path="/support" element={<SupportChat />} />
         <Route path="/ai-tutor" element={<AITutor />} />
         <Route path="/admin" element={<AdminDashboard />} />

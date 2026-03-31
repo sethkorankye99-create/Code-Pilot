@@ -23,24 +23,16 @@ import SettingsModal from './SettingsModal';
 import CoinDisplay from './CoinDisplay';
 import StreakDisplay from './StreakDisplay';
 
-const NAV_ITEMS = [
+const NAV_ITEMS: {
+  id: string;
+  label: string;
+  icon: any;
+  path: string;
+  submenu?: { label: string; path: string; }[];
+}[] = [
   { id: 'home', label: 'Home', icon: Home, path: '/dashboard' },
-  { 
-    id: 'languages', 
-    label: 'Languages', 
-    icon: Code2, 
-    path: '/explore',
-    submenu: [
-      { label: 'HTML', path: '/html-mastery' },
-      { label: 'CSS', path: '/css-mastery' },
-      { label: 'JavaScript', path: '/js-mastery' },
-      { label: 'TypeScript', path: '/ts-mastery' },
-      { label: 'Python', path: '/python-mastery' },
-      { label: 'C++', path: '/cpp-mastery' },
-    ]
-  },
-  { id: 'playground', label: 'Playground', icon: Sparkles, path: '/playground' },
   { id: 'ai', label: 'AI Tutor', icon: Bot, path: '/ai-tutor' },
+  { id: 'playground', label: 'Playground', icon: Sparkles, path: '/playground' },
   { id: 'store', label: 'Store', icon: ShoppingCart, path: '/store' },
 ];
 
@@ -274,7 +266,7 @@ export default function Navigation() {
 
       {/* Mobile Bottom Navigation */}
       <nav className="md:hidden fixed bottom-0 left-0 right-0 h-16 bg-white/80 dark:bg-[#0a0a0a]/80 backdrop-blur-xl border-t border-slate-200 dark:border-white/5 px-6 flex items-center justify-between z-40">
-        {NAV_ITEMS.filter(item => item.id !== 'languages').map((item) => (
+        {NAV_ITEMS.map((item) => (
           <Link
             key={item.id}
             to={item.path}

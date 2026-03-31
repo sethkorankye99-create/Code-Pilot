@@ -299,11 +299,11 @@ export default function Dashboard() {
             </div>
             <p className="text-[10px] font-bold uppercase tracking-wider">Editor</p>
           </Link>
-          <Link to="/explore" className="flex flex-col items-center justify-center gap-1 p-2 text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 transition-colors">
+          <Link to="/ai-tutor" className="flex flex-col items-center justify-center gap-1 p-2 text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 transition-colors">
             <div className="p-1.5 rounded-xl hover:bg-slate-100 dark:hover:bg-white/5 transition-colors">
-              <span className="material-symbols-outlined">search</span>
+              <span className="material-symbols-outlined">smart_toy</span>
             </div>
-            <p className="text-[10px] font-bold uppercase tracking-wider">Explore</p>
+            <p className="text-[10px] font-bold uppercase tracking-wider">AI Tutor</p>
           </Link>
           <button onClick={() => setIsSettingsOpen(true)} className="flex flex-col items-center justify-center gap-1 p-2 text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 transition-colors">
             <div className="p-1.5 rounded-xl hover:bg-slate-100 dark:hover:bg-white/5 transition-colors">

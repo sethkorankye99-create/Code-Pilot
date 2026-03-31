@@ -402,9 +402,9 @@ export default function CourseDetail() {
           <span className="material-symbols-outlined text-2xl" style={{fontVariationSettings: "'FILL' 1"}}>menu_book</span>
           <p className="text-[10px] font-bold uppercase tracking-wider">Courses</p>
         </Link>
-        <Link to="/explore" className="flex flex-1 flex-col items-center justify-center gap-1 text-slate-400 hover:text-slate-600 dark:hover:text-slate-300 transition-colors">
-          <span className="material-symbols-outlined text-2xl">search</span>
-          <p className="text-[10px] font-bold uppercase tracking-wider">Explore</p>
+        <Link to="/ai-tutor" className="flex flex-1 flex-col items-center justify-center gap-1 text-slate-400 hover:text-slate-600 dark:hover:text-slate-300 transition-colors">
+          <span className="material-symbols-outlined text-2xl">smart_toy</span>
+          <p className="text-[10px] font-bold uppercase tracking-wider">AI Tutor</p>
         </Link>
         <button onClick={() => setIsSettingsOpen(true)} className="flex flex-1 flex-col items-center justify-center gap-1 text-slate-400 hover:text-slate-600 dark:hover:text-slate-300 transition-colors">
           <span className="material-symbols-outlined text-2xl">person</span>
