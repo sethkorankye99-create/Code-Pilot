@@ -12,7 +12,6 @@ export default function TodoList() {
   const [tasks, setTasks] = useState<Task[]>([
     { id: '1', text: 'Complete a daily lesson', completed: false },
     { id: '2', text: 'Practice in the Code Playground', completed: false },
-    { id: '3', text: 'Ask the AI Tutor a question', completed: false },
   ]);
 
   const toggleTask = (id: string) => {

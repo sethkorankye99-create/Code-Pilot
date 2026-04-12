@@ -4,10 +4,8 @@ import { motion, AnimatePresence } from 'motion/react';
 import { 
   Home, 
   Code2, 
-  MessageSquare, 
   User, 
   Search, 
-  Bot, 
   PlayCircle, 
   Bell, 
   Menu, 
@@ -31,7 +29,6 @@ const NAV_ITEMS: {
   submenu?: { label: string; path: string; }[];
 }[] = [
   { id: 'home', label: 'Home', icon: Home, path: '/dashboard' },
-  { id: 'ai', label: 'AI Tutor', icon: Bot, path: '/ai-tutor' },
   { id: 'playground', label: 'Playground', icon: Sparkles, path: '/playground' },
   { id: 'store', label: 'Store', icon: ShoppingCart, path: '/store' },
 ];
@@ -277,7 +274,7 @@ export default function Navigation() {
             <div className={`p-1.5 rounded-xl transition-colors ${isActive(item.path) ? 'bg-indigo-50 dark:bg-indigo-500/10' : ''}`}>
               <item.icon size={22} strokeWidth={isActive(item.path) ? 2.5 : 2} />
             </div>
-            <span className="text-[10px] font-black uppercase tracking-widest">{item.id === 'ai' ? 'AI' : item.label.split(' ')[0]}</span>
+            <span className="text-[10px] font-black uppercase tracking-widest">{item.label.split(' ')[0]}</span>
           </Link>
         ))}
       </nav>

@@ -17,12 +17,9 @@ import PythonReference from './pages/PythonReference';
 import CppReference from './pages/CppReference';
 import CodePlayground from './pages/CodePlayground';
 import CourseDetail from './pages/CourseDetail';
-import SupportChat from './pages/SupportChat';
-import AITutor from './pages/AITutor';
 import AdminDashboard from './pages/AdminDashboard';
 import Store from './pages/Store';
 import { AppProvider, useAppContext } from './context/AppContext';
-import FloatingAIChat from './components/FloatingAIChat';
 import AdModal from './components/AdModal';
 
 function AppContent() {
@@ -30,7 +27,6 @@ function AppContent() {
   
   return (
     <Router>
-      <FloatingAIChat />
       <AdModal isOpen={isAdModalOpen} onClose={() => setIsAdModalOpen(false)} />
       <Routes>
         <Route path="/" element={<Landing />} />
@@ -46,8 +42,6 @@ function AppContent() {
         <Route path="/cpp-mastery" element={<CppReference />} />
         <Route path="/playground" element={<CodePlayground />} />
         <Route path="/course" element={<CourseDetail />} />
-        <Route path="/support" element={<SupportChat />} />
-        <Route path="/ai-tutor" element={<AITutor />} />
         <Route path="/admin" element={<AdminDashboard />} />
         <Route path="/store" element={<Store />} />
         <Route path="*" element={<Navigate to="/" replace />} />

@@ -189,28 +189,6 @@ export default function Dashboard() {
         </motion.div>
       </div>
 
-      {/* AI Tutor Promo */}
-      <div className="px-4 pb-8">
-        <Link to="/ai-tutor">
-          <motion.div 
-            whileHover={{ scale: 1.01, y: -2 }}
-            whileTap={{ scale: 0.99 }}
-            className="bg-gradient-to-r from-indigo-50/80 to-purple-50/80 dark:from-indigo-900/10 dark:to-purple-900/10 backdrop-blur-xl border border-indigo-100/50 dark:border-white/10 rounded-[2rem] p-6 flex items-center gap-5 group transition-all shadow-sm hover:shadow-lg hover:shadow-indigo-500/10"
-          >
-            <div className="size-16 rounded-2xl bg-gradient-to-br from-indigo-500 to-purple-500 flex items-center justify-center text-white shadow-lg shadow-indigo-500/25 group-hover:scale-105 transition-transform">
-              <span className="material-symbols-outlined text-3xl">psychology</span>
-            </div>
-            <div className="flex-1">
-              <h3 className="font-bold text-slate-900 dark:text-white text-lg mb-1">AI Programming Tutor</h3>
-              <p className="text-sm text-slate-600 dark:text-slate-400">Stuck on a bug? Ask any programming question and get instant help.</p>
-            </div>
-            <div className="size-10 rounded-full bg-white dark:bg-white/5 flex items-center justify-center text-indigo-500 shadow-sm group-hover:bg-indigo-500 group-hover:text-white transition-colors">
-              <ChevronRight size={20} />
-            </div>
-          </motion.div>
-        </Link>
-      </div>
-
       {/* Todo List Section */}
       <div className="px-4 pb-8">
         <TodoList />
@@ -298,12 +276,6 @@ export default function Dashboard() {
               <span className="material-symbols-outlined">code</span>
             </div>
             <p className="text-[10px] font-bold uppercase tracking-wider">Editor</p>
-          </Link>
-          <Link to="/ai-tutor" className="flex flex-col items-center justify-center gap-1 p-2 text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 transition-colors">
-            <div className="p-1.5 rounded-xl hover:bg-slate-100 dark:hover:bg-white/5 transition-colors">
-              <span className="material-symbols-outlined">smart_toy</span>
-            </div>
-            <p className="text-[10px] font-bold uppercase tracking-wider">AI Tutor</p>
           </Link>
           <button onClick={() => setIsSettingsOpen(true)} className="flex flex-col items-center justify-center gap-1 p-2 text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 transition-colors">
             <div className="p-1.5 rounded-xl hover:bg-slate-100 dark:hover:bg-white/5 transition-colors">

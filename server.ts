@@ -5,8 +5,6 @@ import path from "path";
 import { fileURLToPath } from "url";
 import Database from "better-sqlite3";
 
-import { GoogleGenAI } from "@google/genai";
-
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
@@ -312,37 +310,6 @@ async function startServer() {
       res.json({ success: true, coins: newCoins });
     } catch (err) {
       res.status(500).json({ error: "Database error" });
-    }
-  });
-
-  app.post("/api/support/chat", async (req, res) => {
-    const { message, username } = req.body;
-    if (!message) {
-      return res.status(400).json({ error: "Message required" });
-    }
-
-    try {
-      const ai = new GoogleGenAI({ apiKey: process.env.GEMINI_API_KEY! });
-      const response = await ai.models.generateContent({
-        model: "gemini-3-flash-preview",
-        contents: [
-          {
-            role: "user",
-            parts: [{ text: `You are the Customer Support Admin for "Code Pillot", an interactive coding platform. 
-            The user's name is ${username || 'Guest'}. 
-            Be professional, helpful, and encouraging. 
-            Respond to this message: "${message}"` }]
-          }
-        ],
-        config: {
-          systemInstruction: "You are a helpful support admin for Code Pillot. Keep responses concise and friendly."
-        }
-      });
-
-      res.json({ success: true, text: response.text });
-    } catch (err) {
-      console.error("Gemini Error:", err);
-      res.status(500).json({ error: "Failed to generate response" });
     }
   });
 
