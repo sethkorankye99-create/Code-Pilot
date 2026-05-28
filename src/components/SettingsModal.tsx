@@ -178,10 +178,26 @@ export default function SettingsModal({ isOpen, onClose }: SettingsModalProps) {
                 </button>
               </div>
 
+              {/* Customer Support */}
+              <Link 
+                to="/support"
+                onClick={onClose}
+                className="flex items-center justify-between p-4 rounded-2xl bg-slate-50/50 dark:bg-slate-800/30 border border-slate-200/50 dark:border-slate-800/50 hover:bg-slate-100/50 dark:hover:bg-slate-800/50 transition-colors backdrop-blur-sm"
+              >
+                <div className="flex items-center gap-3">
+                  <span className="material-symbols-outlined text-primary">support_agent</span>
+                  <div>
+                    <p className="text-sm font-bold text-slate-900 dark:text-white">Customer Support</p>
+                    <p className="text-xs text-slate-500 dark:text-slate-400">Chat with our admin team</p>
+                  </div>
+                </div>
+                <span className="material-symbols-outlined text-slate-400">chevron_right</span>
+              </Link>
+
               {/* Logout Button */}
               <button 
                 onClick={handleLogout}
-                className="w-full py-4 rounded-2xl bg-red-50/50 dark:bg-red-900/10 text-red-600 dark:text-red-400 font-bold text-sm hover:bg-red-100/50 dark:hover:bg-red-900/20 transition-colors flex items-center justify-center gap-2 border border-red-100/50 dark:border-red-900/30 backdrop-blur-sm"
+                className="w-full py-4 rounded-2xl bg-red-50/50 dark:bg-red-900/10 text-red-600 dark:text-red-400 font-bold text-sm hover:bg-red-100/50 dark:hover:bg-red-100/50 transition-colors flex items-center justify-center gap-2 border border-red-100/50 dark:border-red-900/10 backdrop-blur-sm"
               >
                 <span className="material-symbols-outlined text-lg">logout</span>
                 Log Out

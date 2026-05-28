@@ -14,7 +14,7 @@ import {
   Settings,
   LogOut,
   Sparkles,
-  ShoppingCart
+  Compass
 } from 'lucide-react';
 import { useAppContext } from '../context/AppContext';
 import SettingsModal from './SettingsModal';
@@ -30,7 +30,6 @@ const NAV_ITEMS: {
 }[] = [
   { id: 'home', label: 'Home', icon: Home, path: '/dashboard' },
   { id: 'playground', label: 'Playground', icon: Sparkles, path: '/playground' },
-  { id: 'store', label: 'Store', icon: ShoppingCart, path: '/store' },
 ];
 
 export default function Navigation() {

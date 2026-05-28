@@ -289,7 +289,8 @@ async function startServer() {
     }
   });
 
-  app.post("/api/coins/purchase", (req, res) => {
+
+   app.post("/api/coins/purchase", (req, res) => {
     const { userId, amount } = req.body;
     if (!userId || !amount) {
       return res.status(400).json({ error: "User ID and amount required" });

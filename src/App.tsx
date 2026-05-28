@@ -17,9 +17,12 @@ import PythonReference from './pages/PythonReference';
 import CppReference from './pages/CppReference';
 import CodePlayground from './pages/CodePlayground';
 import CourseDetail from './pages/CourseDetail';
+import HTMLArticles from './pages/HTMLArticles';
+import ArticleReader from './pages/ArticleReader';
 import AdminDashboard from './pages/AdminDashboard';
 import Store from './pages/Store';
 import { AppProvider, useAppContext } from './context/AppContext';
+import { LearningProvider } from './context/LearningContext';
 import AdModal from './components/AdModal';
 
 function AppContent() {
@@ -42,6 +45,8 @@ function AppContent() {
         <Route path="/cpp-mastery" element={<CppReference />} />
         <Route path="/playground" element={<CodePlayground />} />
         <Route path="/course" element={<CourseDetail />} />
+        <Route path="/html-articles" element={<HTMLArticles />} />
+        <Route path="/html-articles/:id" element={<ArticleReader />} />
         <Route path="/admin" element={<AdminDashboard />} />
         <Route path="/store" element={<Store />} />
         <Route path="*" element={<Navigate to="/" replace />} />
@@ -53,7 +58,9 @@ function AppContent() {
 export default function App() {
   return (
     <AppProvider>
-      <AppContent />
+      <LearningProvider>
+        <AppContent />
+      </LearningProvider>
     </AppProvider>
   );
 }

@@ -21,44 +21,47 @@ export default function Login() {
     setIsLoading(true);
     try {
       // 1. Sign in with Supabase
-      const { data: authData, error: authError } = await supabase.auth.signInWithPassword({
+      const { data, error } = await supabase.auth.signInWithPassword({
         email,
         password,
       });
 
-      if (authError) {
-        showToast(authError.message, "error");
+      if (error) {
+        showToast(error.message, "error");
         setIsLoading(false);
         return;
       }
 
-      if (!authData.user) {
-        showToast("Login failed, no user returned", "error");
-        setIsLoading(false);
-        return;
+      if (!data.user) {
+        throw new Error("No user returned");
       }
 
-      // 2. Sync user with local SQLite database
-      const res = await fetch('/api/auth/sync', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ 
-          id: authData.user.id, 
-          email: authData.user.email 
-        }),
-      });
-      
-      const data = await res.json();
+      // 2. Fetch profile data (assuming a profiles table exists)
+      const { data: profile, error: profileError } = await supabase
+        .from('profiles')
+        .select('*')
+        .eq('id', data.user.id)
+        .single();
 
-      if (res.ok && data.success) {
-        login(data.user);
-        showToast("Welcome back!", "success");
-        navigate('/dashboard');
+      if (profileError) {
+        console.error("Profile fetch error:", profileError);
+        // Fallback if profile doesn't exist yet, or just log them in as guest
+        login({ id: data.user.id, username: email, coins: 0, streak_count: 0 });
       } else {
-        showToast(data.error || "Failed to sync user data", "error");
+        login({
+          id: data.user.id,
+          username: profile.username || email,
+          coins: profile.coins || 0,
+          streak_count: profile.streak_count || 0,
+          profile_picture: profile.profile_picture
+        });
       }
+      
+      showToast("Welcome back!", "success");
+      navigate('/dashboard');
     } catch (err) {
-      showToast("Network error", "error");
+      console.error("Login error:", err);
+      showToast("Login failed", "error");
     } finally {
       setIsLoading(false);
     }

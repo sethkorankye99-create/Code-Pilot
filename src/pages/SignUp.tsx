@@ -27,44 +27,36 @@ export default function SignUp() {
     setIsLoading(true);
     try {
       // 1. Sign up with Supabase
-      const { data: authData, error: authError } = await supabase.auth.signUp({
+      const { data, error } = await supabase.auth.signUp({
         email,
         password,
       });
 
-      if (authError) {
-        showToast(authError.message, "error");
+      if (error) {
+        showToast(error.message, "error");
         setIsLoading(false);
         return;
       }
 
-      if (!authData.user) {
-        showToast("Sign up failed, no user returned", "error");
-        setIsLoading(false);
-        return;
+      if (!data.user) {
+        throw new Error("No user returned");
       }
 
-      // 2. Sync user with local SQLite database
-      const res = await fetch('/api/auth/sync', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ 
-          id: authData.user.id, 
-          email: authData.user.email 
-        }),
-      });
-      
-      const data = await res.json();
+      // 2. Initialize profile in Supabase
+      const { error: profileError } = await supabase
+        .from('profiles')
+        .insert([{ id: data.user.id, username: email, coins: 0, streak_count: 0 }]);
 
-      if (res.ok && data.success) {
-        login(data.user);
-        showToast("Account created successfully! Please check your email to verify.", "success");
-        navigate('/dashboard');
-      } else {
-        showToast(data.error || "Failed to sync user data", "error");
+      if (profileError) {
+        console.error("Profile creation error:", profileError);
       }
+
+      login({ id: data.user.id, username: email, coins: 0, streak_count: 0 });
+      showToast("Account created successfully!", "success");
+      navigate('/dashboard');
     } catch (err) {
-      showToast("Network error", "error");
+      console.error("SignUp error:", err);
+      showToast("Sign up failed", "error");
     } finally {
       setIsLoading(false);
     }

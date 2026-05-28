@@ -90,26 +90,23 @@ export function AppProvider({ children }: { children: ReactNode }) {
       return;
     }
     try {
-      const url = `/api/coins?userId=${userId}`;
-      const res = await fetch(url);
-      if (res.ok) {
-        const data = await res.json();
-        setCoins(data.coins);
-        if (data.streak_count !== undefined) {
-          setStreak(data.streak_count);
-        }
-        if (data.profile_picture !== undefined) {
-          setProfilePicture(data.profile_picture);
-        }
-      } else {
-        if (res.status === 401 || res.status === 404) {
-          logout();
-        } else {
-          console.error('Failed to fetch coins: Server error');
-        }
+      const { data, error } = await supabase
+        .from('profiles')
+        .select('coins, streak_count, profile_picture')
+        .eq('id', userId)
+        .single();
+        
+      if (error) throw error;
+      
+      setCoins(data.coins);
+      if (data.streak_count !== undefined) {
+        setStreak(data.streak_count);
+      }
+      if (data.profile_picture !== undefined) {
+        setProfilePicture(data.profile_picture);
       }
     } catch (err) {
-      console.error('Failed to fetch coins', err);
+      console.error('Failed to fetch profile', err);
       showToast("Could not sync your data. Please check your connection.", "error");
     }
   };
@@ -154,29 +151,31 @@ export function AppProvider({ children }: { children: ReactNode }) {
       showToast("Please log in to use coins.", 'error');
       return { success: false, error: "Not logged in" };
     }
+    
+    const newCoins = (coins || 0) - 1;
+    if (newCoins < 0) {
+      setIsAdModalOpen(true);
+      showToast("You have no coins left! Watch an ad to get more.", 'info');
+      return { success: false, error: "Not enough coins" };
+    }
+
     try {
-      const res = await fetch('/api/coins/deduct', { 
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ userId })
-      });
-      const data = await res.json();
-      if (res.ok && data.success) {
-        setCoins(data.coins);
-        showToast(`1 coin used. ${data.coins} coins remaining.`, 'info');
-        return { success: true, coins: data.coins };
-      } else {
-        if (coins === 0) {
-          setIsAdModalOpen(true);
-          showToast("You have no coins left! Watch an ad to get more.", 'info');
-        } else {
-          showToast(data.error || "Failed to deduct coin.", 'error');
-        }
-        return { success: false, error: data.error };
-      }
+      const { data, error } = await supabase
+        .from('profiles')
+        .update({ coins: newCoins })
+        .eq('id', userId)
+        .select('coins')
+        .single();
+        
+      if (error) throw error;
+
+      setCoins(data.coins);
+      showToast(`1 coin used. ${data.coins} coins remaining.`, 'info');
+      return { success: true, coins: data.coins };
     } catch (err) {
+      console.error("Deduct coin error:", err);
       showToast("Failed to deduct coin", 'error');
-      return { success: false, error: "Network error" };
+      return { success: false, error: "Database error" };
     }
   };
 
@@ -185,42 +184,53 @@ export function AppProvider({ children }: { children: ReactNode }) {
       showToast("Please log in to earn coins.", 'error');
       return { success: false, error: "Not logged in" };
     }
+    const newCoins = (coins || 0) + amount;
     try {
-      const res = await fetch('/api/coins/add', { 
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ userId, amount })
-      });
-      const data = await res.json();
-      if (res.ok && data.success) {
-        setCoins(data.coins);
-        showToast(`${amount} coins added! You now have ${data.coins} coins.`, 'success');
-        return { success: true, coins: data.coins };
-      } else {
-        showToast("Failed to add coins.", 'error');
-        return { success: false, error: data.error };
-      }
+      const { data, error } = await supabase
+        .from('profiles')
+        .update({ coins: newCoins })
+        .eq('id', userId)
+        .select('coins')
+        .single();
+        
+      if (error) throw error;
+
+      setCoins(data.coins);
+      showToast(`${amount} coins added! You now have ${data.coins} coins.`, 'success');
+      return { success: true, coins: data.coins };
     } catch (err) {
+      console.error("Add coin error:", err);
       showToast("Failed to add coins", 'error');
-      return { success: false, error: "Network error" };
+      return { success: false, error: "Database error" };
     }
   };
 
   const updateStreak = async () => {
     if (!userId) return;
     try {
-      const res = await fetch('/api/streak/update', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ userId })
-      });
-      const data = await res.json();
-      if (res.ok && data.success) {
-        if (data.streak_count > streak) {
-          showToast(`Streak continued! ${data.streak_count} days in a row!`, 'success');
-        }
-        setStreak(data.streak_count);
+      // Get current streak
+      const { data: profile, error: profileError } = await supabase
+        .from('profiles')
+        .select('streak_count')
+        .eq('id', userId)
+        .single();
+      if (profileError) throw profileError;
+
+      const newStreak = profile.streak_count + 1;
+      
+      const { data, error } = await supabase
+        .from('profiles')
+        .update({ streak_count: newStreak })
+        .eq('id', userId)
+        .select('streak_count')
+        .single();
+      
+      if (error) throw error;
+      
+      if (data.streak_count > streak) {
+        showToast(`Streak continued! ${data.streak_count} days in a row!`, 'success');
       }
+      setStreak(data.streak_count);
     } catch (err) {
       console.error('Failed to update streak', err);
       showToast("Failed to update your streak.", "error");
@@ -230,21 +240,18 @@ export function AppProvider({ children }: { children: ReactNode }) {
   const updateProfilePicture = async (base64: string) => {
     if (!userId) return;
     try {
-      const res = await fetch('/api/profile/picture', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ userId, profilePicture: base64 })
-      });
-      const data = await res.json();
-      if (res.ok && data.success) {
-        setProfilePicture(base64);
-        showToast('Profile picture updated!', 'success');
-      } else {
-        showToast('Failed to update profile picture', 'error');
-      }
+      const { error } = await supabase
+        .from('profiles')
+        .update({ profile_picture: base64 })
+        .eq('id', userId);
+        
+      if (error) throw error;
+      
+      setProfilePicture(base64);
+      showToast('Profile picture updated!', 'success');
     } catch (err) {
       console.error('Failed to update profile picture', err);
-      showToast('Network error', 'error');
+      showToast('Database error', 'error');
     }
   };
 
