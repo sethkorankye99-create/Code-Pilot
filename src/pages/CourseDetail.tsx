@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { useAppContext } from '../context/AppContext';
+import { supabase } from '../lib/supabase';
 import CoinDisplay from '../components/CoinDisplay';
 import StreakDisplay from '../components/StreakDisplay';
 import SettingsModal from '../components/SettingsModal';
@@ -53,35 +54,40 @@ export default function CourseDetail() {
 
   useEffect(() => {
     if (userId) {
-      fetch(`/api/progress?userId=${userId}&courseId=${courseId}`)
-        .then(res => res.json())
-        .then(data => {
-          if (data.success && data.progress) {
-            const moduleProgress = data.progress.find((p: any) => p.module_id === moduleId);
+      supabase
+        .from('progress')
+        .select('*')
+        .eq('user_id', userId)
+        .eq('course_id', courseId)
+        .then(({ data, error }) => {
+          if (error) {
+            console.error("Failed to fetch progress", error);
+            return;
+          }
+          if (data) {
+            const moduleProgress = data.find((p: any) => p.module_id === moduleId);
             if (moduleProgress) {
-              setIsCompleted(moduleProgress.is_completed === 1);
+              setIsCompleted(moduleProgress.is_completed);
               setQuizScore(moduleProgress.quiz_score);
             }
           }
-        })
-        .catch(err => console.error("Failed to fetch progress", err));
+        });
     }
   }, [userId]);
 
   const saveProgress = async (completed: boolean, score: number) => {
     if (!userId) return;
     try {
-      await fetch('/api/progress/update', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          userId,
-          courseId,
-          moduleId,
-          isCompleted: completed,
-          quizScore: score
-        })
-      });
+      const { error } = await supabase
+        .from('progress')
+        .upsert({
+          user_id: userId,
+          course_id: courseId,
+          module_id: moduleId,
+          is_completed: completed,
+          quiz_score: score
+        });
+      if (error) throw error;
     } catch (err) {
       console.error("Failed to save progress", err);
     }

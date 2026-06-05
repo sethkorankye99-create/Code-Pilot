@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { motion } from 'motion/react';
+import { supabase } from '../lib/supabase';
 import VideoPlayerModal from '../components/VideoPlayerModal';
 
 interface User {
@@ -67,13 +68,11 @@ export default function AdminDashboard() {
 
   const fetchUsers = async () => {
     try {
-      const response = await fetch('/api/admin/users', {
-        headers: { 'x-admin-email': email.trim() }
-      });
-      if (response.ok) {
-        const data = await response.json();
-        setUsers(data.users);
-      }
+      const { data, error } = await supabase
+        .from('profiles')
+        .select('*');
+      if (error) throw error;
+      setUsers(data || []);
     } catch (err) {
       console.error("Failed to fetch users", err);
     }
@@ -81,11 +80,11 @@ export default function AdminDashboard() {
 
   const fetchVideos = async () => {
     try {
-      const response = await fetch('/api/videos');
-      if (response.ok) {
-        const data = await response.json();
-        setVideos(data.videos);
-      }
+      const { data, error } = await supabase
+        .from('videos')
+        .select('*');
+      if (error) throw error;
+      setVideos(data || []);
     } catch (err) {
       console.error("Failed to fetch videos", err);
     }
@@ -97,24 +96,20 @@ export default function AdminDashboard() {
     setError('');
     
     try {
-      const response = await fetch('/api/admin/users', {
-        headers: {
-          'x-admin-email': email.trim()
-        }
-      });
+      const { data, error } = await supabase
+        .from('profiles')
+        .select('*')
+        .eq('email', email.trim());
+
+      if (error) throw error;
       
-      if (response.ok) {
-        const data = await response.json();
-        setUsers(data.users);
+      // Basic "admin" check: assuming certain email implies admin
+      if (data && data.length > 0 && email.trim() === 'admin@example.com') {
         setIsAuthenticated(true);
+        fetchUsers();
         fetchVideos();
       } else {
-        const errorData = await response.json().catch(() => null);
-        if (response.status === 500 && errorData?.error) {
-          setError(errorData.error);
-        } else {
-          setError('Access denied. Invalid admin email.');
-        }
+        setError('Access denied. Invalid admin email.');
       }
     } catch (err) {
       setError('Network error. Please try again.');
@@ -128,36 +123,21 @@ export default function AdminDashboard() {
     setVideoLoading(true);
     try {
       if (editingVideoId) {
-        const response = await fetch(`/api/admin/videos/${editingVideoId}`, {
-          method: 'PUT',
-          headers: {
-            'Content-Type': 'application/json',
-            'x-admin-email': email.trim()
-          },
-          body: JSON.stringify(newVideo)
-        });
-        if (response.ok) {
-          setNewVideo({ title: '', category: '', url: '', time: '', image_url: '' });
-          setEditingVideoId(null);
-          fetchVideos();
-        } else {
-          alert("Failed to update video.");
-        }
+        const { error } = await supabase
+          .from('videos')
+          .update(newVideo)
+          .eq('id', editingVideoId);
+        if (error) throw error;
+        setNewVideo({ title: '', category: '', url: '', time: '', image_url: '' });
+        setEditingVideoId(null);
+        fetchVideos();
       } else {
-        const response = await fetch('/api/admin/videos', {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-            'x-admin-email': email.trim()
-          },
-          body: JSON.stringify(newVideo)
-        });
-        if (response.ok) {
-          setNewVideo({ title: '', category: '', url: '', time: '', image_url: '' });
-          fetchVideos();
-        } else {
-          alert("Failed to add video.");
-        }
+        const { error } = await supabase
+          .from('videos')
+          .insert([newVideo]);
+        if (error) throw error;
+        setNewVideo({ title: '', category: '', url: '', time: '', image_url: '' });
+        fetchVideos();
       }
     } catch (err) {
       alert(`Error ${editingVideoId ? 'updating' : 'adding'} video.`);
@@ -186,15 +166,12 @@ export default function AdminDashboard() {
   const handleDeleteVideo = async (id: number) => {
     if (!confirm("Are you sure you want to delete this video?")) return;
     try {
-      const response = await fetch(`/api/admin/videos/${id}`, {
-        method: 'DELETE',
-        headers: { 'x-admin-email': email.trim() }
-      });
-      if (response.ok) {
-        fetchVideos();
-      } else {
-        alert("Failed to delete video.");
-      }
+      const { error } = await supabase
+        .from('videos')
+        .delete()
+        .eq('id', id);
+      if (error) throw error;
+      fetchVideos();
     } catch (err) {
       alert("Error deleting video.");
     }

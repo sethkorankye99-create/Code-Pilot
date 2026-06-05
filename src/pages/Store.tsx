@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { motion } from 'motion/react';
 import { ShoppingCart, Star, Shield, Zap, Sparkles, User as UserIcon } from 'lucide-react';
 import { useAppContext } from '../context/AppContext';
+import { supabase } from '../lib/supabase';
 import Navigation from '../components/Navigation';
 
 const STORE_ITEMS = [
@@ -58,27 +59,21 @@ export default function Store() {
       return;
     }
 
-    // Deduct the specific amount
     try {
-      // We need a custom deduct endpoint for specific amounts, but for now we'll just use a loop or a new endpoint.
-      // Since we only have deductCoin (which deducts 1), let's simulate a purchase by calling an endpoint if we had one.
-      // For now, we'll just use a fetch to a new endpoint we'll create: /api/coins/purchase
-      const res = await fetch('/api/coins/purchase', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ userId: localStorage.getItem('userId'), amount: item.price })
-      });
+      const { data, error } = await supabase
+        .from('profiles')
+        .update({ coins: coins - item.price })
+        .eq('id', localStorage.getItem('userId'))
+        .select('coins')
+        .single();
       
-      const data = await res.json();
-      if (res.ok && data.success) {
-        setPurchasedItems([...purchasedItems, item.id]);
-        showToast(`Successfully purchased ${item.name}!`, "success");
-        // We should refresh coins here, but AppContext will need to be updated.
-        // For now, we'll just reload the page to sync state or let the user refresh.
-        window.location.reload();
-      } else {
-        showToast(data.error || "Purchase failed.", "error");
-      }
+      if (error) throw error;
+      
+      setPurchasedItems([...purchasedItems, item.id]);
+      showToast(`Successfully purchased ${item.name}!`, "success");
+      // AppContext will take care of updating coins, 
+      // but let's force a state refresh or update local context if needed
+      window.location.reload(); 
     } catch (err) {
       console.error(err);
       showToast("Failed to process purchase.", "error");
