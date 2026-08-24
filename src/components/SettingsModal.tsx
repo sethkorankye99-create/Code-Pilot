@@ -1,6 +1,6 @@
 import React, { useState, useRef } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 import { useAppContext } from '../context/AppContext';
 
 interface SettingsModalProps {
@@ -9,19 +9,8 @@ interface SettingsModalProps {
 }
 
 export default function SettingsModal({ isOpen, onClose }: SettingsModalProps) {
-  const { username, profilePicture, updateProfilePicture, coins, streak, showToast, logout, addCoins, theme, toggleTheme } = useAppContext();
-  const [isEditing, setIsEditing] = useState(false);
-  const [editName, setEditName] = useState(username);
+  const { profilePicture, updateProfilePicture, coins, streak, showToast, logout, theme, toggleTheme } = useAppContext();
   const fileInputRef = useRef<HTMLInputElement>(null);
-  const [isWatchingAd, setIsWatchingAd] = useState(false);
-  const navigate = useNavigate();
-
-  const handleSaveName = () => {
-    if (editName.trim()) {
-      showToast("Username update not implemented", "info");
-    }
-    setIsEditing(false);
-  };
 
   const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -39,22 +28,11 @@ export default function SettingsModal({ isOpen, onClose }: SettingsModalProps) {
     }
   };
 
-  const handleWatchAd = async () => {
-    if (isWatchingAd) return;
-    setIsWatchingAd(true);
-    showToast("Watching ad...", "info");
-    
-    // Simulate watching an ad for 2 seconds
-    setTimeout(async () => {
-      await addCoins(5);
-      setIsWatchingAd(false);
-    }, 2000);
-  };
-
-  const handleLogout = async () => {
-    await logout();
-    onClose();
-    navigate('/login');
+  const handleResetProgress = async () => {
+    if (confirm("Are you sure you want to reset your local stats?")) {
+      logout();
+      onClose();
+    }
   };
 
   return (
@@ -86,7 +64,7 @@ export default function SettingsModal({ isOpen, onClose }: SettingsModalProps) {
 
             <div className="space-y-6">
               {/* Profile Section */}
-              <div className="flex flex-col items-center gap-4 p-6 rounded-2xl bg-slate-50/50 dark:bg-slate-800/30 border border-slate-200/50 dark:border-slate-800/50 text-center backdrop-blur-sm">
+              <div className="flex flex-col items-center gap-3 p-6 rounded-2xl bg-slate-50/50 dark:bg-slate-800/30 border border-slate-200/50 dark:border-slate-800/50 text-center backdrop-blur-sm">
                 <div 
                   className="relative size-24 rounded-full bg-primary/20 flex items-center justify-center text-primary text-3xl font-bold cursor-pointer overflow-hidden group shadow-lg"
                   onClick={() => fileInputRef.current?.click()}
@@ -94,12 +72,19 @@ export default function SettingsModal({ isOpen, onClose }: SettingsModalProps) {
                   {profilePicture ? (
                     <img src={profilePicture} alt="Profile" referrerPolicy="no-referrer" className="w-full h-full object-cover" />
                   ) : (
-                    username.charAt(0).toUpperCase()
+                    <span className="material-symbols-outlined text-4xl text-primary">account_circle</span>
                   )}
                   <div className="absolute inset-0 bg-black/40 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
                     <span className="material-symbols-outlined text-white text-base">photo_camera</span>
                   </div>
                 </div>
+                <button 
+                  onClick={() => fileInputRef.current?.click()}
+                  className="text-xs font-semibold text-primary hover:underline flex items-center gap-1"
+                >
+                  <span className="material-symbols-outlined text-sm">photo_camera</span>
+                  Change Profile Photo
+                </button>
                 <input 
                   type="file" 
                   ref={fileInputRef} 
@@ -107,56 +92,21 @@ export default function SettingsModal({ isOpen, onClose }: SettingsModalProps) {
                   accept="image/*" 
                   className="hidden" 
                 />
-                <div className="w-full">
-                  {isEditing ? (
-                    <div className="flex items-center gap-2 max-w-xs mx-auto">
-                      <input 
-                        type="text" 
-                        value={editName}
-                        onChange={(e) => setEditName(e.target.value)}
-                        className="w-full bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-700 rounded-lg px-3 py-2 text-sm text-slate-900 dark:text-white focus:outline-none focus:border-primary text-center"
-                        autoFocus
-                      />
-                      <button onClick={handleSaveName} className="p-2 bg-primary text-white rounded-lg hover:bg-primary/90 shadow-md">
-                        <span className="material-symbols-outlined text-sm">check</span>
-                      </button>
-                    </div>
-                  ) : (
-                    <div className="flex flex-col items-center">
-                      <div className="relative group/name inline-block">
-                        <p className="text-xs text-slate-500 dark:text-slate-400 font-medium uppercase tracking-wider mb-1">Username</p>
-                        <div className="flex items-center justify-center gap-2">
-                          <p className="text-xl font-bold text-slate-900 dark:text-white">{username}</p>
-                          <button onClick={() => setIsEditing(true)} className="p-1 text-slate-400 hover:text-primary transition-colors">
-                            <span className="material-symbols-outlined text-sm">edit</span>
-                          </button>
-                        </div>
-                        {streak > 0 && (
-                          <div className="flex items-center justify-center gap-1 mt-2 bg-orange-500/10 px-3 py-1 rounded-full">
-                            <span className="material-symbols-outlined text-orange-500 text-sm" style={{fontVariationSettings: "'FILL' 1"}}>local_fire_department</span>
-                            <span className="text-xs font-bold text-orange-600 dark:text-orange-400">{streak} Day Streak</span>
-                          </div>
-                        )}
-                      </div>
-                    </div>
-                  )}
-                </div>
+                {streak > 0 && (
+                  <div className="flex items-center justify-center gap-1 mt-1 bg-orange-500/10 px-3 py-1 rounded-full">
+                    <span className="material-symbols-outlined text-orange-500 text-sm" style={{fontVariationSettings: "'FILL' 1"}}>local_fire_department</span>
+                    <span className="text-xs font-bold text-orange-600 dark:text-orange-400">{streak} Day Streak</span>
+                  </div>
+                )}
               </div>
 
               {/* Coins Card */}
               <div className="p-5 rounded-2xl bg-gradient-to-br from-yellow-50/80 to-yellow-100/80 dark:from-yellow-900/20 dark:to-yellow-800/10 border border-yellow-200/50 dark:border-yellow-700/30 backdrop-blur-sm flex flex-col items-center justify-center text-center">
-                <div className="flex items-center gap-2 mb-2">
+                <div className="flex items-center gap-2 mb-1">
                   <span className="material-symbols-outlined text-yellow-500 text-3xl" style={{fontVariationSettings: "'FILL' 1"}}>monetization_on</span>
                   <span className="text-2xl font-bold text-slate-900 dark:text-white">{coins !== null ? coins : 5} Coins</span>
                 </div>
-                <p className="text-sm text-slate-600 dark:text-slate-400 mb-4">Use coins to take quizzes and unlock content.</p>
-                <button 
-                  onClick={handleWatchAd}
-                  className="w-full py-3 rounded-xl bg-slate-900 dark:bg-white text-white dark:text-slate-900 font-bold text-sm hover:opacity-90 transition-opacity flex items-center justify-center gap-2 shadow-md"
-                >
-                  <span className="material-symbols-outlined text-lg">play_circle</span>
-                  Watch Ad (+5Coins)
-                </button>
+                <p className="text-sm text-slate-600 dark:text-slate-400">Earn coins by completing quizzes and scoring points.</p>
               </div>
 
               {/* Theme Toggle */}
@@ -188,19 +138,19 @@ export default function SettingsModal({ isOpen, onClose }: SettingsModalProps) {
                   <span className="material-symbols-outlined text-primary">support_agent</span>
                   <div>
                     <p className="text-sm font-bold text-slate-900 dark:text-white">Customer Support</p>
-                    <p className="text-xs text-slate-500 dark:text-slate-400">Chat with our admin team</p>
+                    <p className="text-xs text-slate-500 dark:text-slate-400">Chat with our support team</p>
                   </div>
                 </div>
                 <span className="material-symbols-outlined text-slate-400">chevron_right</span>
               </Link>
 
-              {/* Logout Button */}
+              {/* Reset Stats */}
               <button 
-                onClick={handleLogout}
-                className="w-full py-4 rounded-2xl bg-red-50/50 dark:bg-red-900/10 text-red-600 dark:text-red-400 font-bold text-sm hover:bg-red-100/50 dark:hover:bg-red-100/50 transition-colors flex items-center justify-center gap-2 border border-red-100/50 dark:border-red-900/10 backdrop-blur-sm"
+                onClick={handleResetProgress}
+                className="w-full py-3 rounded-2xl bg-slate-100 dark:bg-white/5 text-slate-600 dark:text-slate-400 font-bold text-xs hover:bg-slate-200 dark:hover:bg-white/10 transition-colors flex items-center justify-center gap-2 border border-slate-200 dark:border-white/5"
               >
-                <span className="material-symbols-outlined text-lg">logout</span>
-                Log Out
+                <span className="material-symbols-outlined text-sm">restart_alt</span>
+                Reset Stats
               </button>
 
             </div>

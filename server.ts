@@ -67,6 +67,18 @@ const getYesterdayDateStr = () => {
   return `${yesterday.getUTCFullYear()}-${String(yesterday.getUTCMonth() + 1).padStart(2, '0')}-${String(yesterday.getUTCDate()).padStart(2, '0')}`;
 };
 
+// Helper to get or auto-create a user record
+const getOrCreateUser = (userId: string, username = 'Coder') => {
+  let user = db.prepare('SELECT * FROM users WHERE id = ?').get(userId) as any;
+  if (!user) {
+    const today = getCurrentDateStr();
+    db.prepare('INSERT INTO users (id, username, password, coins, last_reset_date, streak_count, last_streak_date, profile_picture, email) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)')
+      .run(userId, username, '', 10, today, 0, '', null, `${userId}@example.com`);
+    user = { id: userId, username, coins: 10, streak_count: 0, profile_picture: null, last_reset_date: today, last_streak_date: '' };
+  }
+  return user;
+};
+
 async function startServer() {
   const app = express();
   const PORT = 3000;
@@ -167,28 +179,20 @@ async function startServer() {
   app.get("/api/coins", (req, res) => {
     const userId = req.query.userId as string;
     if (!userId) {
-      return res.status(401).json({ error: "Unauthorized: User ID required" });
+      return res.status(400).json({ error: "Unauthorized: User ID required" });
     }
     
-    let user = db.prepare('SELECT * FROM users WHERE id = ?').get(userId) as any;
-    if (!user) {
-      return res.status(404).json({ error: "User not found" });
-    }
-    
+    const user = getOrCreateUser(userId);
     res.json({ coins: user.coins, streak_count: user.streak_count, profile_picture: user.profile_picture });
   });
 
   app.post("/api/coins/deduct", (req, res) => {
     const { userId } = req.body;
     if (!userId) {
-      return res.status(401).json({ error: "Unauthorized: User ID required" });
+      return res.status(400).json({ error: "Unauthorized: User ID required" });
     }
     
-    let user = db.prepare('SELECT * FROM users WHERE id = ?').get(userId) as any;
-    if (!user) {
-      return res.status(404).json({ error: "User not found" });
-    }
-    
+    const user = getOrCreateUser(userId);
     if (user.coins <= 0) {
       return res.status(400).json({ error: "No coins left", coins: 0 });
     }
@@ -202,14 +206,10 @@ async function startServer() {
   app.post("/api/streak/update", (req, res) => {
     const { userId } = req.body;
     if (!userId) {
-      return res.status(401).json({ error: "Unauthorized: User ID required" });
+      return res.status(400).json({ error: "Unauthorized: User ID required" });
     }
     
-    let user = db.prepare('SELECT * FROM users WHERE id = ?').get(userId) as any;
-    if (!user) {
-      return res.status(404).json({ error: "User not found" });
-    }
-
+    const user = getOrCreateUser(userId);
     const today = getCurrentDateStr();
     const yesterday = getYesterdayDateStr();
 
@@ -240,6 +240,7 @@ async function startServer() {
     }
     
     try {
+      getOrCreateUser(userId);
       const progress = db.prepare('SELECT * FROM course_progress WHERE user_id = ? AND course_id = ?').all(userId, courseId);
       res.json({ success: true, progress });
     } catch (err) {
@@ -255,6 +256,7 @@ async function startServer() {
     }
     
     try {
+      getOrCreateUser(userId);
       db.prepare(`
         INSERT INTO course_progress (user_id, course_id, module_id, is_completed, quiz_score)
         VALUES (?, ?, ?, ?, ?)
@@ -276,11 +278,7 @@ async function startServer() {
     }
 
     try {
-      const user = db.prepare('SELECT coins FROM users WHERE id = ?').get(userId) as any;
-      if (!user) {
-        return res.status(404).json({ error: "User not found" });
-      }
-
+      const user = getOrCreateUser(userId);
       const newCoins = user.coins + amount;
       db.prepare('UPDATE users SET coins = ? WHERE id = ?').run(newCoins, userId);
       res.json({ success: true, coins: newCoins });
@@ -289,19 +287,14 @@ async function startServer() {
     }
   });
 
-
-   app.post("/api/coins/purchase", (req, res) => {
+  app.post("/api/coins/purchase", (req, res) => {
     const { userId, amount } = req.body;
     if (!userId || !amount) {
       return res.status(400).json({ error: "User ID and amount required" });
     }
 
     try {
-      const user = db.prepare('SELECT coins FROM users WHERE id = ?').get(userId) as any;
-      if (!user) {
-        return res.status(404).json({ error: "User not found" });
-      }
-
+      const user = getOrCreateUser(userId);
       if (user.coins < amount) {
         return res.status(400).json({ error: "Not enough coins" });
       }
@@ -320,30 +313,11 @@ async function startServer() {
       return res.status(400).json({ error: "User ID required" });
     }
     try {
+      getOrCreateUser(userId);
       db.prepare('UPDATE users SET profile_picture = ? WHERE id = ?').run(profilePicture, userId);
       res.json({ success: true });
     } catch (err) {
       res.status(500).json({ error: "Failed to update profile picture" });
-    }
-  });
-
-  app.get("/api/admin/users", (req, res) => {
-    const adminEmail = req.headers['x-admin-email'];
-    const expectedEmail = process.env.ADMIN_EMAIL ? process.env.ADMIN_EMAIL.trim() : null;
-    
-    if (!expectedEmail) {
-      return res.status(500).json({ error: "Server configuration error: ADMIN_EMAIL environment variable is not set." });
-    }
-
-    if (!adminEmail || adminEmail.toString().trim().toLowerCase() !== expectedEmail.toLowerCase()) {
-      return res.status(401).json({ error: "Unauthorized" });
-    }
-
-    try {
-      const users = db.prepare('SELECT id, username, email, coins, streak_count, last_streak_date, created_at, profile_picture FROM users ORDER BY created_at DESC').all();
-      res.json({ success: true, users });
-    } catch (err) {
-      res.status(500).json({ error: "Database error" });
     }
   });
 
@@ -354,64 +328,6 @@ async function startServer() {
       res.json({ success: true, videos });
     } catch (err) {
       res.status(500).json({ error: "Database error" });
-    }
-  });
-
-  app.post("/api/admin/videos", (req, res) => {
-    const adminEmail = req.headers['x-admin-email'];
-    const expectedEmail = process.env.ADMIN_EMAIL ? process.env.ADMIN_EMAIL.trim() : null;
-    
-    if (!expectedEmail || !adminEmail || adminEmail.toString().trim().toLowerCase() !== expectedEmail.toLowerCase()) {
-      return res.status(401).json({ error: "Unauthorized" });
-    }
-
-    const { title, category, url, time, image_url } = req.body;
-    if (!title || !category || !url || !time) {
-      return res.status(400).json({ error: "Missing required fields" });
-    }
-
-    try {
-      const result = db.prepare('INSERT INTO videos (title, category, url, time, image_url) VALUES (?, ?, ?, ?, ?)').run(title, category, url, time, image_url || null);
-      res.json({ success: true, id: result.lastInsertRowid });
-    } catch (err) {
-      res.status(500).json({ error: "Failed to add video" });
-    }
-  });
-
-  app.delete("/api/admin/videos/:id", (req, res) => {
-    const adminEmail = req.headers['x-admin-email'];
-    const expectedEmail = process.env.ADMIN_EMAIL ? process.env.ADMIN_EMAIL.trim() : null;
-    
-    if (!expectedEmail || !adminEmail || adminEmail.toString().trim().toLowerCase() !== expectedEmail.toLowerCase()) {
-      return res.status(401).json({ error: "Unauthorized" });
-    }
-
-    try {
-      db.prepare('DELETE FROM videos WHERE id = ?').run(req.params.id);
-      res.json({ success: true });
-    } catch (err) {
-      res.status(500).json({ error: "Failed to delete video" });
-    }
-  });
-
-  app.put("/api/admin/videos/:id", (req, res) => {
-    const adminEmail = req.headers['x-admin-email'];
-    const expectedEmail = process.env.ADMIN_EMAIL ? process.env.ADMIN_EMAIL.trim() : null;
-    
-    if (!expectedEmail || !adminEmail || adminEmail.toString().trim().toLowerCase() !== expectedEmail.toLowerCase()) {
-      return res.status(401).json({ error: "Unauthorized" });
-    }
-
-    const { title, category, url, time, image_url } = req.body;
-    if (!title || !category || !url || !time) {
-      return res.status(400).json({ error: "Missing required fields" });
-    }
-
-    try {
-      db.prepare('UPDATE videos SET title = ?, category = ?, url = ?, time = ?, image_url = ? WHERE id = ?').run(title, category, url, time, image_url || null, req.params.id);
-      res.json({ success: true });
-    } catch (err) {
-      res.status(500).json({ error: "Failed to update video" });
     }
   });
 

@@ -34,7 +34,7 @@ const NAV_ITEMS: {
 
 export default function Navigation() {
   const location = useLocation();
-  const { userId, profilePicture, username, logout, theme } = useAppContext();
+  const { profilePicture, theme } = useAppContext();
   const [isSettingsOpen, setIsSettingsOpen] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [activeSubmenu, setActiveSubmenu] = useState<string | null>(null);
@@ -104,7 +104,8 @@ export default function Navigation() {
           <div className="relative">
             <button 
               onClick={() => setIsProfileOpen(!isProfileOpen)}
-              className="flex items-center gap-3 p-1.5 rounded-full hover:bg-slate-100 dark:hover:bg-white/5 transition-colors border border-transparent hover:border-slate-200 dark:hover:border-white/10"
+              className="flex items-center p-1.5 rounded-full hover:bg-slate-100 dark:hover:bg-white/5 transition-colors border border-transparent hover:border-slate-200 dark:hover:border-white/10"
+              title="Profile & Settings"
             >
               <div className="size-8 rounded-full bg-slate-100 dark:bg-white/10 overflow-hidden border border-slate-200 dark:border-white/10">
                 {profilePicture ? (
@@ -115,7 +116,6 @@ export default function Navigation() {
                   </div>
                 )}
               </div>
-              <span className="text-sm font-bold text-black dark:text-white mr-1">{username}</span>
             </button>
 
             <AnimatePresence>
@@ -133,7 +133,7 @@ export default function Navigation() {
                       className="w-full flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium text-slate-600 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-white/5 transition-colors"
                     >
                       <Settings size={18} />
-                      Settings
+                      Settings & Profile
                     </button>
                     <Link 
                       to="/playground"
@@ -142,14 +142,6 @@ export default function Navigation() {
                       <Sparkles size={18} />
                       Code Editor
                     </Link>
-                    <div className="h-px bg-slate-100 dark:bg-white/5 my-1" />
-                    <button 
-                      onClick={() => { logout(); setIsProfileOpen(false); }}
-                      className="w-full flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-bold text-rose-500 hover:bg-rose-50 dark:hover:bg-rose-500/10 transition-colors"
-                    >
-                      <LogOut size={18} />
-                      Log Out
-                    </button>
                   </motion.div>
                 </>
               )}
@@ -240,20 +232,13 @@ export default function Navigation() {
               ))}
             </div>
 
-            <div className="p-4 border-t border-slate-200 dark:border-white/10 space-y-4">
+            <div className="p-4 border-t border-slate-200 dark:border-white/10 space-y-2">
               <button 
                 onClick={() => { setIsSettingsOpen(true); setIsMobileMenuOpen(false); }}
                 className="w-full flex items-center gap-4 p-4 rounded-2xl bg-slate-100 dark:bg-white/5 text-black dark:text-white font-bold"
               >
                 <Settings size={24} />
-                Settings
-              </button>
-              <button 
-                onClick={() => logout()}
-                className="w-full flex items-center gap-4 p-4 rounded-2xl bg-rose-50 dark:bg-rose-500/10 text-rose-500 font-bold"
-              >
-                <LogOut size={24} />
-                Log Out
+                Settings & Profile
               </button>
             </div>
           </motion.div>

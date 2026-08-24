@@ -1,10 +1,8 @@
 import { Link } from 'react-router-dom';
-import { useAppContext } from '../context/AppContext';
-import { Trophy } from 'lucide-react';
+import { Trophy, ArrowRight } from 'lucide-react';
 import { motion } from 'motion/react';
 
 export default function Landing() {
-  const { isLoggedIn } = useAppContext();
   return (
     <div className="relative flex min-h-screen w-full flex-col overflow-x-hidden bg-slate-50 dark:bg-background-dark transition-colors duration-300">
       {/* Top App Bar Component */}
@@ -16,11 +14,12 @@ export default function Landing() {
           <h2 className="text-slate-900 dark:text-slate-100 text-xl font-bold tracking-tight">Code Pillot</h2>
         </div>
         <div className="flex items-center gap-4">
-          <Link to="/login" className="text-slate-600 dark:text-slate-400 font-medium hover:text-primary transition-colors">
-            Log In
-          </Link>
-          <Link to="/signup" className="bg-primary text-white px-5 py-2.5 rounded-xl font-bold text-sm hover:bg-primary/90 transition-all shadow-lg shadow-primary/25 hover:shadow-primary/40 hover:-translate-y-0.5">
-            Sign Up
+          <Link 
+            to="/dashboard" 
+            className="bg-primary text-white px-5 py-2.5 rounded-xl font-bold text-sm hover:bg-primary/90 transition-all shadow-lg shadow-primary/25 hover:shadow-primary/40 hover:-translate-y-0.5 flex items-center gap-2"
+          >
+            <span>Open App</span>
+            <ArrowRight size={16} />
           </Link>
         </div>
       </header>
@@ -77,7 +76,10 @@ export default function Landing() {
         
         {/* Action Area */}
         <div className="w-full max-w-sm mt-12 space-y-6">
-          <Link to={isLoggedIn ? "/dashboard" : "/signup"} className="w-full bg-gradient-to-r from-primary to-indigo-600 hover:from-primary/90 hover:to-indigo-600/90 text-white font-bold h-14 rounded-2xl transition-all shadow-xl shadow-primary/25 hover:shadow-primary/40 hover:-translate-y-1 flex items-center justify-center gap-2 group">
+          <Link 
+            to="/dashboard" 
+            className="w-full bg-gradient-to-r from-primary to-indigo-600 hover:from-primary/90 hover:to-indigo-600/90 text-white font-bold h-14 rounded-2xl transition-all shadow-xl shadow-primary/25 hover:shadow-primary/40 hover:-translate-y-1 flex items-center justify-center gap-2 group"
+          >
             <span>Get Started</span>
             <span className="material-symbols-outlined text-xl group-hover:translate-x-1 transition-transform">arrow_forward</span>
           </Link>

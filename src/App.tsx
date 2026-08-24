@@ -5,8 +5,6 @@
 
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import Landing from './pages/Landing';
-import Login from './pages/Login';
-import SignUp from './pages/SignUp';
 import Dashboard from './pages/Dashboard';
 import Lesson from './pages/Lesson';
 import HtmlReference from './pages/HtmlReference';
@@ -19,22 +17,17 @@ import CodePlayground from './pages/CodePlayground';
 import CourseDetail from './pages/CourseDetail';
 import HTMLArticles from './pages/HTMLArticles';
 import ArticleReader from './pages/ArticleReader';
-import AdminDashboard from './pages/AdminDashboard';
 import Store from './pages/Store';
-import { AppProvider, useAppContext } from './context/AppContext';
+import { AppProvider } from './context/AppContext';
 import { LearningProvider } from './context/LearningContext';
-import AdModal from './components/AdModal';
 
 function AppContent() {
-  const { isAdModalOpen, setIsAdModalOpen } = useAppContext();
-  
   return (
     <Router>
-      <AdModal isOpen={isAdModalOpen} onClose={() => setIsAdModalOpen(false)} />
       <Routes>
         <Route path="/" element={<Landing />} />
-        <Route path="/login" element={<Login />} />
-        <Route path="/signup" element={<SignUp />} />
+        <Route path="/login" element={<Navigate to="/dashboard" replace />} />
+        <Route path="/signup" element={<Navigate to="/dashboard" replace />} />
         <Route path="/dashboard" element={<Dashboard />} />
         <Route path="/lesson" element={<Lesson />} />
         <Route path="/html-mastery" element={<HtmlReference />} />
@@ -47,7 +40,6 @@ function AppContent() {
         <Route path="/course" element={<CourseDetail />} />
         <Route path="/html-articles" element={<HTMLArticles />} />
         <Route path="/html-articles/:id" element={<ArticleReader />} />
-        <Route path="/admin" element={<AdminDashboard />} />
         <Route path="/store" element={<Store />} />
         <Route path="*" element={<Navigate to="/" replace />} />
       </Routes>

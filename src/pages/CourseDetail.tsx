@@ -1,11 +1,9 @@
 import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { useAppContext } from '../context/AppContext';
-import { supabase } from '../lib/supabase';
 import CoinDisplay from '../components/CoinDisplay';
 import StreakDisplay from '../components/StreakDisplay';
 import SettingsModal from '../components/SettingsModal';
-import AdModal from '../components/AdModal';
 import { motion, AnimatePresence } from 'motion/react';
 
 const QUIZ_QUESTIONS = [
@@ -43,9 +41,7 @@ export default function CourseDetail() {
   const [quizScore, setQuizScore] = useState(0);
   const [isQuizFinished, setIsQuizFinished] = useState(false);
   const [isSettingsOpen, setIsSettingsOpen] = useState(false);
-  const [isAdOpen, setIsAdOpen] = useState(false);
   const [isVideoPlaying, setIsVideoPlaying] = useState(false);
-  const [hasWatchedAd, setHasWatchedAd] = useState(false);
   const [isCompleted, setIsCompleted] = useState(false);
   const [isDeducting, setIsDeducting] = useState(false);
 
@@ -53,43 +49,39 @@ export default function CourseDetail() {
   const moduleId = "module-3";
 
   useEffect(() => {
-    if (userId) {
-      supabase
-        .from('progress')
-        .select('*')
-        .eq('user_id', userId)
-        .eq('course_id', courseId)
-        .then(({ data, error }) => {
-          if (error) {
-            console.error("Failed to fetch progress", error);
-            return;
+    const activeUserId = userId || localStorage.getItem('userId') || 'guest_user';
+    fetch(`/api/progress?userId=${encodeURIComponent(activeUserId)}&courseId=${encodeURIComponent(courseId)}`)
+      .then(res => res.json())
+      .then(data => {
+        if (data.success && Array.isArray(data.progress)) {
+          const moduleProgress = data.progress.find((p: any) => p.module_id === moduleId);
+          if (moduleProgress) {
+            setIsCompleted(Boolean(moduleProgress.is_completed));
+            setQuizScore(moduleProgress.quiz_score || 0);
           }
-          if (data) {
-            const moduleProgress = data.find((p: any) => p.module_id === moduleId);
-            if (moduleProgress) {
-              setIsCompleted(moduleProgress.is_completed);
-              setQuizScore(moduleProgress.quiz_score);
-            }
-          }
-        });
-    }
+        }
+      })
+      .catch(err => {
+        console.warn("Using local progress state");
+      });
   }, [userId]);
 
   const saveProgress = async (completed: boolean, score: number) => {
-    if (!userId) return;
+    const activeUserId = userId || localStorage.getItem('userId') || 'guest_user';
     try {
-      const { error } = await supabase
-        .from('progress')
-        .upsert({
-          user_id: userId,
-          course_id: courseId,
-          module_id: moduleId,
-          is_completed: completed,
-          quiz_score: score
-        });
-      if (error) throw error;
+      await fetch('/api/progress/update', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          userId: activeUserId,
+          courseId,
+          moduleId,
+          isCompleted: completed,
+          quizScore: score
+        })
+      });
     } catch (err) {
-      console.error("Failed to save progress", err);
+      console.warn("Failed to save progress to server, saved locally");
     }
   };
 
@@ -137,17 +129,7 @@ export default function CourseDetail() {
   };
 
   const handlePlayClick = () => {
-    if (!hasWatchedAd) {
-      setIsAdOpen(true);
-    } else {
-      setIsVideoPlaying(!isVideoPlaying);
-    }
-  };
-
-  const handleAdClose = () => {
-    setIsAdOpen(false);
-    setHasWatchedAd(true);
-    setIsVideoPlaying(true);
+    setIsVideoPlaying(!isVideoPlaying);
   };
 
   return (
@@ -415,7 +397,6 @@ export default function CourseDetail() {
       </div>
 
       <SettingsModal isOpen={isSettingsOpen} onClose={() => setIsSettingsOpen(false)} />
-      <AdModal isOpen={isAdOpen} onClose={handleAdClose} />
     </div>
   );
 }

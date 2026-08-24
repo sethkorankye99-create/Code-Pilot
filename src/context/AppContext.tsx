@@ -1,6 +1,5 @@
 import { createContext, useContext, useState, useEffect, ReactNode } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
-import { supabase } from '../lib/supabase';
 
 interface Toast {
   id: number;
@@ -19,8 +18,6 @@ interface AppContextType {
   toggleTheme: () => void;
   coins: number | null;
   streak: number;
-  isAdModalOpen: boolean;
-  setIsAdModalOpen: (isOpen: boolean) => void;
   deductCoin: () => Promise<{success: boolean, coins?: number, error?: string}>;
   addCoins: (amount: number) => Promise<{success: boolean, coins?: number, error?: string}>;
   updateStreak: () => Promise<void>;
@@ -32,10 +29,19 @@ interface AppContextType {
 const AppContext = createContext<AppContextType | undefined>(undefined);
 
 export function AppProvider({ children }: { children: ReactNode }) {
-  const [userId, setUserId] = useState<string | null>(() => localStorage.getItem('userId'));
-  const [username, setUsername] = useState(() => localStorage.getItem('username') || 'Guest');
+  const [userId, setUserId] = useState<string | null>(() => {
+    const saved = localStorage.getItem('userId');
+    if (saved) return saved;
+    const newGuestId = 'guest_' + Math.random().toString(36).substring(2, 9);
+    localStorage.setItem('userId', newGuestId);
+    return newGuestId;
+  });
+  const [username, setUsername] = useState(() => localStorage.getItem('username') || 'Guest Coder');
   const [profilePicture, setProfilePicture] = useState<string | null>(() => localStorage.getItem('profilePicture'));
-  const [isLoggedIn, setIsLoggedIn] = useState(() => !!localStorage.getItem('userId'));
+  const [isLoggedIn, setIsLoggedIn] = useState(() => {
+    const saved = localStorage.getItem('isLoggedIn');
+    return saved === 'true';
+  });
   const [theme, setTheme] = useState<'light' | 'dark'>(() => {
     if (localStorage.getItem('theme')) {
       return localStorage.getItem('theme') as 'light' | 'dark';
@@ -44,9 +50,8 @@ export function AppProvider({ children }: { children: ReactNode }) {
   });
   const [coins, setCoins] = useState<number | null>(() => {
     const stored = localStorage.getItem('coins');
-    return stored ? parseInt(stored, 10) : null;
+    return stored ? parseInt(stored, 10) : 10;
   });
-  const [isAdModalOpen, setIsAdModalOpen] = useState(false);
 
   useEffect(() => {
     if (coins !== null) {
@@ -55,13 +60,23 @@ export function AppProvider({ children }: { children: ReactNode }) {
       localStorage.removeItem('coins');
     }
   }, [coins]);
-  const [streak, setStreak] = useState<number>(0);
+
+  const [streak, setStreak] = useState<number>(() => {
+    const stored = localStorage.getItem('streak');
+    return stored ? parseInt(stored, 10) : 0;
+  });
+
+  useEffect(() => {
+    localStorage.setItem('streak', streak.toString());
+  }, [streak]);
+
   const [toasts, setToasts] = useState<Toast[]>([]);
 
   useEffect(() => {
     if (userId) {
       localStorage.setItem('userId', userId);
       localStorage.setItem('username', username);
+      localStorage.setItem('isLoggedIn', isLoggedIn ? 'true' : 'false');
       if (profilePicture) {
         localStorage.setItem('profilePicture', profilePicture);
       } else {
@@ -70,9 +85,10 @@ export function AppProvider({ children }: { children: ReactNode }) {
     } else {
       localStorage.removeItem('userId');
       localStorage.removeItem('username');
+      localStorage.removeItem('isLoggedIn');
       localStorage.removeItem('profilePicture');
     }
-  }, [userId, username, profilePicture]);
+  }, [userId, username, profilePicture, isLoggedIn]);
 
   useEffect(() => {
     localStorage.setItem('theme', theme);
@@ -83,31 +99,28 @@ export function AppProvider({ children }: { children: ReactNode }) {
     }
   }, [theme]);
 
+  const showToast = (message: string, type: 'success' | 'error' | 'info' = 'info') => {
+    const id = Date.now() + Math.random();
+    setToasts(prev => [...prev, { id, message, type }]);
+    setTimeout(() => {
+      setToasts(prev => prev.filter(t => t.id !== id));
+    }, 4000);
+  };
+
   const refreshCoins = async () => {
-    if (!userId) {
-      setCoins(0);
-      setStreak(0);
-      return;
-    }
+    if (!userId) return;
     try {
-      const { data, error } = await supabase
-        .from('profiles')
-        .select('coins, streak_count, profile_picture')
-        .eq('id', userId)
-        .single();
-        
-      if (error) throw error;
-      
-      setCoins(data.coins);
-      if (data.streak_count !== undefined) {
-        setStreak(data.streak_count);
-      }
-      if (data.profile_picture !== undefined) {
-        setProfilePicture(data.profile_picture);
+      const res = await fetch(`/api/coins?userId=${encodeURIComponent(userId)}`);
+      if (res.ok) {
+        const data = await res.json();
+        if (data.coins !== undefined) setCoins(data.coins);
+        if (data.streak_count !== undefined) setStreak(data.streak_count);
+        if (data.profile_picture !== undefined && data.profile_picture !== null) {
+          setProfilePicture(data.profile_picture);
+        }
       }
     } catch (err) {
-      console.error('Failed to fetch profile', err);
-      showToast("Could not sync your data. Please check your connection.", "error");
+      console.warn('Syncing using local cache');
     }
   };
 
@@ -125,133 +138,118 @@ export function AppProvider({ children }: { children: ReactNode }) {
   };
 
   const logout = async () => {
-    try {
-      await supabase.auth.signOut();
-    } catch (err) {
-      console.error("Error signing out from Supabase:", err);
-    }
-    setUserId(null);
-    setUsername('Guest');
-    setCoins(5);
+    const newGuestId = 'guest_' + Math.random().toString(36).substring(2, 9);
+    setUserId(newGuestId);
+    setUsername('Guest Coder');
+    setCoins(10);
     setStreak(0);
     setProfilePicture(null);
     setIsLoggedIn(false);
-  };
-
-  const showToast = (message: string, type: 'success' | 'error' | 'info' = 'info') => {
-    const id = Date.now() + Math.random();
-    setToasts(prev => [...prev, { id, message, type }]);
-    setTimeout(() => {
-      setToasts(prev => prev.filter(t => t.id !== id));
-    }, 4000);
+    showToast("Signed out successfully", "info");
   };
 
   const deductCoin = async () => {
-    if (!userId) {
-      showToast("Please log in to use coins.", 'error');
-      return { success: false, error: "Not logged in" };
-    }
+    const activeUserId = userId || 'guest_user';
+    const currentCoins = coins !== null ? coins : 10;
     
-    const newCoins = (coins || 0) - 1;
-    if (newCoins < 0) {
-      setIsAdModalOpen(true);
-      showToast("You have no coins left! Watch an ad to get more.", 'info');
+    if (currentCoins <= 0) {
+      showToast("You have no coins left! Earn more by scoring high on quizzes.", 'info');
       return { success: false, error: "Not enough coins" };
     }
 
     try {
-      const { data, error } = await supabase
-        .from('profiles')
-        .update({ coins: newCoins })
-        .eq('id', userId)
-        .select('coins')
-        .single();
-        
-      if (error) throw error;
-
-      setCoins(data.coins);
-      showToast(`1 coin used. ${data.coins} coins remaining.`, 'info');
-      return { success: true, coins: data.coins };
+      const res = await fetch('/api/coins/deduct', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ userId: activeUserId })
+      });
+      
+      if (res.ok) {
+        const data = await res.json();
+        setCoins(data.coins);
+        showToast(`1 coin used. ${data.coins} coins remaining.`, 'info');
+        return { success: true, coins: data.coins };
+      } else {
+        const newCount = Math.max(0, currentCoins - 1);
+        setCoins(newCount);
+        showToast(`1 coin used. ${newCount} coins remaining.`, 'info');
+        return { success: true, coins: newCount };
+      }
     } catch (err) {
-      console.error("Deduct coin error:", err);
-      showToast("Failed to deduct coin", 'error');
-      return { success: false, error: "Database error" };
+      const newCount = Math.max(0, currentCoins - 1);
+      setCoins(newCount);
+      showToast(`1 coin used. ${newCount} coins remaining.`, 'info');
+      return { success: true, coins: newCount };
     }
   };
 
   const addCoins = async (amount: number) => {
-    if (!userId) {
-      showToast("Please log in to earn coins.", 'error');
-      return { success: false, error: "Not logged in" };
-    }
-    const newCoins = (coins || 0) + amount;
+    const activeUserId = userId || 'guest_user';
+    const currentCoins = coins !== null ? coins : 10;
+    const fallbackCoins = currentCoins + amount;
+    
     try {
-      const { data, error } = await supabase
-        .from('profiles')
-        .update({ coins: newCoins })
-        .eq('id', userId)
-        .select('coins')
-        .single();
-        
-      if (error) throw error;
-
-      setCoins(data.coins);
-      showToast(`${amount} coins added! You now have ${data.coins} coins.`, 'success');
-      return { success: true, coins: data.coins };
+      const res = await fetch('/api/coins/add', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ userId: activeUserId, amount })
+      });
+      
+      if (res.ok) {
+        const data = await res.json();
+        setCoins(data.coins);
+        showToast(`${amount} coins added! You now have ${data.coins} coins.`, 'success');
+        return { success: true, coins: data.coins };
+      } else {
+        setCoins(fallbackCoins);
+        showToast(`${amount} coins added! You now have ${fallbackCoins} coins.`, 'success');
+        return { success: true, coins: fallbackCoins };
+      }
     } catch (err) {
-      console.error("Add coin error:", err);
-      showToast("Failed to add coins", 'error');
-      return { success: false, error: "Database error" };
+      setCoins(fallbackCoins);
+      showToast(`${amount} coins added! You now have ${fallbackCoins} coins.`, 'success');
+      return { success: true, coins: fallbackCoins };
     }
   };
 
   const updateStreak = async () => {
-    if (!userId) return;
+    const activeUserId = userId || 'guest_user';
     try {
-      // Get current streak
-      const { data: profile, error: profileError } = await supabase
-        .from('profiles')
-        .select('streak_count')
-        .eq('id', userId)
-        .single();
-      if (profileError) throw profileError;
-
-      const newStreak = profile.streak_count + 1;
+      const res = await fetch('/api/streak/update', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ userId: activeUserId })
+      });
       
-      const { data, error } = await supabase
-        .from('profiles')
-        .update({ streak_count: newStreak })
-        .eq('id', userId)
-        .select('streak_count')
-        .single();
-      
-      if (error) throw error;
-      
-      if (data.streak_count > streak) {
-        showToast(`Streak continued! ${data.streak_count} days in a row!`, 'success');
+      if (res.ok) {
+        const data = await res.json();
+        if (data.streak_count > streak) {
+          showToast(`Streak continued! ${data.streak_count} days in a row!`, 'success');
+        }
+        setStreak(data.streak_count);
+      } else {
+        const newStreak = streak + 1;
+        setStreak(newStreak);
+        showToast(`Streak continued! ${newStreak} days in a row!`, 'success');
       }
-      setStreak(data.streak_count);
     } catch (err) {
-      console.error('Failed to update streak', err);
-      showToast("Failed to update your streak.", "error");
+      const newStreak = streak + 1;
+      setStreak(newStreak);
     }
   };
 
   const updateProfilePicture = async (base64: string) => {
-    if (!userId) return;
+    const activeUserId = userId || 'guest_user';
+    setProfilePicture(base64);
     try {
-      const { error } = await supabase
-        .from('profiles')
-        .update({ profile_picture: base64 })
-        .eq('id', userId);
-        
-      if (error) throw error;
-      
-      setProfilePicture(base64);
+      await fetch('/api/profile/picture', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ userId: activeUserId, profilePicture: base64 })
+      });
       showToast('Profile picture updated!', 'success');
     } catch (err) {
-      console.error('Failed to update profile picture', err);
-      showToast('Database error', 'error');
+      showToast('Profile picture saved locally!', 'success');
     }
   };
 
@@ -260,7 +258,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
   };
 
   return (
-    <AppContext.Provider value={{ userId, username, profilePicture, isLoggedIn, login, logout, theme, toggleTheme, coins, streak, isAdModalOpen, setIsAdModalOpen, deductCoin, addCoins, updateStreak, updateProfilePicture, refreshCoins, showToast }}>
+    <AppContext.Provider value={{ userId, username, profilePicture, isLoggedIn, login, logout, theme, toggleTheme, coins, streak, deductCoin, addCoins, updateStreak, updateProfilePicture, refreshCoins, showToast }}>
       {children}
       {/* Toast Container */}
       <div className="fixed top-20 left-1/2 -translate-x-1/2 z-[100] flex flex-col gap-2 pointer-events-none w-full max-w-sm px-4">
@@ -296,3 +294,4 @@ export function useAppContext() {
   }
   return context;
 }
+

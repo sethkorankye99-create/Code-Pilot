@@ -1,8 +1,7 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { motion } from 'motion/react';
 import { ShoppingCart, Star, Shield, Zap, Sparkles, User as UserIcon } from 'lucide-react';
 import { useAppContext } from '../context/AppContext';
-import { supabase } from '../lib/supabase';
 import Navigation from '../components/Navigation';
 
 const STORE_ITEMS = [
@@ -45,8 +44,11 @@ const STORE_ITEMS = [
 ];
 
 export default function Store() {
-  const { coins, deductCoin, showToast } = useAppContext();
-  const [purchasedItems, setPurchasedItems] = useState<string[]>([]);
+  const { coins, showToast, refreshCoins, userId } = useAppContext();
+  const [purchasedItems, setPurchasedItems] = useState<string[]>(() => {
+    const saved = localStorage.getItem('purchased_items');
+    return saved ? JSON.parse(saved) : [];
+  });
 
   const handlePurchase = async (item: typeof STORE_ITEMS[0]) => {
     if (purchasedItems.includes(item.id)) {
@@ -59,21 +61,24 @@ export default function Store() {
       return;
     }
 
+    const activeUserId = userId || localStorage.getItem('userId') || 'guest_user';
+
     try {
-      const { data, error } = await supabase
-        .from('profiles')
-        .update({ coins: coins - item.price })
-        .eq('id', localStorage.getItem('userId'))
-        .select('coins')
-        .single();
-      
-      if (error) throw error;
-      
-      setPurchasedItems([...purchasedItems, item.id]);
-      showToast(`Successfully purchased ${item.name}!`, "success");
-      // AppContext will take care of updating coins, 
-      // but let's force a state refresh or update local context if needed
-      window.location.reload(); 
+      const res = await fetch('/api/coins/purchase', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ userId: activeUserId, amount: item.price })
+      });
+
+      if (res.ok) {
+        const nextPurchased = [...purchasedItems, item.id];
+        setPurchasedItems(nextPurchased);
+        localStorage.setItem('purchased_items', JSON.stringify(nextPurchased));
+        await refreshCoins();
+        showToast(`Successfully purchased ${item.name}!`, "success");
+      } else {
+        showToast("Failed to process purchase.", "error");
+      }
     } catch (err) {
       console.error(err);
       showToast("Failed to process purchase.", "error");
